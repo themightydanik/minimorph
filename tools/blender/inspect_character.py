@@ -135,10 +135,15 @@ def inspect(path):
                 assert material is not None and 0 <= material < len(
                     document["materials"]
                 )
-                if document["materials"][material].get("name") == "Kitten_VertexFur":
+                if document["materials"][material].get("name") == "Kitten_Fur_PBR":
+                    mat = document["materials"][material]
                     assert (
-                        "COLOR_0" in primitive["attributes"]
-                    ), "Missing baked fur vertex colors"
+                        "baseColorTexture" in mat.get("pbrMetallicRoughness", {})
+                        and "normalTexture" in mat
+                    ), "Missing baked fur PBR textures"
+                    assert (
+                        "TEXCOORD_0" in primitive["attributes"]
+                    ), "Missing fur UV coordinates"
                 used_materials.add(material)
         for child in node.get("children", []):
             walk(child, transform)
@@ -151,10 +156,38 @@ def inspect(path):
     assert (
         abs(minimum[1]) <= 0.005 and abs(height - 1.8) <= 0.03
     ), "Incorrect origin/height in GLB Y-up coordinates"
+    budget_path = path.parent / "budgets.json"
+    if not budget_path.exists():
+        budget_path = (
+            Path(__file__).resolve().parents[2]
+            / "assets/characters/minimorph/budgets.json"
+        )
+    limits = json.loads(budget_path.read_text())
     assert (
-        triangles <= 20000 and len(used_materials) <= 8 and primitives <= 8
-    ), "Mobile geometry/material/draw budgets exceeded"
-    assert byte_count <= 8 * 1024 * 1024
+        triangles <= limits["triangles"]
+        and len(used_materials) <= limits["materials"]
+        and primitives <= limits["primitives"]
+    ), "Declared review budgets exceeded"
+    assert byte_count <= limits["bytes"], "Declared byte budget exceeded"
+    image_info = []
+    for image in document.get("images", []):
+        view = document["bufferViews"][image["bufferView"]]
+        start = view.get("byteOffset", 0)
+        payload = binary[start : start + view["byteLength"]]
+        assert payload.startswith(b"\x89PNG\r\n\x1a\n"), "Expected embedded PNG maps"
+        width, image_height = struct.unpack_from(">II", payload, 16)
+        assert (
+            width > 0 and image_height > 0 and width <= 4096 and image_height <= 4096
+        ), "Invalid/oversized texture dimensions"
+        image_info.append(
+            {
+                "name": image.get("name", ""),
+                "width": width,
+                "height": image_height,
+                "bytes": len(payload),
+                "sha256": hashlib.sha256(payload).hexdigest(),
+            }
+        )
     return {
         "asset": path.name,
         "bytes": byte_count,
@@ -174,6 +207,11 @@ def inspect(path):
         "skins": len(document.get("skins", [])),
         "animation_clips": len(document.get("animations", [])),
         "external_resources": 0,
+        "limits": limits,
+        "texture_images": image_info,
+        "texture_rgba8_bytes_without_mips": sum(
+            v["width"] * v["height"] * 4 for v in image_info
+        ),
     }
 
 

@@ -79,6 +79,12 @@ void source
     canvas.dataset.materials = String(
       new Set(meshes.map((mesh) => mesh.material)).size,
     );
+    const fur = meshes.map((mesh) => mesh.material).find(
+      (material) => material?.name === "Kitten_Fur_PBR",
+    ) as pc.StandardMaterial | undefined;
+    canvas.dataset.furTextures = String(Boolean(
+      fur?.diffuseMap && fur.normalMap && fur.glossMap,
+    ));
     canvas.dataset.meshes = String(meshes.length);
     canvas.dataset.loaded = "true";
     status.textContent =

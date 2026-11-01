@@ -11,6 +11,7 @@ test("real character GLB loads through the shared PlayCanvas source", async ({
   expect(Number(await canvas.getAttribute("data-height"))).toBeCloseTo(1.8, 2);
   await expect(canvas).toHaveAttribute("data-meshes", "8");
   await expect(canvas).toHaveAttribute("data-materials", "8");
+  await expect(canvas).toHaveAttribute("data-fur-textures", "true");
   const lit = await canvas.evaluate(
     (element) =>
       new Promise<number>((resolve) =>

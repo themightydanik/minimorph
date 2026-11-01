@@ -1,9 +1,11 @@
 {
   "blender": "4.3.2",
   "runs": 2,
-  "geometry_sha256_1e6": "7a50825286e70b0e2aa994e3ae37c9fb3ffcd3a182c9544c2a358b10f4eb1d51",
+  "geometry_sha256_1e6": "ff14be76be8141ba8c0de167c1ea8483896d31ea6dd28d44b54d5d0f51aca9e9",
+  "geometry_match": false,
   "triangles_match": true,
   "vertices_match": true,
   "bounds_match": true,
+  "textures_match": true,
   "byte_identical": false
 }

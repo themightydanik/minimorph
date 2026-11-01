@@ -10,6 +10,16 @@ import json
 import math
 from pathlib import Path
 import sys
+from types import SimpleNamespace
+
+sys.path.insert(0, str(Path(__file__).parent))
+from character_fidelity import (
+    build_face,
+    build_helmet,
+    setup_materials,
+    refine_armor,
+    finish_uvs,
+)
 
 import bpy
 import bmesh
@@ -256,7 +266,7 @@ def ear(side, fur):
     fur_colors(obj, ear=True)
 
 
-def build():
+def build(output):
     global MODEL
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.object.empty_add()
@@ -265,217 +275,27 @@ def build():
     silver = material("Silver_PBR", "DDE4EB", 0.55, 0.32)
     dark = material("Armor_Dark", "3A4048", 0.3, 0.42)
     cyan = material("Cyan_Illumination", "00D8FF", 0.15, 0.25, 2.2)
-    fur = material("Kitten_VertexFur", "FFFFFF", 0, 0.8, vertex=True)
+    fur = material("Kitten_Fur_PBR", "FFFFFF", 0, 0.8)
     iris = material("Blue_Iris", "239AC2", 0.08, 0.17)
     pupil = material("Pupil_And_Gasket", "081B2B", 0.05, 0.2)
     white = material("Eye_Catchlight", "FFFFFF", 0, 0.18, 0.12)
-    nose = material("Nose_And_Mouth", "9C4E33", 0, 0.45)
+    nose = material("Nose_And_Mouth", "A86D40", 0, 0.45)
 
-    # Continuous sculpt-like facial surface, not floating cheek primitives.
-    head = sphere("Kitten face", (0, 0.045, 1.31), (0.395, 0.265, 0.34), fur, 40, 24)
-    cheeks = [
-        sphere("Muzzle cheek", (side * 0.075, 0.285, 1.175), (0.12, 0.075, 0.078), fur)
-        for side in [-1, 1]
-    ]
-    cheeks.append(sphere("Soft chin", (0, 0.263, 1.115), (0.126, 0.056, 0.05), fur))
-    bpy.ops.object.select_all(action="DESELECT")
-    for obj in [head] + cheeks:
-        obj.select_set(True)
-    bpy.context.view_layer.objects.active = head
-    bpy.ops.object.join()
-    for obj in cheeks:
-        PARTS.remove(obj)
-    mod = head.modifiers.new("Joined muzzle sculpt", "REMESH")
-    mod.mode = "VOXEL"
-    mod.voxel_size = 0.016
-    mod.use_smooth_shade = True
-    apply_modifier(head, mod)
-    mod = head.modifiers.new("Soft facial transitions", "SMOOTH")
-    mod.factor = 0.75
-    mod.iterations = 3
-    apply_modifier(head, mod)
-    mod = head.modifiers.new("Mobile facial topology", "DECIMATE")
-    mod.ratio = 0.18
-    apply_modifier(head, mod)
-    smooth(head)
-    fur_colors(head, face=True)
-    for side in [-1, 1]:
-        ear(side, fur)
-        lid = sphere(
-            "Cream eyelid surround",
-            (side * 0.163, 0.264, 1.362),
-            (0.123, 0.026, 0.139),
-            fur,
-            20,
-            10,
-        )
-        fur_colors(lid, "BE792F")
-        sphere(
-            "Dark eyelid",
-            (side * 0.163, 0.28, 1.362),
-            (0.111, 0.026, 0.125),
-            pupil,
-            24,
-            12,
-        )
-        sphere(
-            "Blue eye iris",
-            (side * 0.163, 0.30, 1.362),
-            (0.094, 0.018, 0.109),
-            iris,
-            24,
-            12,
-        )
-        sphere(
-            "Large glossy pupil",
-            (side * 0.163, 0.316, 1.37),
-            (0.079, 0.01, 0.094),
-            pupil,
-            20,
-            10,
-        )
-        sphere(
-            "Primary eye reflection",
-            (side * 0.163 - 0.026, 0.327, 1.414),
-            (0.025, 0.007, 0.026),
-            white,
-            12,
-            8,
-        )
-        sphere(
-            "Secondary eye reflection",
-            (side * 0.163 + 0.029, 0.327, 1.335),
-            (0.01, 0.004, 0.01),
-            white,
-            10,
-            6,
-        )
-    # A softened triangular nose and short expressive split muzzle line.
-    nose_obj = panel(
-        "Kitten nose",
-        [(-0.036, 1.23), (0.036, 1.23), (0, 1.194)],
-        0.373,
-        0.033,
-        nose,
-        0.012,
+    api = SimpleNamespace(
+        sphere=sphere,
+        mesh_object=mesh_object,
+        smooth=smooth,
+        apply_modifier=apply_modifier,
+        parts=PARTS,
+        panel=panel,
+        tube=tube,
+        oval_ring=oval_ring,
+        cylinder_between=cylinder_between,
+        bevel=bevel,
     )
-    smooth(nose_obj)
-    tube("Muzzle center line", [(0, 0.365, 1.198), (0, 0.365, 1.176)], 0.0035, nose)
-    for side in [-1, 1]:
-        tube(
-            "Muzzle smile",
-            [
-                (0, 0.365, 1.176),
-                (side * 0.021, 0.361, 1.165),
-                (side * 0.05, 0.351, 1.17),
-            ],
-            0.003,
-            nose,
-        )
-
-    for side in [-1, 1]:
-        for offset in [-0.025, 0, 0.025]:
-            tube(
-                "Fine attached whisker",
-                [
-                    (side * 0.15, 0.34, 1.175 + offset * 0.4),
-                    (side * 0.22, 0.345, 1.175 + offset),
-                    (side * 0.29, 0.326, 1.18 + offset * 1.3),
-                ],
-                0.0012,
-                white,
-            )
-
-    # Genuine open helmet shell with a solid inner rim; no transparent full sphere.
-    theta_open, segments, rings = 1.0, 48, 12
-
-    def helmet_point(theta, angle, lift=0):
-        return (
-            (0.50 + lift) * math.sin(theta) * math.cos(angle),
-            (0.43 + lift) * math.cos(theta),
-            1.31 + (0.41 + lift) * math.sin(theta) * math.sin(angle),
-        )
-
-    vertices = [
-        helmet_point(
-            theta_open + (math.pi - theta_open) * j / rings, TAU * i / segments
-        )
-        for j in range(rings)
-        for i in range(segments)
-    ]
-    vertices.append((0, -0.43, 1.31))
-    pole = len(vertices) - 1
-    faces = [
-        (
-            j * segments + i,
-            j * segments + (i + 1) % segments,
-            (j + 1) * segments + (i + 1) % segments,
-            (j + 1) * segments + i,
-        )
-        for j in range(rings - 1)
-        for i in range(segments)
-    ]
-    faces += [
-        ((rings - 1) * segments + i, (rings - 1) * segments + (i + 1) % segments, pole)
-        for i in range(segments)
-    ]
-    helmet = smooth(mesh_object("Silver open helmet shell", vertices, faces, silver))
-    mod = helmet.modifiers.new("Helmet wall thickness", "SOLIDIFY")
-    mod.thickness = 0.015
-    apply_modifier(helmet, mod)
-    oval_ring("Outer silver face frame", 0.433, 0.357, 0.24, 1.31, 0.019, silver)
-    oval_ring("Visor dark seal", 0.414, 0.344, 0.261, 1.31, 0.018, pupil)
-    oval_ring("Continuous cyan visor rim", 0.407, 0.337, 0.28, 1.31, 0.009, cyan)
-    for angle in [0.9, 2.24, 4.18, 5.25]:
-        tube(
-            "Helmet panel seam",
-            [helmet_point(theta_open + j / 24 * 1.92, angle, 0.003) for j in range(25)],
-            0.0035,
-            dark,
-        )
-    tube(
-        "Rear helmet panel seam",
-        [helmet_point(2.18, TAU * i / 48, 0.003) for i in range(49)],
-        0.0035,
-        dark,
-    )
-    for side in [-1, 1]:
-        cylinder_between(
-            "Comms outer gasket",
-            (side * 0.477, -0.005, 1.295),
-            (side * 0.509, -0.005, 1.295),
-            0.123,
-            0.123,
-            pupil,
-            28,
-        )
-        cylinder_between(
-            "Silver comms housing",
-            (side * 0.51, -0.005, 1.295),
-            (side * 0.535, -0.005, 1.295),
-            0.107,
-            0.107,
-            silver,
-            28,
-        )
-        cylinder_between(
-            "Comms cyan ring",
-            (side * 0.536, -0.005, 1.295),
-            (side * 0.54, -0.005, 1.295),
-            0.084,
-            0.084,
-            cyan,
-            24,
-        )
-        cylinder_between(
-            "Comms inset face",
-            (side * 0.541, -0.005, 1.295),
-            (side * 0.548, -0.005, 1.295),
-            0.072,
-            0.072,
-            silver,
-            24,
-        )
+    setup_materials(MATERIALS, output / "textures")
+    build_face(api, MATERIALS)
+    build_helmet(api, MATERIALS)
 
     cylinder_between(
         "Sealed neck collar", (0, -0.01, 0.84), (0, -0.01, 0.96), 0.166, 0.19, dark, 32
@@ -725,6 +545,9 @@ def build():
                 nose,
             )
 
+    refine_armor(api, MATERIALS)
+    finish_uvs(PARTS, MATERIALS)
+
     # Repair coincident bevel/curve endpoints and triangulate before budgeting.
     for obj in PARTS:
         bm = bmesh.new()
@@ -784,7 +607,9 @@ def export_asset(output):
         result.name = "Mesh_" + mat.name
         # Keep the editable source intact; lightly simplify the runtime copy.
         mod = result.modifiers.new("Runtime mobile reduction", "DECIMATE")
-        mod.ratio = 0.85
+        mod.ratio = {"Kitten_Fur_PBR": 0.30, "Blue_Iris": 0.55, "Silver_PBR": 0.78}.get(
+            mat.name, 0.88
+        )
         mod.use_collapse_triangulate = True
         apply_modifier(result, mod)
         result.parent = root
@@ -846,7 +671,7 @@ def stage():
             (Vector((0, 0, 1)) - obj.location).to_track_quat("-Z", "Y").to_euler()
         )
 
-    light("Warm key", (-3, 4, 5), 430, 4, (1, 0.87, 0.73))
+    light("Warm key", (-3, 4, 5), 430, 1.8, (1, 0.93, 0.84))
     light("Cool fill", (3, 2, 3), 300, 3, (0.63, 0.83, 1))
     light("Silver rim", (0, -3, 4), 650, 3, (0.66, 0.86, 1))
     bpy.ops.mesh.primitive_plane_add(size=200)
@@ -872,28 +697,48 @@ def main():
         "--output", type=Path, default=ROOT / "assets/characters/minimorph"
     )
     parser.add_argument("--renders", action="store_true")
+    parser.add_argument(
+        "--source-only",
+        action="store_true",
+        help="Render high-quality source for visual review before export",
+    )
+    parser.add_argument("--samples", type=int, default=64)
+    parser.add_argument("--head-review", action="store_true")
     args = parser.parse_args(
         sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
     )
     args.output.mkdir(parents=True, exist_ok=True)
-    build()
-    export_asset(args.output)
+    import shutil
+
+    manifest = ROOT / "assets/characters/minimorph/budgets.json"
+    if args.output.resolve() != manifest.parent.resolve():
+        shutil.copyfile(manifest, args.output / "budgets.json")
+    build(args.output)
+    if not args.source_only:
+        export_asset(args.output)
     sys.path.insert(0, str(Path(__file__).parent))
     from inspect_character import inspect
 
-    report = inspect(args.output / "minimorph_v1.glb")
-    (args.output / "validation.json").write_text(json.dumps(report, indent=2) + "\n")
+    if not args.source_only:
+        report = inspect(args.output / "minimorph_v1.glb")
+        (args.output / "validation.json").write_text(
+            json.dumps(report, indent=2) + "\n"
+        )
     camera = stage()
+    bpy.context.scene.cycles.samples = args.samples
     bpy.data.orphans_purge(do_local_ids=True, do_linked_ids=True, do_recursive=True)
     bpy.context.preferences.filepaths.save_version = 0
-    bpy.ops.wm.save_as_mainfile(filepath=str(args.output / "minimorph_v1.blend"))
+    bpy.ops.wm.save_as_mainfile(
+        filepath=str(args.output / "minimorph_v1.blend"), compress=True
+    )
     if args.renders:
         # Verify the exact optimized export in beauty renders, not a denser source.
-        for obj in PARTS:
-            obj.hide_render = True
-        bpy.ops.import_scene.gltf(
-            filepath=str((args.output / "minimorph_v1.glb").resolve())
-        )
+        if not args.source_only:
+            for obj in PARTS:
+                obj.hide_render = True
+            bpy.ops.import_scene.gltf(
+                filepath=str((args.output / "minimorph_v1.glb").resolve())
+            )
         folder = args.output / "renders"
         folder.mkdir(exist_ok=True)
         for name, position in [
@@ -902,9 +747,14 @@ def main():
             ("side", (4, 0, 1.25)),
             ("back", (0, -4, 1.3)),
         ]:
+            if args.head_review and name not in ["front", "three-quarter"]:
+                continue
             camera.location = position
+            if args.head_review:
+                camera.data.ortho_scale = 1.12
+                camera.location.z += 0.45
             camera.rotation_euler = (
-                (Vector((0, 0, 0.9)) - camera.location)
+                (Vector((0, 0, 1.355 if args.head_review else 0.9)) - camera.location)
                 .to_track_quat("-Z", "Y")
                 .to_euler()
             )

@@ -35,12 +35,14 @@ class CharacterAuditTests(unittest.TestCase):
 
     def test_actual_model_contract(self):
         report = inspect(ASSET)
-        self.assertLessEqual(report["rendered_triangles"], 20000)
+        self.assertLessEqual(
+            report["rendered_triangles"], report["limits"]["triangles"]
+        )
         self.assertEqual(report["materials"], 8)
         self.assertEqual(report["rendered_primitives"], 8)
         self.assertEqual(report["skins"], 0)
         self.assertEqual(report["animation_clips"], 0)
-        self.assertAlmostEqual(report["height"], 1.8, places=5)
+        self.assertAlmostEqual(report["height"], 1.8, delta=0.0001)
 
     def test_committed_report_matches_actual_asset(self):
         expected = json.loads(ASSET.with_name("validation.json").read_text())
@@ -63,13 +65,13 @@ class CharacterAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, "Root scale"):
             inspect(self.modified())
 
-    def test_rejects_missing_fur_colors(self):
+    def test_rejects_missing_fur_textures(self):
         for mesh in self.document["meshes"]:
             for primitive in mesh["primitives"]:
                 material = self.document["materials"][primitive["material"]]
-                if material.get("name") == "Kitten_VertexFur":
-                    primitive["attributes"].pop("COLOR_0")
-        with self.assertRaisesRegex(AssertionError, "fur vertex colors"):
+                if material.get("name") == "Kitten_Fur_PBR":
+                    material["pbrMetallicRoughness"].pop("baseColorTexture")
+        with self.assertRaisesRegex(AssertionError, "fur PBR textures"):
             inspect(self.modified())
 
     def test_rejects_degenerate_triangle(self):

@@ -1,58 +1,45 @@
-# PR #3 visual rework — rejected baseline, not a new model
+# PR #3 visual rework — unapproved work in progress
 
-The current character was explicitly rejected on visual fidelity. Successful
-GLB audits, reproducibility checks and browser loading do not establish likeness
-or visual approval. The existing model/renders are a negative baseline only.
-This note records the diagnosis; it does not claim that the modeling rework is
-complete or that a revised character has been approved.
+All three supplied images have been visually reviewed in the conversation: the original illustration, approved design sheet and rejected Blender output. The original and sheet remain the visual authority. The supplied `blob:https://chatgpt.com/…` URLs refer to browser-local data and cannot be downloaded by this environment. No reference pixels have been recreated or substituted.
 
-## Reference inputs
+**The required facial likeness has not been achieved. This candidate is not a finished or approved Minimorph model.** Repeated procedural surface adjustments improved construction and material detail, but the result still has a generic toy appearance. A character artist needs to sculpt the facial planes and eyelids and author the fur painting against the original references. Passing technical tests does not change this assessment.
 
-The approved design sheet is visible in the earlier task conversation. The new
-rework request names an original approved illustration, the design sheet and a
-negative comparison image, but no new image attachments are available in this
-submission or as files under `/workspace/attachments` at this inspection.
-The original illustration and actual reference image files are needed before
-reference-aligned remodeling and a genuine side-by-side comparison can proceed.
-Do not substitute generated concept art or another generic cat astronaut.
+## What changed
 
-## Diagnosis of the existing generator
+- Continuous remeshed facial surface with socket depressions, cheek/muzzle volumes, shaped nose and curved mouth; single textured glossy eye surfaces instead of stacked iris/pupil primitives.
+- Curved ear surfaces with recessed inner structure and integrated shell exits.
+- Shallow segmented helmet loft, separate shell thickness, oval cyan bezel, side modules and rear access plate.
+- Fitted layered chest, shoulder, forearm, thigh, knee and shin plates, rear armor and connected remeshed paws.
+- Six packed PBR maps: fur color, normal and roughness, iris color, silver normal and roughness. These are procedural textures, not reference-authored fur painting.
+- Separate editable source and reduced runtime GLB. No rig or animations.
 
-| Area | Existing implementation | Required replacement / visual criterion |
-| --- | --- | --- |
-| Face | A remeshed sphere/cheek union is reduced to 18% before another runtime reduction. Eye surrounds, dark lids, irises and pupils are separate outward ellipsoids. There are no sculpted eye sockets. | Rebuild continuous feline facial volumes and recessed sockets with integrated eyelid contours. Judge front and three-quarter likeness before optimization. |
-| Eyes | Layered oval surfaces and geometric catchlights look attached to the face rather than seated in it. | Match reference spacing, gaze, iris/pupil proportions and lid shape; use believable gloss/corneal response without floating rims. |
-| Fur | Analytic vertex colors provide a few coarse stripes and a cream region; no fur-detail maps are embedded. | Reference-aligned tabby/muzzle painting and subtle directional fur detail, baked into portable textures or efficient supported geometry. |
-| Ears | Subdivided triangular fans have little inner-ear anatomy. | Rounded pinna, rim thickness, recessed inner structure and fur transitions matching the reference. |
-| Helmet | A single ellipsoidal/spherical cap plus oval tubes and surface seam curves. | Reference-shaped oval opening and segmented shell volumes with fitted thickness, integrated ear exits and side modules. Avoid oversized spherical silhouette. |
-| Armor | Repeated beveled panels, ellipsoids and cuffs suggest simplified toy parts. | Fit layered shell plates to the body, distinguish joint recesses from armor thickness and reproduce reference panel contours front/side/back. |
-| Materials | Constant PBR values and low-frequency vertex colors lack brushed-metal and fur surface information. | Separate subtle surface treatment for silver, graphite, cyan emission, fur and glossy blue eyes. Verify packed glTF textures/material response in PlayCanvas. |
-| Optimization | Fixed 20k-triangle/eight-material/eight-primitive limits and blanket reduction precede visual acceptance. | Keep a higher-quality editable source. Select and document runtime budgets after visual review and measured export tests; never equate more polygons with fidelity or silently disable validation. |
+## Remaining visual mismatches
 
-## Review sequence
+| Area | Unresolved issue |
+| --- | --- |
+| Face | Eyes remain too prominent and generic; eyelid anatomy and the reference's soft kitten expression are missing. Cheeks, brow, muzzle transition and nose proportions still need sculpting. |
+| Fur | Directional maps and tabby masks lack the original's authored strand flow, nuanced markings and soft transitions. |
+| Ears | Simplified pinna, rim and silhouette do not reproduce the reference's natural anatomy. |
+| Helmet | Opening depth and rim/shell proportions need adjustment against actual reference pixels; shell still frames the head differently. |
+| Armor | Panel topology is improved but chest and leg contours, paw anatomy and overall silhouette still diverge. |
+| Rendering | Studio lighting, reflections and noisy CPU renders differ from the illustration. Material detail alone does not establish likeness. |
 
-1. Obtain the approved illustration and design-sheet image files. Preserve the
-   rejected baseline by its existing Git commit rather than relabeling it as a
-   revised result.
-2. First review the head/face and helmet at front and three-quarter angles in
-   consistent lighting. Confirm silhouette, facial proportions, sockets, ears,
-   muzzle and markings against the actual references.
-3. Rework armor fit, back construction and materials; produce front,
-   three-quarter, side and back renders of the revised asset.
-4. Produce an actual side-by-side contact sheet with the supplied approved
-   images and clearly labeled rejected/revised renders. Record remaining
-   mismatches rather than claiming approval automatically.
-5. Preserve the high-quality source and make a separately optimized GLB.
-   Measure geometry/material/texture statistics from that export and preserve
-   origin, height, negative-Z facing, loading, ownership and fallback behavior.
-6. Re-run the existing asset audits, PlayCanvas browser tests, Telegram/Minima
-   builds and MDS packaging. Present revised renders for human visual review.
+## Review assets
 
-## Integrity boundaries
+The [asset README](../assets/characters/minimorph/README.md) displays four renders of the **actual optimized GLB**, with separate source-model renders. `review/rejected-*.png` preserves actual renders from rejected commit `e4d02398578a9d79fc4c3e80ad45818d91607543`; these are repository artifacts, not the user's uploaded negative-example pixels.
 
-Keep the existing GLB validation/reproducibility/browser work. Do not modify
-physics, checkpoints, game camera, host integration or the procedural fallback.
-No rig, animation, skinning, NFT, token or marketplace work belongs in this task.
-If the available generation/sculpting/texturing approach does not demonstrate a
-substantial visual improvement, report that limitation and leave the model
-explicitly unapproved rather than presenting another simplified toy as final.
+Run `npm run preview:character`, then open `/comparison.html`. The page compares the candidate and rejected baseline and allows selecting an actual local approved image for the reference column. No file leaves the browser. A reference-versus-candidate contact sheet with original pixels is **pending accessible PNG/JPG files or HTTPS URLs**; the empty reference column is explicitly labeled. Do not describe it as a completed reference comparison.
+
+## Technical scope
+
+Measured runtime statistics and review limits are in `validation.json` and `budgets.json`. The raised limits are temporary review ceilings, not evidence of mobile readiness. The larger source and export need optimization after art review. The gameplay fallback, controller, camera, checkpoints, Telegram and read-only Minima adapter remain unchanged.
+
+Human review is requested to diagnose the candidate, **not to declare the task complete**. Further procedural parameter tuning has reached a practical quality limit here; manual sculpting and texture authoring are the next step.
+
+## Validation results
+
+- `npm run check`: seven GLB audit tests, TypeScript, ESLint, 27 unit tests, Telegram/Minima production builds and read-only MDS packaging pass. TypeScript and ESLint were repeated after adding texture inspection.
+- Independent Blender 4.3.2 import audit passes.
+- Desktop/mobile PlayCanvas asset tests pass with explicit fur color/normal/roughness-map binding assertions.
+- Two regeneration runs match geometry counts, bounds and texture hashes, but canonical geometry hashes differ. Exact geometric repeatability remains unresolved; no byte-identity claim is made.
+- Physical-device performance and artistic approval are not established.

@@ -47,4 +47,4 @@ No secrets or environment variables are required for this prototype. Never commi
 
 ## Character asset
 
-The first static GLB and editable Blender source are in [assets/characters/minimorph](assets/characters/minimorph/README.md). See the [model pipeline and reference comparison](docs/character-model-v1.md) for background regeneration, measured budgets and PlayCanvas inspection. The gameplay character remains the procedural fallback until a separate visual integration.
+The unapproved visual rework GLB and editable Blender source are in [assets/characters/minimorph](assets/characters/minimorph/README.md). See the [model pipeline and reference comparison](docs/character-model-v1.md) for background regeneration, measured budgets and PlayCanvas inspection. The gameplay character remains the procedural fallback until a separate visual integration.

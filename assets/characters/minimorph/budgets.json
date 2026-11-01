@@ -1,0 +1,8 @@
+{
+  "status": "visual-review-candidate-not-approved",
+  "triangles": 100000,
+  "materials": 12,
+  "primitives": 16,
+  "bytes": 25165824,
+  "rationale": "Temporary upper limits for a textured fidelity review export. These are enforced safety limits, not a claim of mobile production readiness. Optimize only after facial/silhouette review; actual statistics and texture sizes must be reported."
+}

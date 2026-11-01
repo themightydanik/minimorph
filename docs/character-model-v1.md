@@ -1,118 +1,40 @@
-# Minimorph v1 character pipeline
+# Character generation and inspection
 
-## Source of visual authority
+This is an **unapproved visual rework candidate**. Read [the visual assessment](character-visual-rework.md) before evaluating it. Technical compatibility is separate from artistic approval.
 
-The approved “Minimorph Character Design Sheet v1.0” supplied in this task defines
-the orange kitten, huge blue eyes, silver astronaut suit, cyan oval visor rim,
-triangular exposed ears and compact chibi proportions. Its turnaround was used
-for the front, side and back construction. The original sheet remains in the task
-conversation; it is not bundled as a texture or claimed as mesh source data.
-Concept-sheet topology counts, example animations and illustrated texture maps
-are not measurements or implemented features of this export.
+## Reproduce
 
-## Files and regeneration
-
-Use Blender **4.3.2** (the tested version). From the repository root:
+Requires Blender 4.3.2 (including its bundled NumPy). No UI operations or external add-ons are needed.
 
 ```sh
-blender --background --factory-startup --python-exit-code 1 \
-  --python tools/blender/build_character.py -- --renders
+blender --background --factory-startup --python-exit-code 1 --python tools/blender/build_character.py -- --output assets/characters/minimorph --renders --samples 128
+blender --background --factory-startup --python-exit-code 1 --python tools/blender/validate_character.py -- --input assets/characters/minimorph/minimorph_v1.glb --report assets/characters/minimorph/validation-blender.json
+npm run check
+npm run test:browser
 ```
 
-The command creates `assets/characters/minimorph/minimorph_v1.glb`, an editable
-`minimorph_v1.blend`, `validation.json` and four PNG renders. Omit `--renders` to
-skip the CPU studio render pass; use `--output /absolute/directory` for a separate
-regeneration. No manual UI steps, external meshes, downloaded textures or Blender
-add-ons are needed. Rendering uses Cycles CPU at 128 samples and does not require
-OpenImageDenoise, CUDA or a desktop display. Nonfatal exporter messages about an
-unavailable Draco library do not apply: this asset is exported without Draco.
+`character_fidelity.py` builds continuous fur surfaces, helmet shell plates, fitted armor and deterministic procedural PBR maps. The `.blend` saves the higher-resolution editable construction before export reduction. Material groups are reduced separately and exported as eight meshes. All six images are embedded; no external runtime dependencies are required. PNG sources are also included in `textures/`.
 
-The script makes a continuous remeshed/softened face and muzzle, vertex-paints the
-fur, builds an actual open helmet shell and rounded armor plates, then repairs
-coincident endpoints and degenerate geometry. The source scene retains named
-editable parts. Export copies are joined by material and mildly simplified for
-the runtime budget; the source parts are preserved. The GLB is re-imported for
-the reference renders, so they show the optimized geometry and exported colors.
-
-Blender authoring coordinates are Z-up/front +Y. The standard glTF conversion
-produces Y-up/front -Z. All mesh transforms are baked, the single root is identity,
-the lowest foot vertex is at zero and the highest ear vertex is at 1.8 units.
-The exported hierarchy has one `Minimorph_v1` root and eight material meshes.
-
-## Materials and budgets
-
-Eight glTF metallic/roughness PBR materials cover silver armor, dark joints,
-cyan emission, orange/cream vertex-painted fur, blue irises, dark pupils/gaskets,
-eye highlights/whiskers and the nose/mouth. Fur color is embedded as `COLOR_0`,
-not an unsupported Blender procedural shader. There are no images or external
-resource paths, so no texture downloads are required. A glass visor is not added;
-the approved oval face opening stays visibly open. The low-cost opaque eye layers
-avoid transparency sorting on mobile.
-
-The pipeline enforces **20,000 triangles**, **8 materials**, **8 render primitives**
-and **8 MiB** as upper budgets. Exact measured counts, bounds and file size are in
-[validation.json](../assets/characters/minimorph/validation.json). Exported vertex
-counts include glTF splits for normals, UVs and colors; they should not be compared
-to the concept sheet's illustrative authoring-vertex number.
-
-## Validation and PlayCanvas inspection
+For source-model renders without reduction, use another output directory:
 
 ```sh
-npm run test:character
-blender --background --factory-startup --python-exit-code 1 \
-  --python tools/blender/validate_character.py -- \
-  --input assets/characters/minimorph/minimorph_v1.glb \
-  --report /tmp/minimorph-blender-validation.json
-npm run preview:character
+blender --background --factory-startup --python-exit-code 1 --python tools/blender/build_character.py -- --output /tmp/minimorph-source --source-only --renders --samples 128
 ```
 
-The dependency-free Python audit reads the real JSON/BIN chunks and vertex/index
-buffers. It checks access bounds, finite positions, unit normals, nondegenerate
-triangles, embedded resources, root transforms, scene hierarchy, origin/height,
-fur colors and budgets. Regression tests mutate the real GLB to demonstrate
-rejection of truncation, external geometry, wrong root transforms, missing colors
-and degenerate triangles. They also require the committed report to match the
-asset. The Blender check independently imports the file and measures evaluated
-world-space geometry. Negative-Z facing is confirmed from the front/side views;
-it is not inferred from a bounding box.
+`--head-review` renders front and three-quarter source closeups. Default `--renders` shows the actual re-imported optimized GLB from front, three-quarter, side and back. Render samples are configurable; renders may retain noise. CPU denoising is disabled for compatibility.
 
-The inspection page uses the existing `gltfCharacterSource` directly. The browser
-test checks real PlayCanvas load/instantiation, actual mesh/material counts, world
-height, visible WebGL pixels and all four view buttons on desktop and mobile
-emulation. `npm run test:browser` runs that test alongside the existing game tests.
-`npm run check` includes the Python audit, existing type/lint/unit checks, both
-frontend builds and MDS packaging. No production physics, checkpoint, camera,
-Telegram or Minima code is changed.
+## Measured export
 
-To use the asset in a later gameplay integration, serve the GLB with the target
-application and pass `character: gltfCharacterSource(url)` in `createGame` options.
-The existing presenter retains the procedural cat while loading and on failure,
-and disposes replaced/late visual resources. This PR does not switch the default
-game character or pretend the static mesh has the procedural fallback's animation.
+The candidate has 96,206 triangles, 62,759 exported vertices, eight primitives/materials and six embedded images; the GLB is 9,588,016 bytes. Texture RGBA8 storage before mipmaps is 31,457,280 bytes, independent of PNG compression. No skins or animation clips are implemented. Feet are at zero within tolerance, Y-up height approximately 1.8, and the character faces local negative Z.
 
-## Comparison with the approved sheet
+`budgets.json` enforces temporary review ceilings of 100,000 triangles, 12 materials, 16 primitives and 24 MiB. This replaces the earlier 20k/8 MiB review assumptions explicitly; it is not a mobile performance claim. No device performance benchmark has been conducted. Optimize only after the face and silhouette are accepted.
 
-| Area       | Preserved from reference                                                                                                                     | Differences / limitations                                                                                                                       |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Silhouette | Large head, exposed triangular ears, small armored torso and short legs                                                                      | Exact contour and panel dimensions are a first model interpretation rather than a pixel-identical reconstruction.                               |
-| Face       | Orange/cream kitten fur, very large blue eyes, small triangular nose, joined cheeks/muzzle and fine whiskers                                 | Neutral expression only; fur/markings are vertex-painted without individual hair or 2K texture maps. Eye surfaces are simplified opaque layers. |
-| Helmet     | Silver shell with oval opening, cyan seal, side comms discs and rear panel seams                                                             | Fewer tiny recesses and rim details; no refractive glass or optical coating.                                                                    |
-| Suit       | Silver chest with cyan M core/circuits, shoulder plates, tapered forearm guards, articulated-looking knee/shin segments and exposed toe paws | Static fitted components; no actual joint rig, deforming fabric, cloth simulation or mechanical articulation.                                   |
-| Back       | Closed segmented helmet and integrated life-support/status unit                                                                              | Fine vents/fasteners and fabric texture are simplified.                                                                                         |
-| Motion     | Pose suitable for a future character source                                                                                                  | No skeleton, skin weights, animation clips, blend shapes or expression variants. These must be authored and tested separately.                  |
+The standalone inspector checks binary structure, finite attributes, index bounds, winding/normals, transforms, dimensions, texture embedding, fur UV/PBR inputs and budgets. Mutation tests exercise invalid assets. Blender independently imports and measures the GLB. Repeatability records compare actual regeneration results; byte identity is not assumed. In the current two-run experiment, counts, bounds and image hashes match, but the canonical geometry hash differs. Exact geometry reproducibility remains unresolved; consult `reproducibility.json`.
 
-The coin, platform, expression examples and animation/rig diagrams on the sheet
-are not included as character geometry or implemented systems. The four exported
-views are linked in the [asset README](../assets/characters/minimorph/README.md).
-Studio lighting and PlayCanvas scene lighting differ: the same PBR surface can
-look brighter/chromier under the studio's area lights. Physical-device performance
-and a production character rig remain unverified; browser tests use emulation.
+## PlayCanvas and manual review
 
-## Repeatability
+Run `npm run preview:character`. The viewer uses the existing `gltfCharacterSource` and supports four camera views. Open `/comparison.html` for candidate/rejected views and a local approved-reference file selector. Original reference pixels remain unavailable to this environment; see the visual assessment for limitations.
 
-Rebuild with the pinned Blender version and compare the validation reports. Raw
-GLB hashes can differ because Blender may reorder equivalent vertex/index records.
-`geometry_sha256_1e6` canonicalizes oriented triangles to 1e-6 units for a geometry
-comparison independent of record ordering; `glb_sha256` identifies the exact file.
-The `.blend` binary also contains scene/serialization metadata and is not claimed
-to be byte-for-byte reproducible across Blender versions or machines.
+Check front and three-quarter facial likeness first, then helmet depth, ear attachment, armor silhouette, exposed paws and back construction. Inspect textures and cyan emission in PlayCanvas. Browser tests verify actual loading and nonempty rendering on desktop and mobile viewports; they do not judge likeness or device frame rate.
+
+Neither game host selects this asset by default. Procedural fallback, shared gameplay, Telegram integration and Minima MDS remain unchanged. No rigging, animation, blockchain or account functionality is added.

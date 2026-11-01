@@ -103,7 +103,7 @@ def read_glb(path):
     return document, len(data)
 
 
-def validate(path, max_triangles=20000, max_materials=8, max_bytes=8 * 1024 * 1024):
+def validate(path, max_triangles=100000, max_materials=12, max_bytes=24 * 1024 * 1024):
     import bpy
     from mathutils import Vector
 
@@ -183,8 +183,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--report", type=Path)
-    parser.add_argument("--max-triangles", type=int, default=20000)
-    parser.add_argument("--max-materials", type=int, default=8)
+    parser.add_argument("--max-triangles", type=int, default=100000)
+    parser.add_argument("--max-materials", type=int, default=12)
     args = parser.parse_args(
         sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
     )
