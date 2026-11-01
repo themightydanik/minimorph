@@ -1,0 +1,13 @@
+{
+  "name": "@minimorph/game-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./style.css": "./src/style.css"
+  },
+  "dependencies": {
+    "@minimorph/game-engine": "*"
+  }
+}

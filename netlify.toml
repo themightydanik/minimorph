@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build -w @minimorph/telegram"
+  publish = "apps/telegram/dist"
+[build.environment]
+  NODE_VERSION = "24"
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
