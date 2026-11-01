@@ -13,7 +13,7 @@ npm run dev:telegram
 npm run dev:minima
 ```
 
-Open the address printed by Vite. WASD or arrow keys move; Space jumps. On touch devices use the directional pad and Jump. Follow the cyan runway lights across five floating platforms to the finish arch. Falling returns you to the start and preserves your elapsed time; Restart starts a new run. Desktop browsers need WebGL 2 and hardware acceleration.
+Open the address printed by Vite. WASD or arrow keys move; Space jumps. Q/E or the ↶/↷ buttons orbit the camera; movement follows the camera heading. On touch devices use the directional pad and Jump. Follow the cyan runway lights across five floating platforms to the finish arch. Two amber pads become cyan when secured as checkpoints. Jump over the moving amber sweeper on the middle island. Falling or hitting it returns you to the latest checkpoint and preserves your elapsed time; Restart clears the full run. Desktop browsers need WebGL 2 and hardware acceleration.
 
 ```sh
 npm run typecheck
@@ -30,14 +30,14 @@ npm run test:browser
 
 ## Structure
 
-| Workspace | Responsibility |
-| --- | --- |
-| `apps/telegram` | Telegram bridge, browser fallback, Vite target |
-| `apps/minima` | Classic MDS shell, local official SDK, MiniDapp metadata |
-| `packages/game-engine` | PlayCanvas scene lifecycle, camera, deterministic movement/collision |
-| `packages/game-content` | Shared platform course and finish coordinates |
-| `packages/game-ui` | HUD, keyboard and multi-pointer controls, restart and errors |
-| `packages/minima-adapter` | Optional read-only MDS `status` integration |
+| Workspace                 | Responsibility                                                                |
+| ------------------------- | ----------------------------------------------------------------------------- |
+| `apps/telegram`           | Telegram bridge, browser fallback, Vite target                                |
+| `apps/minima`             | Classic MDS shell, local official SDK, MiniDapp metadata                      |
+| `packages/game-engine`    | Fixed-step controller, camera, replaceable character visuals, scene lifecycle |
+| `packages/game-content`   | Shared platform course and finish coordinates                                 |
+| `packages/game-ui`        | HUD, keyboard and multi-pointer controls, restart and errors                  |
+| `packages/minima-adapter` | Optional read-only MDS `status` integration                                   |
 
 See [architecture](docs/architecture.md), [deployment and manual verification](docs/deployment.md), and [reference review](docs/references.md). Additional services and packages are deliberately deferred until they have real implementations.
 

@@ -1,27 +1,258 @@
-import { platforms, spawn, finish } from '@minimorph/game-content';
-import type { Platform } from '@minimorph/game-content';
-export interface PlayerState { x: number; y: number; z: number; vy: number; grounded: boolean; won: boolean; elapsed: number; falls: number }
-export interface Input { x: number; z: number; jump: boolean }
+import {
+  platforms,
+  spawn,
+  finish,
+  checkpoints,
+  obstacles,
+} from "@minimorph/game-content";
+import type { Platform, MovingObstacle } from "@minimorph/game-content";
+export interface PlayerState {
+  x: number;
+  y: number;
+  z: number;
+  vx: number;
+  vy: number;
+  vz: number;
+  heading: number;
+  grounded: boolean;
+  won: boolean;
+  elapsed: number;
+  falls: number;
+  checkpoint: number;
+  checkpointFlash: number;
+  coyote: number;
+  jumpBuffer: number;
+  respawnTimer: number;
+  protection: number;
+  respawns: number;
+  recovery: "fall" | "obstacle" | null;
+  obstacleHits: number;
+  landingTime: number;
+  landingImpact: number;
+}
+export interface Input {
+  x: number;
+  z: number;
+  jump: boolean;
+  cameraYaw?: number;
+  cameraTurn?: number;
+}
 export const SPEED = 6;
+export const ACCELERATION = 34;
+export const DECELERATION = 42;
 export const GRAVITY = 18;
 export const JUMP_SPEED = 8.5;
 export const FIXED_STEP = 1 / 120;
-export function createPlayer(): PlayerState { return { ...spawn, vy: 0, grounded: true, won: false, elapsed: 0, falls: 0 }; }
-export function stepPlayer(state: PlayerState, input: Input, dt: number, surfaces: readonly Platform[] = platforms): void {
+export const COYOTE_TIME = 0.1;
+export const JUMP_BUFFER_TIME = 0.12;
+export const RESPAWN_DELAY = 0.4;
+export const PLAYER_RADIUS = 0.25;
+export const idleInput: Input = { x: 0, z: 0, jump: false };
+export function createPlayer(): PlayerState {
+  return {
+    ...spawn,
+    vx: 0,
+    vy: 0,
+    vz: 0,
+    heading: 0,
+    grounded: true,
+    won: false,
+    elapsed: 0,
+    falls: 0,
+    checkpoint: 0,
+    checkpointFlash: 0,
+    coyote: COYOTE_TIME,
+    jumpBuffer: 0,
+    respawnTimer: 0,
+    protection: 0,
+    respawns: 0,
+    recovery: null,
+    obstacleHits: 0,
+    landingTime: 0,
+    landingImpact: 0,
+  };
+}
+export function cameraRelativeMovement(
+  x: number,
+  z: number,
+  yaw = 0,
+): { x: number; z: number } {
+  const length = Math.max(1, Math.hypot(x, z));
+  return {
+    x: (x * Math.cos(yaw) + z * Math.sin(yaw)) / length,
+    z: (z * Math.cos(yaw) - x * Math.sin(yaw)) / length,
+  };
+}
+export function wrapAngle(angle: number): number {
+  return Math.atan2(Math.sin(angle), Math.cos(angle));
+}
+export function obstaclePosition(obstacle: MovingObstacle, time: number) {
+  return {
+    x:
+      obstacle.x +
+      Math.sin((time * Math.PI * 2) / obstacle.period + obstacle.phase) *
+        obstacle.amplitude,
+    y: obstacle.y,
+    z: obstacle.z,
+  };
+}
+export function beginRecovery(
+  state: PlayerState,
+  reason: "fall" | "obstacle",
+): void {
+  if (state.recovery || state.won) return;
+  state.recovery = reason;
+  state.respawnTimer = RESPAWN_DELAY;
+  state.falls++;
+  if (reason === "obstacle") state.obstacleHits++;
+  state.vx = state.vy = state.vz = 0;
+  state.jumpBuffer = state.coyote = 0;
+  state.grounded = false;
+}
+function restoreCheckpoint(state: PlayerState): void {
+  const point = checkpoints[state.checkpoint - 1] ?? spawn;
+  Object.assign(state, {
+    x: point.x,
+    y: point.y,
+    z: point.z,
+    vx: 0,
+    vy: 0,
+    vz: 0,
+    grounded: true,
+    recovery: null,
+    respawnTimer: 0,
+    protection: 0.65,
+    jumpBuffer: 0,
+    coyote: COYOTE_TIME,
+    landingTime: 0.2,
+    landingImpact: 0.5,
+    respawns: state.respawns + 1,
+  });
+}
+function approachVelocity(
+  state: PlayerState,
+  x: number,
+  z: number,
+  dt: number,
+): void {
+  const dx = x - state.vx,
+    dz = z - state.vz,
+    distance = Math.hypot(dx, dz);
+  const amount = (Math.hypot(x, z) > 0 ? ACCELERATION : DECELERATION) * dt;
+  if (distance <= amount) {
+    state.vx = x;
+    state.vz = z;
+  } else {
+    state.vx += (dx / distance) * amount;
+    state.vz += (dz / distance) * amount;
+  }
+}
+export function stepPlayer(
+  state: PlayerState,
+  input: Input,
+  dt: number,
+  surfaces: readonly Platform[] = platforms,
+  hazards: readonly MovingObstacle[] = obstacles,
+): void {
   if (state.won) return;
   state.elapsed += dt;
-  const length = Math.hypot(input.x, input.z);
-  const scale = Math.max(1, length);
-  state.x += input.x / scale * SPEED * dt;
-  state.z += input.z / scale * SPEED * dt;
-  if (input.jump && state.grounded) { state.vy = JUMP_SPEED; state.grounded = false; }
+  state.checkpointFlash = Math.max(0, state.checkpointFlash - dt);
+  state.landingTime = Math.max(0, state.landingTime - dt);
+  state.protection = Math.max(0, state.protection - dt);
+  if (state.recovery) {
+    state.respawnTimer -= dt;
+    if (state.respawnTimer <= 0) restoreCheckpoint(state);
+    return;
+  }
+  state.coyote = state.grounded ? COYOTE_TIME : Math.max(0, state.coyote - dt);
+  state.jumpBuffer = input.jump
+    ? JUMP_BUFFER_TIME
+    : Math.max(0, state.jumpBuffer - dt);
+  const movement = cameraRelativeMovement(input.x, input.z, input.cameraYaw);
+  approachVelocity(state, movement.x * SPEED, movement.z * SPEED, dt);
+  if (state.jumpBuffer > 0 && state.coyote > 0) {
+    state.vy = JUMP_SPEED;
+    state.grounded = false;
+    state.jumpBuffer = state.coyote = 0;
+  }
   const oldY = state.y;
+  state.x += state.vx * dt;
+  state.z += state.vz * dt;
+  if (Math.hypot(state.vx, state.vz) > 0.05) {
+    const target = Math.atan2(-state.vx, -state.vz);
+    state.heading = wrapAngle(
+      state.heading +
+        wrapAngle(target - state.heading) * (1 - Math.exp(-15 * dt)),
+    );
+  }
+  const wasGrounded = state.grounded;
   state.vy -= GRAVITY * dt;
   state.y += state.vy * dt;
   state.grounded = false;
-  // Swept vertical foot collision; side overlap never teleports the player upward.
-  const landing = surfaces.filter(p => Math.abs(state.x - p.x) <= p.width / 2 && Math.abs(state.z - p.z) <= p.depth / 2 && oldY >= p.y - 0.001 && state.y <= p.y && state.vy <= 0).sort((a, b) => b.y - a.y)[0];
-  if (landing) { state.y = landing.y; state.vy = 0; state.grounded = true; }
-  if (state.y < -12) { const falls = state.falls + 1; const elapsed = state.elapsed; Object.assign(state, createPlayer(), { falls, elapsed }); }
-  if (state.grounded && Math.abs(state.y - finish.y) < 0.01 && Math.hypot(state.x - finish.x, state.z - finish.z) < finish.radius) state.won = true;
+  let landing: Platform | undefined;
+  for (const p of surfaces) {
+    if (
+      Math.abs(state.x - p.x) <= p.width / 2 &&
+      Math.abs(state.z - p.z) <= p.depth / 2 &&
+      oldY >= p.y - 0.001 &&
+      state.y <= p.y &&
+      state.vy <= 0 &&
+      (!landing || p.y > landing.y)
+    )
+      landing = p;
+  }
+  if (landing) {
+    if (!wasGrounded) {
+      state.landingTime = 0.2;
+      state.landingImpact = Math.min(1, -state.vy / 10);
+    }
+    state.y = landing.y;
+    state.vy = 0;
+    state.grounded = true;
+  }
+  // Sample hazards from simulation time, not wall-clock/render frames.
+  if (state.protection === 0)
+    for (const obstacle of hazards) {
+      const now = obstaclePosition(obstacle, state.elapsed),
+        before = obstaclePosition(obstacle, state.elapsed - dt);
+      const left =
+        Math.min(now.x, before.x) - obstacle.width / 2 - PLAYER_RADIUS;
+      const right =
+        Math.max(now.x, before.x) + obstacle.width / 2 + PLAYER_RADIUS;
+      if (
+        state.x >= left &&
+        state.x <= right &&
+        Math.abs(state.z - now.z) < obstacle.depth / 2 + PLAYER_RADIUS &&
+        state.y < now.y + obstacle.height &&
+        state.y + 1.7 > now.y
+      ) {
+        beginRecovery(state, "obstacle");
+        return;
+      }
+    }
+  if (state.y < -6) {
+    beginRecovery(state, "fall");
+    return;
+  }
+  if (state.grounded) {
+    // Ordered activation prevents shortcuts from unlocking later respawn points.
+    const checkpoint = checkpoints[state.checkpoint];
+    if (
+      checkpoint &&
+      Math.abs(state.y - checkpoint.y) < 0.01 &&
+      Math.hypot(state.x - checkpoint.x, state.z - checkpoint.z) <
+        checkpoint.radius
+    ) {
+      state.checkpoint++;
+      state.checkpointFlash = 1.2;
+    }
+    if (
+      state.checkpoint === checkpoints.length &&
+      Math.abs(state.y - finish.y) < 0.01 &&
+      Math.hypot(state.x - finish.x, state.z - finish.z) < finish.radius
+    ) {
+      state.won = true;
+      state.vx = state.vy = state.vz = 0;
+    }
+  }
 }
