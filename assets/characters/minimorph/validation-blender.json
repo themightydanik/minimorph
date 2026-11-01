@@ -1,38 +1,31 @@
 {
   "asset": "minimorph_v1.glb",
   "blender": "4.3.2",
-  "bytes": 9588016,
-  "mesh_objects": 8,
-  "vertices_instanced": 62759,
-  "triangles_instanced": 96206,
+  "bytes": 25551344,
+  "mesh_objects": 1,
+  "vertices_instanced": 145409,
+  "triangles_instanced": 160000,
   "used_materials": [
-    "Armor_Dark",
-    "Blue_Iris",
-    "Cyan_Illumination",
-    "Eye_Catchlight",
-    "Kitten_Fur_PBR",
-    "Nose_And_Mouth",
-    "Pupil_And_Gasket",
-    "Silver_PBR"
+    "Meshy_PBR"
   ],
-  "height": 1.7999365014911746,
+  "height": 1.7999999523162842,
   "blender_world_min": [
-    -0.5036779642105103,
-    -0.32996246218681335,
-    6.690789450658485e-05
+    -0.5630382299423218,
+    -0.48363322019577026,
+    0.0
   ],
   "blender_world_max": [
-    0.5036779642105103,
-    0.3891615867614746,
-    1.8000034093856812
+    0.5632855296134949,
+    0.4838324785232544,
+    1.7999999523162842
   ],
-  "embedded_images": 6,
+  "embedded_images": 3,
   "skins": 0,
   "animation_clips": 0,
   "budgets": {
-    "triangles": 100000,
-    "materials": 12,
-    "bytes": 25165824
+    "triangles": 160000,
+    "materials": 1,
+    "bytes": 33554432
   },
   "orientation": "Negative-Z facing requires visual verification; not inferred from bounds."
 }

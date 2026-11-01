@@ -1,9 +1,0 @@
-{
-  "human_approved": false,
-  "visual_rework_complete": false,
-  "references_visually_reviewed_in_chat": true,
-  "original_pixel_comparison_complete": false,
-  "blocked_reference_files": "Supplied blob URLs are local to the user browser. Actual PNG/JPG or HTTPS URLs required.",
-  "assessment": "Procedural candidate still lacks required facial likeness; manual sculpting and authored textures needed.",
-  "rejected_baseline_commit": "e4d02398578a9d79fc4c3e80ad45818d91607543"
-}

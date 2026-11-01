@@ -1,8 +1,8 @@
 {
-  "status": "visual-review-candidate-not-approved",
-  "triangles": 100000,
-  "materials": 12,
-  "primitives": 16,
-  "bytes": 25165824,
-  "rationale": "Temporary upper limits for a textured fidelity review export. These are enforced safety limits, not a claim of mobile production readiness. Optimize only after facial/silhouette review; actual statistics and texture sizes must be reported."
+  "status": "official-meshy-optimized-awaiting-human-visual-approval",
+  "triangles": 160000,
+  "materials": 1,
+  "primitives": 1,
+  "bytes": 33554432,
+  "rationale": "160k Meshy review export selected over 40k/80k because UV-seam/eye detail is better preserved. One material and three 2k PNG maps. Temporary quality-review ceiling; physical-mobile profiling and human art approval pending."
 }

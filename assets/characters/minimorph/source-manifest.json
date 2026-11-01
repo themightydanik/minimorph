@@ -1,0 +1,44 @@
+{
+  "assets": [
+    {
+      "browser_download_url": "https://github.com/themightydanik/minimorph/releases/download/assets-v1/meshy-model.glb",
+      "digest": "sha256:d5d53c934fd32b6bc70bc2eea6f328d88d756704a6e598e3fcde2950f10a6e9a",
+      "name": "meshy-model.glb",
+      "size": 50384156,
+      "url": "https://api.github.com/repos/themightydanik/minimorph/releases/assets/699785907"
+    },
+    {
+      "browser_download_url": "https://github.com/themightydanik/minimorph/releases/download/assets-v1/texture_0.png",
+      "digest": "sha256:6d39e7c86827c92ebab5d4749112bc96dcde6192d45415037dd28b5f24b65373",
+      "name": "texture_0.png",
+      "size": 6911674,
+      "url": "https://api.github.com/repos/themightydanik/minimorph/releases/assets/699786216"
+    },
+    {
+      "browser_download_url": "https://github.com/themightydanik/minimorph/releases/download/assets-v1/texture_0_metallic.png",
+      "digest": "sha256:cef4e46de6b375953b360fc35c606a23ff3b256635851a7ff2015f696fd4b8a6",
+      "name": "texture_0_metallic.png",
+      "size": 962957,
+      "url": "https://api.github.com/repos/themightydanik/minimorph/releases/assets/699786124"
+    },
+    {
+      "browser_download_url": "https://github.com/themightydanik/minimorph/releases/download/assets-v1/texture_0_normal.png",
+      "digest": "sha256:f98b00dc4581bc3e95997c88d66f1f096e01e73ffb8c479af092f28a1af15afb",
+      "name": "texture_0_normal.png",
+      "size": 6088881,
+      "url": "https://api.github.com/repos/themightydanik/minimorph/releases/assets/699786148"
+    },
+    {
+      "browser_download_url": "https://github.com/themightydanik/minimorph/releases/download/assets-v1/texture_0_roughness.png",
+      "digest": "sha256:cb8b651af9189e9680b3abeb575ac377dd919de1998885768e415906e04d0cfb",
+      "name": "texture_0_roughness.png",
+      "size": 1548403,
+      "url": "https://api.github.com/repos/themightydanik/minimorph/releases/assets/699786191"
+    }
+  ],
+  "id": 430917218,
+  "tag_name": "assets-v1",
+  "repository": "themightydanik/minimorph",
+  "release_url": "https://github.com/themightydanik/minimorph/releases/tag/assets-v1",
+  "verified_against_release_digest": true
+}

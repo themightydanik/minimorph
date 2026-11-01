@@ -1,40 +1,78 @@
-# Character generation and inspection
+# Official Meshy character: optimization pipeline
 
-This is an **unapproved visual rework candidate**. Read [the visual assessment](character-visual-rework.md) before evaluating it. Technical compatibility is separate from artistic approval.
+The only authoritative 3D source is the user's [assets-v1 Release](https://github.com/themightydanik/minimorph/releases/tag/assets-v1). The illustration/design sheet remain the artistic reference. This pipeline edits the actual Meshy mesh; it does not construct a replacement from primitives. The prior procedural asset, Blender source, generator and obsolete textures/renders have been removed from the branch tip. They remain in Git history.
 
-## Reproduce
+## Retrieve and reproduce
 
-Requires Blender 4.3.2 (including its bundled NumPy). No UI operations or external add-ons are needed.
+Blender 4.3.2 (bundled NumPy), Python 3, authenticated `gh` and Node 22 are used. No extra Blender add-ons or runtime model dependencies are required.
 
 ```sh
-blender --background --factory-startup --python-exit-code 1 --python tools/blender/build_character.py -- --output assets/characters/minimorph --renders --samples 128
-blender --background --factory-startup --python-exit-code 1 --python tools/blender/validate_character.py -- --input assets/characters/minimorph/minimorph_v1.glb --report assets/characters/minimorph/validation-blender.json
+python tools/blender/download_meshy.py --output /tmp/minimorph-master
+blender --background --factory-startup --python-exit-code 1 --python tools/blender/optimize_meshy.py -- --source /tmp/minimorph-master --output /tmp/minimorph-40k --triangles 40000 --bake-normals --source-renders --renders --samples 48
+blender --background --factory-startup --python-exit-code 1 --python tools/blender/optimize_meshy.py -- --source /tmp/minimorph-master --output /tmp/minimorph-80k --triangles 80000 --bake-normals --renders --samples 48
+blender --background --factory-startup --python-exit-code 1 --python tools/blender/optimize_meshy.py -- --source /tmp/minimorph-master --output /tmp/minimorph-160k --triangles 160000 --preserve-seams --bake-normals --renders --samples 48
+```
+
+The download helper verifies **all five exact filenames, published sizes, SHA-256 digests and GLB/PNG headers** against the committed `source-manifest.json`. Existing downloads are verified before Blender imports them. Missing or changed files stop the pipeline. Keep master files outside the repository; the helper rejects a repository-local destination. Masters remain untouched in GitHub Releases, not Git/LFS or the application bundle. Pin hashes even if the Release tag is later edited.
+
+## Source inspection and rigging assessment
+
+The GLB is 50,384,156 bytes, with 1,408,570 triangles, 762,042 exported vertices, one mesh/primitive/material, one UV set, three embedded 2048² JPEG maps, and no skeleton or animations. Its glTF bounds are X −0.595689…0.595229, Y −0.952027…0.950987, Z −0.511001…0.511781. Front is +Z, verified from actual renders.
+
+Face, helmet, suit and paws share one textured surface. The 1744 imported topological islands are **UV/seam splits**, not 1744 separately modeled character parts. Welding only coincident positions at 1e−7 yields one connected, closed surface with 704,189 vertices, zero boundary/nonmanifold edges and unchanged triangles. These measurements do not prove absence of self-intersections.
+
+The model is **not rig-ready**. No separate eyes/jaw/armor objects, skeleton, skin weights or deformation-friendly joint loops are provided. A character artist must plan segmentation/retopology, rigid armor versus soft-tissue weighting, shoulder/hip deformation and facial controls. No rigging or animation is implemented in this PR.
+
+## Optimization and normalization
+
+1. Verify masters and import actual Meshy GLB.
+2. Rotate 180° around vertical, apply uniform scale to height 1.8, center horizontally and put feet on ground. No nonuniform shape change.
+3. Preserve a copy of the high-resolution normals. Weld coincident vertices on the runtime copy **while preserving per-corner UVs**.
+4. Collapse to the requested budget; transfer original interpolated corner normals to preserve smooth silver highlights. Direct collapse of independent UV islands caused visible dents and was rejected during experiments.
+5. Protect UV-seam vertices in the selected 160k candidate. Reproject the supplied high-resolution normal detail with a selected-to-active tangent bake (2k, cage 0.02, ray distance 0.04, margin 8); export tangent vectors so the runtime uses the same basis. This corrects highlight distortion caused by reusing a high-resolution tangent normal map unchanged. Base color and scalar PBR inputs remain unchanged.
+6. Reconfirm height/ground after reduction; export one identity root, one textured mesh/material, Y-up facing negative Z.
+7. Re-import the exported GLB before rendering. Measure the file, not an intermediate Blender modifier.
+
+Compare 40k, 80k and selected 160k at normal distance and in face/helmet closeups. Geometry reduction alone does not establish visual approval. See [visual review](character-visual-rework.md) and measured reports in the asset folder.
+
+## Material handling
+
+The source already embeds base-color JPEG, packed metallic/roughness JPEG and tangent normal JPEG with correct bindings. External PNGs share the atlas and provide lossless source maps. They replace the lossy embedded copies; measured pixel differences are recorded in `optimization.json` (not assumed identical).
+
+- Base color: supplied `texture_0.png`, sRGB.
+- Normal: supplied `texture_0_normal.png`, Non-Color, tangent normal node, strength 1; reprojected into the reduced mesh tangent basis with the source detail retained. The derived PNG is embedded.
+- Roughness and metallic: scalar maps read as Non-Color, packed losslessly into G/B of one PNG for standard glTF metallic-roughness. R is unused/white.
+- Opaque and double-sided, as original. No transparency invented.
+- No emissive map/factor exists in the source; no emission is added. Cyan remains its textured PBR appearance, not a claim of physical illumination.
+
+Three 2048² PNGs are embedded in the optimized GLB. This is one material/draw primitive with 48 MiB RGBA8 texture storage before mipmaps (about 64 MiB with full mip chains); compressed download bytes are a different measurement. Physical-mobile performance is not benchmarked. Further texture reduction/compression should be separately compared against the source before adoption.
+
+## Inspect and validate
+
+```sh
+python tools/blender/inspect_character.py --input assets/characters/minimorph/minimorph_v1.glb
+blender --background --factory-startup --python-exit-code 1 --python tools/blender/validate_character.py -- --input assets/characters/minimorph/minimorph_v1.glb --report /tmp/blender-import.json
 npm run check
 npm run test:browser
+npm run preview:character
 ```
 
-`character_fidelity.py` builds continuous fur surfaces, helmet shell plates, fitted armor and deterministic procedural PBR maps. The `.blend` saves the higher-resolution editable construction before export reduction. Material groups are reduced separately and exported as eight meshes. All six images are embedded; no external runtime dependencies are required. PNG sources are also included in `textures/`.
+The inspector verifies GLB chunks, buffers/accessors/indices, finite normals and UVs, geometric closure across UV seams, texture references and embedding, required PBR bindings, origin/height, no unexpected emission/transparency and declared budgets. Negative tests mutate actual buffers/material references. Blender supplies a second import audit. Orientation is visually verified, not inferred from a bounding box.
 
-For source-model renders without reduction, use another output directory:
+The PlayCanvas preview uses the existing shared `gltfCharacterSource`. Browser tests assert bounds, mesh/material count, all four PBR texture bindings, nonempty rendering and no page errors on desktop/mobile. They do not approve art or certify frame rate.
+
+Open `/comparison.html` for original Meshy versus both candidates, including face closeups. To capture exact side-by-side PNGs of these real renders, run the preview server, then:
 
 ```sh
-blender --background --factory-startup --python-exit-code 1 --python tools/blender/build_character.py -- --output /tmp/minimorph-source --source-only --renders --samples 128
+node tools/character-preview/capture-comparisons.mjs
 ```
 
-`--head-review` renders front and three-quarter source closeups. Default `--renders` shows the actual re-imported optimized GLB from front, three-quarter, side and back. Render samples are configurable; renders may retain noise. CPU denoising is disabled for compatibility.
+Both columns use identical cameras, lighting, exposure and supplied PBR maps. Left is unreduced original Meshy geometry normalized only for scale/facing; right is the actual optimized GLB. Matching materials isolates geometry/shading differences. The untouched raw original with embedded JPEGs remains in the Release.
 
-## Measured export
+The production game does not select this GLB. Its existing procedural fallback and all controller/camera/checkpoint/Telegram/read-only Minima functionality remain unchanged. No master textures or render/reference files are copied into host app production bundles. PR #3 remains Draft until human visual approval; no automatic merge.
 
-The candidate has 96,206 triangles, 62,759 exported vertices, eight primitives/materials and six embedded images; the GLB is 9,588,016 bytes. Texture RGBA8 storage before mipmaps is 31,457,280 bytes, independent of PNG compression. No skins or animation clips are implemented. Feet are at zero within tolerance, Y-up height approximately 1.8, and the character faces local negative Z.
+## Repeatability and verification record
 
-`budgets.json` enforces temporary review ceilings of 100,000 triangles, 12 materials, 16 primitives and 24 MiB. This replaces the earlier 20k/8 MiB review assumptions explicitly; it is not a mobile performance claim. No device performance benchmark has been conducted. Optimize only after the face and silhouette are accepted.
+Two independent Blender runs produce matching canonical geometry hashes, triangle/vertex counts and bounds. Base color and packed metallic/roughness image hashes match. The 2k normal bake differs in just 3 of 4,194,304 pixels, by at most one 8-bit level (measured mean absolute RGB difference 9.35e−10). Four-thread Cycles baking is therefore not byte deterministic; no identical-GLB-hash claim is made. See `reproducibility.json`.
 
-The standalone inspector checks binary structure, finite attributes, index bounds, winding/normals, transforms, dimensions, texture embedding, fur UV/PBR inputs and budgets. Mutation tests exercise invalid assets. Blender independently imports and measures the GLB. Repeatability records compare actual regeneration results; byte identity is not assumed. In the current two-run experiment, counts, bounds and image hashes match, but the canonical geometry hash differs. Exact geometry reproducibility remains unresolved; consult `reproducibility.json`.
-
-## PlayCanvas and manual review
-
-Run `npm run preview:character`. The viewer uses the existing `gltfCharacterSource` and supports four camera views. Open `/comparison.html` for candidate/rejected views and a local approved-reference file selector. Original reference pixels remain unavailable to this environment; see the visual assessment for limitations.
-
-Check front and three-quarter facial likeness first, then helmet depth, ear attachment, armor silhouette, exposed paws and back construction. Inspect textures and cyan emission in PlayCanvas. Browser tests verify actual loading and nonempty rendering on desktop and mobile viewports; they do not judge likeness or device frame rate.
-
-Neither game host selects this asset by default. Procedural fallback, shared gameplay, Telegram integration and Minima MDS remain unchanged. No rigging, animation, blockchain or account functionality is added.
+Local `npm run check` passes: 11 GLB/provenance/negative tests, TypeScript, ESLint, 27 unit tests, Telegram/Minima builds and MDS packaging. Independent Blender import also passes. The complete browser suite passes all 18 desktop/mobile tests (system Chromium, software WebGL). All required map bindings and ground placement are checked in desktop/mobile PlayCanvas browser tests. Physical-device profiling and human visual approval remain pending.

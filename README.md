@@ -47,4 +47,4 @@ No secrets or environment variables are required for this prototype. Never commi
 
 ## Character asset
 
-The unapproved visual rework GLB and editable Blender source are in [assets/characters/minimorph](assets/characters/minimorph/README.md). See the [model pipeline and reference comparison](docs/character-model-v1.md) for background regeneration, measured budgets and PlayCanvas inspection. The gameplay character remains the procedural fallback until a separate visual integration.
+The official Meshy-derived character and measured validation reports are in [assets/characters/minimorph](assets/characters/minimorph/README.md). The untouched high-resolution master stays in the [assets-v1 Release](https://github.com/themightydanik/minimorph/releases/tag/assets-v1); see the [optimization pipeline](docs/character-model-v1.md) and [source-versus-optimized review](docs/character-visual-rework.md). PR #3 remains Draft for human visual approval. Production gameplay continues to use its existing procedural fallback.

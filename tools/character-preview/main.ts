@@ -79,16 +79,18 @@ void source
     canvas.dataset.materials = String(
       new Set(meshes.map((mesh) => mesh.material)).size,
     );
-    const fur = meshes.map((mesh) => mesh.material).find(
-      (material) => material?.name === "Kitten_Fur_PBR",
+    const material = meshes.map((mesh) => mesh.material).find(
+      (material) => material?.name === "Meshy_PBR",
     ) as pc.StandardMaterial | undefined;
-    canvas.dataset.furTextures = String(Boolean(
-      fur?.diffuseMap && fur.normalMap && fur.glossMap,
+    canvas.dataset.pbrTextures = String(Boolean(
+      material?.diffuseMap && material.normalMap && material.glossMap && material.metalnessMap,
     ));
+    canvas.dataset.pbrChannels = `${material?.glossMapChannel}/${material?.metalnessMapChannel}`;
+    canvas.dataset.ground = String(bounds.center.y - bounds.halfExtents.y);
     canvas.dataset.meshes = String(meshes.length);
     canvas.dataset.loaded = "true";
     status.textContent =
-      "Static GLB loaded via gltfCharacterSource. No rig or animation clips.";
+      "Official Meshy-derived GLB loaded via gltfCharacterSource. No rig or animation clips.";
   })
   .catch((error) => {
     status.textContent = String(error);

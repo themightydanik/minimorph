@@ -5,13 +5,18 @@ test("real character GLB loads through the shared PlayCanvas source", async ({
   test.setTimeout(60000);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
   await page.goto("http://127.0.0.1:5175");
   const canvas = page.locator("canvas");
   await expect(canvas).toHaveAttribute("data-loaded", "true");
   expect(Number(await canvas.getAttribute("data-height"))).toBeCloseTo(1.8, 2);
-  await expect(canvas).toHaveAttribute("data-meshes", "8");
-  await expect(canvas).toHaveAttribute("data-materials", "8");
-  await expect(canvas).toHaveAttribute("data-fur-textures", "true");
+  await expect(canvas).toHaveAttribute("data-meshes", "1");
+  await expect(canvas).toHaveAttribute("data-materials", "1");
+  await expect(canvas).toHaveAttribute("data-pbr-textures", "true");
+  await expect(canvas).toHaveAttribute("data-pbr-channels", "g/b");
+  expect(Math.abs(Number(await canvas.getAttribute("data-ground")))).toBeLessThan(0.005);
   const lit = await canvas.evaluate(
     (element) =>
       new Promise<number>((resolve) =>

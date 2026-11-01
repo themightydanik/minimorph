@@ -1,45 +1,36 @@
-# PR #3 visual rework — unapproved work in progress
+# Official Meshy source versus optimized character
 
-All three supplied images have been visually reviewed in the conversation: the original illustration, approved design sheet and rejected Blender output. The original and sheet remain the visual authority. The supplied `blob:https://chatgpt.com/…` URLs refer to browser-local data and cannot be downloaded by this environment. No reference pixels have been recreated or substituted.
+PR #3 now derives from the five exact official [assets-v1 Release assets](https://github.com/themightydanik/minimorph/releases/tag/assets-v1), verified by size and SHA-256. The former procedural character is rejected and removed from the branch tip. Its renders are not used as the new comparison authority.
 
-**The required facial likeness has not been achieved. This candidate is not a finished or approved Minimorph model.** Repeated procedural surface adjustments improved construction and material detail, but the result still has a generic toy appearance. A character artist needs to sculpt the facial planes and eyelids and author the fur painting against the original references. Passing technical tests does not change this assessment.
+**Human visual approval is pending.** These are optimization candidates of the actual Meshy character, not newly generated designs. The original illustration and approved design sheet remain the artistic reference, but the official Meshy model is the 3D source to preserve.
 
-## What changed
+## Comparison method
 
-- Continuous remeshed facial surface with socket depressions, cheek/muzzle volumes, shaped nose and curved mouth; single textured glossy eye surfaces instead of stacked iris/pupil primitives.
-- Curved ear surfaces with recessed inner structure and integrated shell exits.
-- Shallow segmented helmet loft, separate shell thickness, oval cyan bezel, side modules and rear access plate.
-- Fitted layered chest, shoulder, forearm, thigh, knee and shin plates, rear armor and connected remeshed paws.
-- Six packed PBR maps: fur color, normal and roughness, iris color, silver normal and roughness. These are procedural textures, not reference-authored fur painting.
-- Separate editable source and reduced runtime GLB. No rig or animations.
+Source and candidate images use the same 640×720 orthographic cameras, AgX exposure/look, area lights, environment and 48 samples. Six views include front, three-quarter, side, back, face-front and face-three-quarter. The source retains all 1,408,570 triangles, normalized only for game scale/facing. Both use the supplied lossless PBR maps, so the comparison isolates mesh/UV/shading changes rather than JPEG-versus-PNG differences. Candidates are exported and re-imported before rendering. Normal-detail reprojection corrects the changed tangent basis; base color and roughness/metallic inputs are preserved.
 
-## Remaining visual mismatches
+Open `/comparison.html` in `npm run preview:character`. Static side-by-side PNGs in the asset folder are exact browser captures of these render pairs; no image synthesis or substituted character is used. They include each candidate and the real Meshy source.
 
-| Area | Unresolved issue |
-| --- | --- |
-| Face | Eyes remain too prominent and generic; eyelid anatomy and the reference's soft kitten expression are missing. Cheeks, brow, muzzle transition and nose proportions still need sculpting. |
-| Fur | Directional maps and tabby masks lack the original's authored strand flow, nuanced markings and soft transitions. |
-| Ears | Simplified pinna, rim and silhouette do not reproduce the reference's natural anatomy. |
-| Helmet | Opening depth and rim/shell proportions need adjustment against actual reference pixels; shell still frames the head differently. |
-| Armor | Panel topology is improved but chest and leg contours, paw anatomy and overall silhouette still diverge. |
-| Rendering | Studio lighting, reflections and noisy CPU renders differ from the illustration. Material detail alone does not establish likeness. |
+## Findings and trade-offs
 
-## Review assets
+- Direct collapse of the imported, seam-split mesh damaged metal highlights. The source's apparent 1744 islands were UV splits: welding coincident positions produces one closed connected surface without changing its triangles or UV-corner data.
+- The 40k and 80k trials preserve overall character identity and silhouette, but show visible pupil/iris and helmet/armor texture-border distortion in closeups. Those budgets are not accepted solely for their lower triangle counts.
+- The selected 160k candidate protects source seam vertices, transfers source corner normals and reprojects the source tangent normal detail. This improves the eye borders and metal highlights compared to 40k/80k. Its quality and cost must be evaluated from the actual comparison images and measured reports. No automated artistic approval is claimed.
+- Source appearance includes detailed fur, cyan-colored trim and metallic armor. There is no true emissive source channel, and none is added.
+- The surface is a single triangulated character mesh. Panel lines and some details are texture features rather than separately articulated armor. No rig, expressions or animations have been added.
+- CPU renders retain sampling noise. PNG download sizes do not measure GPU memory or frame rate. Physical-mobile performance has not been benchmarked.
 
-The [asset README](../assets/characters/minimorph/README.md) displays four renders of the **actual optimized GLB**, with separate source-model renders. `review/rejected-*.png` preserves actual renders from rejected commit `e4d02398578a9d79fc4c3e80ad45818d91607543`; these are repository artifacts, not the user's uploaded negative-example pixels.
+## Human review instructions
 
-Run `npm run preview:character`, then open `/comparison.html`. The page compares the candidate and rejected baseline and allows selecting an actual local approved image for the reference column. No file leaves the browser. A reference-versus-candidate contact sheet with original pixels is **pending accessible PNG/JPG files or HTTPS URLs**; the empty reference column is explicitly labeled. Do not describe it as a completed reference comparison.
+1. Compare normal-distance front and three-quarter renders for eye proportions, muzzle, whiskers, ear shape, helmet opening, cyan line continuity and chest panel contours.
+2. Inspect face closeups for jagged pupil/iris boundaries, texture seams and small metallic highlight changes.
+3. Compare side/back silhouette and paw/leg shape, and inspect ear and helmet seams from both directions.
+4. Load the selected optimized GLB in the PlayCanvas preview on desktop and a real mobile device. Confirm front faces the preview camera, feet meet ground level, all PBR maps are bound, and rendering is stable.
+5. Approve or request changes explicitly. Successful tests, a lower triangle count or this report do not approve the art.
 
-## Technical scope
+The existing production character fallback and gameplay remain unchanged. Source masters stay in the Release outside Git and application bundles. See the asset README for actual candidate statistics, audit reports and comparison links.
 
-Measured runtime statistics and review limits are in `validation.json` and `budgets.json`. The raised limits are temporary review ceilings, not evidence of mobile readiness. The larger source and export need optimization after art review. The gameplay fallback, controller, camera, checkpoints, Telegram and read-only Minima adapter remain unchanged.
+## Measured selected export
 
-Human review is requested to diagnose the candidate, **not to declare the task complete**. Further procedural parameter tuning has reached a practical quality limit here; manual sculpting and texture authoring are the next step.
+160,000 triangles, 145,409 exported vertices (including UV/normal/tangent splits), one mesh/primitive/material, three embedded 2048² PNGs, 25,551,344 bytes. This is an 88.6% triangle reduction from the source, with zero geometric boundary/nonmanifold edges after merging exact seam positions. The original illustration is not replaced or redesigned. No visual approval, rigging or animation is claimed.
 
-## Validation results
-
-- `npm run check`: seven GLB audit tests, TypeScript, ESLint, 27 unit tests, Telegram/Minima production builds and read-only MDS packaging pass. TypeScript and ESLint were repeated after adding texture inspection.
-- Independent Blender 4.3.2 import audit passes.
-- Desktop/mobile PlayCanvas asset tests pass with explicit fur color/normal/roughness-map binding assertions.
-- Two regeneration runs match geometry counts, bounds and texture hashes, but canonical geometry hashes differ. Exact geometric repeatability remains unresolved; no byte-identity claim is made.
-- Physical-device performance and artistic approval are not established.
+Geometry is repeatable across two runs; the normal bake differs in only three pixels by one 8-bit level, so binary identity is not claimed. Review source/candidate images rather than assuming a triangle count proves fidelity.

@@ -1,79 +1,61 @@
 {
   "asset": "minimorph_v1.glb",
-  "bytes": 9588016,
-  "glb_sha256": "e6986973c4f237740dc085eaf47f83b144f4e51ceea002c5fcb8ffc88ac7cd99",
-  "geometry_sha256_1e6": "ff14be76be8141ba8c0de167c1ea8483896d31ea6dd28d44b54d5d0f51aca9e9",
-  "rendered_triangles": 96206,
-  "rendered_primitives": 8,
-  "rendered_vertices": 62759,
-  "materials": 8,
-  "nodes": 9,
+  "welded_surface_vertices": 79904,
+  "welded_surface_boundary_edges": 0,
+  "welded_surface_nonmanifold_edges": 0,
+  "bytes": 25551344,
+  "glb_sha256": "52dff3dd1f96d7c7958f48a0a06013e2a0b1bb8f515183dabeed499fd584c851",
+  "geometry_sha256_1e6": "059e87dd15f8bff99693acaa674196d37af1c26003cb09f81f108d88c3777ba9",
+  "rendered_triangles": 160000,
+  "rendered_primitives": 1,
+  "rendered_vertices": 145409,
+  "materials": 1,
+  "nodes": 2,
   "glTF_world_min": [
-    -0.5036779642105103,
-    6.690789450658485e-05,
-    -0.3891615867614746
+    -0.5630382299423218,
+    0.0,
+    -0.4838324785232544
   ],
   "glTF_world_max": [
-    0.5036779642105103,
-    1.8000034093856812,
-    0.32996246218681335
+    0.5632855296134949,
+    1.7999999523162842,
+    0.48363322019577026
   ],
-  "height": 1.7999365014911746,
-  "embedded_images": 6,
+  "height": 1.7999999523162842,
+  "embedded_images": 3,
   "skins": 0,
   "animation_clips": 0,
   "external_resources": 0,
   "limits": {
-    "status": "visual-review-candidate-not-approved",
-    "triangles": 100000,
-    "materials": 12,
-    "primitives": 16,
-    "bytes": 25165824,
-    "rationale": "Temporary upper limits for a textured fidelity review export. These are enforced safety limits, not a claim of mobile production readiness. Optimize only after facial/silhouette review; actual statistics and texture sizes must be reported."
+    "status": "official-meshy-optimized-awaiting-human-visual-approval",
+    "triangles": 160000,
+    "materials": 1,
+    "primitives": 1,
+    "bytes": 33554432,
+    "rationale": "160k Meshy review export selected over 40k/80k because UV-seam/eye detail is better preserved. One material and three 2k PNG maps. Temporary quality-review ceiling; physical-mobile profiling and human art approval pending."
   },
   "texture_images": [
     {
-      "name": "eye_iris_1k",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 113139,
-      "sha256": "532a365bd0a0d2e3f9bc919babb80d7e808ac851b9ba34a392cce12c920758b7"
-    },
-    {
-      "name": "fur_normal_1k",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 1433058,
-      "sha256": "28c6ec55ade12d584de37a15ba2937d876b481466b9e68c6953f5cf420132ba3"
-    },
-    {
-      "name": "fur_albedo_2k",
+      "name": "reprojected-normal",
       "width": 2048,
       "height": 2048,
-      "bytes": 4506687,
-      "sha256": "97506b3cd1b6c8f29b341f9786a2ac0998311736f5e4ddbad3543a4874b35586"
+      "bytes": 6485001,
+      "sha256": "f10035de6e468b40361e66af222d93436a1a79fdfc7727b5481a9c066b637df7"
     },
     {
-      "name": "fur_roughness_1k",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 890769,
-      "sha256": "e3ef171b21eaa74f57e2f2df40578f0b2bf01ddad30ed8136cf172b93873ea3e"
+      "name": "texture_0",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 6911674,
+      "sha256": "6d39e7c86827c92ebab5d4749112bc96dcde6192d45415037dd28b5f24b65373"
     },
     {
-      "name": "silver_normal_512",
-      "width": 512,
-      "height": 512,
-      "bytes": 10727,
-      "sha256": "71678e5a18a68bc7a28e85f62b499d9110690f018ba690243801769453ddb900"
-    },
-    {
-      "name": "silver_roughness_512",
-      "width": 512,
-      "height": 512,
-      "bytes": 38151,
-      "sha256": "bbc645c627ac4fc7a08076a7627772d894d379ab05f4d62f68807529158c9df3"
+      "name": "metallic-roughness",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3253092,
+      "sha256": "26be96bdbbdcb28a19f6304685fe32d551f7066fc78073134fd468fe798ed56b"
     }
   ],
-  "texture_rgba8_bytes_without_mips": 31457280
+  "texture_rgba8_bytes_without_mips": 50331648
 }

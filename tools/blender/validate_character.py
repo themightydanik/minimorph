@@ -103,7 +103,17 @@ def read_glb(path):
     return document, len(data)
 
 
-def validate(path, max_triangles=100000, max_materials=12, max_bytes=24 * 1024 * 1024):
+def validate(path, max_triangles=None, max_materials=None, max_bytes=None):
+    budgets = path.parent / "budgets.json"
+    if not budgets.exists():
+        budgets = (
+            Path(__file__).resolve().parents[2]
+            / "assets/characters/minimorph/budgets.json"
+        )
+    limits = json.loads(budgets.read_text())
+    max_triangles = limits["triangles"] if max_triangles is None else max_triangles
+    max_materials = limits["materials"] if max_materials is None else max_materials
+    max_bytes = limits["bytes"] if max_bytes is None else max_bytes
     import bpy
     from mathutils import Vector
 
@@ -183,8 +193,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--report", type=Path)
-    parser.add_argument("--max-triangles", type=int, default=100000)
-    parser.add_argument("--max-materials", type=int, default=12)
+    parser.add_argument("--max-triangles", type=int)
+    parser.add_argument("--max-materials", type=int)
     args = parser.parse_args(
         sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
     )

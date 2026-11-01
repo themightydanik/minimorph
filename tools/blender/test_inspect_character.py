@@ -38,11 +38,27 @@ class CharacterAuditTests(unittest.TestCase):
         self.assertLessEqual(
             report["rendered_triangles"], report["limits"]["triangles"]
         )
-        self.assertEqual(report["materials"], 8)
-        self.assertEqual(report["rendered_primitives"], 8)
+        self.assertEqual(report["materials"], 1)
+        self.assertEqual(report["rendered_primitives"], 1)
         self.assertEqual(report["skins"], 0)
         self.assertEqual(report["animation_clips"], 0)
         self.assertAlmostEqual(report["height"], 1.8, delta=0.0001)
+
+    def test_release_provenance_and_unchanged_base_color(self):
+        manifest = json.loads(ASSET.with_name("source-manifest.json").read_text())
+        sources = {item["name"]: item for item in manifest["assets"]}
+        report = inspect(ASSET)
+        base = next(
+            image for image in report["texture_images"] if image["name"] == "texture_0"
+        )
+        self.assertEqual("sha256:" + base["sha256"], sources["texture_0.png"]["digest"])
+        optimization = json.loads(ASSET.with_name("optimization.json").read_text())
+        self.assertEqual(
+            "sha256:" + optimization["source_sha256"],
+            sources["meshy-model.glb"]["digest"],
+        )
+        self.assertEqual(optimization["source"]["triangles"], 1408570)
+        self.assertEqual(report["embedded_images"], 3)
 
     def test_committed_report_matches_actual_asset(self):
         expected = json.loads(ASSET.with_name("validation.json").read_text())
@@ -65,13 +81,29 @@ class CharacterAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, "Root scale"):
             inspect(self.modified())
 
-    def test_rejects_missing_fur_textures(self):
+    def test_rejects_missing_pbr_textures(self):
         for mesh in self.document["meshes"]:
             for primitive in mesh["primitives"]:
                 material = self.document["materials"][primitive["material"]]
-                if material.get("name") == "Kitten_Fur_PBR":
+                if material.get("name") == "Meshy_PBR":
                     material["pbrMetallicRoughness"].pop("baseColorTexture")
-        with self.assertRaisesRegex(AssertionError, "fur PBR textures"):
+        with self.assertRaisesRegex(AssertionError, "Meshy PBR textures"):
+            inspect(self.modified())
+
+    def test_rejects_invalid_texture_reference(self):
+        self.document["materials"][0]["normalTexture"]["index"] = 999
+        with self.assertRaisesRegex(AssertionError, "Invalid texture reference"):
+            inspect(self.modified())
+
+    def test_rejects_open_surface(self):
+        primitive = self.document["meshes"][0]["primitives"][0]
+        self.document["accessors"][primitive["indices"]]["count"] -= 3
+        with self.assertRaisesRegex(AssertionError, "Open or nonmanifold"):
+            inspect(self.modified())
+
+    def test_rejects_missing_uv(self):
+        self.document["meshes"][0]["primitives"][0]["attributes"].pop("TEXCOORD_0")
+        with self.assertRaisesRegex(AssertionError, "Missing texture UV"):
             inspect(self.modified())
 
     def test_rejects_degenerate_triangle(self):

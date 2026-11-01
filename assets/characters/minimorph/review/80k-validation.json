@@ -1,0 +1,61 @@
+{
+  "asset": "minimorph_v1.glb",
+  "welded_surface_vertices": 39904,
+  "welded_surface_boundary_edges": 0,
+  "welded_surface_nonmanifold_edges": 0,
+  "bytes": 19976120,
+  "glb_sha256": "3fc21e5b984cbea25d3f8b2bf900d63701b99cdfebf13779d9070baa014302a2",
+  "geometry_sha256_1e6": "8849f647c10b509dac88b3a8563f65dec3d232cd8c8a76de4824d0539465a58e",
+  "rendered_triangles": 80000,
+  "rendered_primitives": 1,
+  "rendered_vertices": 63305,
+  "materials": 1,
+  "nodes": 2,
+  "glTF_world_min": [
+    -0.563299298286438,
+    0.0,
+    -0.48357483744621277
+  ],
+  "glTF_world_max": [
+    0.5632412433624268,
+    1.7999999523162842,
+    0.4839668273925781
+  ],
+  "height": 1.7999999523162842,
+  "embedded_images": 3,
+  "skins": 0,
+  "animation_clips": 0,
+  "external_resources": 0,
+  "limits": {
+    "status": "official-meshy-optimized-awaiting-human-visual-approval",
+    "triangles": 80000,
+    "materials": 1,
+    "primitives": 1,
+    "bytes": 33554432,
+    "rationale": "Selected runtime candidate target is 40k triangles. One opaque double-sided PBR material, three embedded PNG maps. This is a geometry/asset ceiling, not a measured physical-device frame-rate guarantee."
+  },
+  "texture_images": [
+    {
+      "name": "reprojected-normal",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 6290783,
+      "sha256": "a1aa1be9dbca9ed988832af5fdb8abc4d7c2f5928749de5d4dd3c41c02bc39fb"
+    },
+    {
+      "name": "texture_0",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 6911674,
+      "sha256": "6d39e7c86827c92ebab5d4749112bc96dcde6192d45415037dd28b5f24b65373"
+    },
+    {
+      "name": "metallic-roughness",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3253092,
+      "sha256": "26be96bdbbdcb28a19f6304685fe32d551f7066fc78073134fd468fe798ed56b"
+    }
+  ],
+  "texture_rgba8_bytes_without_mips": 50331648
+}

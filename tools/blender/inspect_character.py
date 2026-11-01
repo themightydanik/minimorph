@@ -74,6 +74,8 @@ def inspect(path):
 
     positions, triangles, primitives, used_materials, visited = [], 0, 0, set(), set()
     canonical_triangles = []
+    surface_edges = {}
+    surface_vertices = set()
 
     def walk(index, parent):
         nonlocal triangles, primitives
@@ -93,6 +95,13 @@ def inspect(path):
                 assert all(
                     0.9 <= math.sqrt(sum(v * v for v in n)) <= 1.1 for n in normals
                 ), "Invalid vertex normal"
+                if "TANGENT" in primitive["attributes"]:
+                    tangents = accessor(primitive["attributes"]["TANGENT"])
+                    assert len(tangents) == len(vertices), "Invalid tangent count"
+                    assert all(
+                        all(math.isfinite(c) for c in t) and abs(abs(t[3]) - 1) < 1e-5
+                        for t in tangents
+                    ), "Invalid tangent basis"
                 indices = (
                     [v[0] for v in accessor(primitive["indices"])]
                     if "indices" in primitive
@@ -115,6 +124,10 @@ def inspect(path):
                     assert (
                         sum(v * v for v in cross) > 1e-24
                     ), "Degenerate exported triangle"
+                    for edge in [(p, q), (q, r), (r, p)]:
+                        key = tuple(sorted(edge))
+                        surface_edges[key] = surface_edges.get(key, 0) + 1
+                    surface_vertices.update((p, q, r))
                     rounded = tuple(
                         tuple((round(value, 6) or 0.0) for value in vertex)
                         for vertex in (p, q, r)
@@ -135,15 +148,42 @@ def inspect(path):
                 assert material is not None and 0 <= material < len(
                     document["materials"]
                 )
-                if document["materials"][material].get("name") == "Kitten_Fur_PBR":
-                    mat = document["materials"][material]
+                mat = document["materials"][material]
+                pbr = mat.get("pbrMetallicRoughness", {})
+                assert (
+                    "baseColorTexture" in pbr
+                    and "metallicRoughnessTexture" in pbr
+                    and "normalTexture" in mat
+                ), "Missing Meshy PBR textures"
+                assert (
+                    mat.get("alphaMode", "OPAQUE") == "OPAQUE"
+                ), "Unexpected transparency"
+                assert mat.get("emissiveFactor", [0, 0, 0]) == [
+                    0,
+                    0,
+                    0,
+                ], "Unexpected emission"
+                assert (
+                    "TEXCOORD_0" in primitive["attributes"]
+                ), "Missing texture UV coordinates"
+                uv = accessor(primitive["attributes"]["TEXCOORD_0"])
+                assert len(uv) == len(vertices) and all(
+                    math.isfinite(c) for value in uv for c in value
+                ), "Invalid texture UV coordinates"
+                for binding in [
+                    pbr["baseColorTexture"],
+                    pbr["metallicRoughnessTexture"],
+                    mat["normalTexture"],
+                ]:
+                    assert binding.get("texCoord", 0) == 0, "Unexpected UV set"
+                    index = binding["index"]
                     assert (
-                        "baseColorTexture" in mat.get("pbrMetallicRoughness", {})
-                        and "normalTexture" in mat
-                    ), "Missing baked fur PBR textures"
+                        0 <= index < len(document.get("textures", []))
+                    ), "Invalid texture reference"
+                    source = document["textures"][index]["source"]
                     assert (
-                        "TEXCOORD_0" in primitive["attributes"]
-                    ), "Missing fur UV coordinates"
+                        0 <= source < len(document.get("images", []))
+                    ), "Invalid image reference"
                 used_materials.add(material)
         for child in node.get("children", []):
             walk(child, transform)
@@ -188,8 +228,16 @@ def inspect(path):
                 "sha256": hashlib.sha256(payload).hexdigest(),
             }
         )
+    boundary_edges = sum(count == 1 for count in surface_edges.values())
+    nonmanifold_edges = sum(count != 2 for count in surface_edges.values())
+    assert (
+        boundary_edges == 0 and nonmanifold_edges == 0
+    ), "Open or nonmanifold geometric surface"
     return {
         "asset": path.name,
+        "welded_surface_vertices": len(surface_vertices),
+        "welded_surface_boundary_edges": boundary_edges,
+        "welded_surface_nonmanifold_edges": nonmanifold_edges,
         "bytes": byte_count,
         "glb_sha256": hashlib.sha256(data).hexdigest(),
         "geometry_sha256_1e6": hashlib.sha256(
