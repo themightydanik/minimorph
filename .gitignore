@@ -7,3 +7,10 @@ test-results/
 .env.*
 !.env.example
 *.log
+
+__pycache__/
+*.blend1
+
+# Meshy masters live in the assets-v1 Release, never in runtime/Git.
+meshy-model.glb
+texture_0*.png

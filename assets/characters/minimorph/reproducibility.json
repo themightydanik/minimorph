@@ -1,0 +1,20 @@
+{
+  "blender": "4.3.2",
+  "runs": 2,
+  "source_sha256": "d5d53c934fd32b6bc70bc2eea6f328d88d756704a6e598e3fcde2950f10a6e9a",
+  "geometry_sha256_1e6": "059e87dd15f8bff99693acaa674196d37af1c26003cb09f81f108d88c3777ba9",
+  "geometry_match": true,
+  "triangles_match": true,
+  "vertices_match": true,
+  "bounds_match": true,
+  "textures_match": false,
+  "byte_identical": false,
+  "normal_bake_pixel_difference": {
+    "mean_absolute_rgb_difference_0_1": 9.349747642772854e-10,
+    "max_absolute_rgb_difference_0_1": 0.003921568393707275,
+    "changed_pixels": 3,
+    "pixels_changed_more_than_1_255": 0,
+    "total_pixels": 4194304,
+    "note": "Cycles selected-to-active normal bake is not byte deterministic with four CPU threads; geometry is repeatable. This is a measured pixel comparison, not artistic approval."
+  }
+}

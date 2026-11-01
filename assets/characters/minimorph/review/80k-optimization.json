@@ -1,0 +1,97 @@
+{
+  "blender": "4.3.2",
+  "source_sha256": "d5d53c934fd32b6bc70bc2eea6f328d88d756704a6e598e3fcde2950f10a6e9a",
+  "requested_triangles": 80000,
+  "preserve_seams": false,
+  "normal_reprojection": true,
+  "source": {
+    "vertices": 762042,
+    "triangles": 1408570,
+    "uv_layers": [
+      "UVMap"
+    ],
+    "boundary_edges": 112026,
+    "nonmanifold_edges": 112026,
+    "components": 1744,
+    "largest_components_vertices": [
+      7337,
+      6651,
+      4706,
+      4631,
+      4441,
+      4414,
+      4196,
+      4151,
+      3908,
+      3783,
+      3765,
+      3578
+    ],
+    "zero_area_triangles": 0
+  },
+  "welded_before_collapse": {
+    "vertices": 704189,
+    "triangles": 1408570,
+    "uv_layers": [
+      "UVMap"
+    ],
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "components": 1,
+    "largest_components_vertices": [
+      704189
+    ],
+    "zero_area_triangles": 0
+  },
+  "weld_distance": 1e-07,
+  "normal_transfer": "Nearest source polygon interpolated corner normals",
+  "optimized_blender": {
+    "vertices": 39904,
+    "triangles": 80000,
+    "uv_layers": [
+      "UVMap"
+    ],
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "components": 1,
+    "largest_components_vertices": [
+      39904
+    ],
+    "zero_area_triangles": 0
+  },
+  "normalization": {
+    "source_blender_min": [
+      -0.5952290296554565,
+      -0.5110009908676147,
+      -0.9520270228385925
+    ],
+    "source_blender_max": [
+      0.5956889986991882,
+      0.5117809772491455,
+      0.9509869813919067
+    ],
+    "uniform_scale": 0.9458679736452313,
+    "rotation_degrees_about_up": 180,
+    "target_height": 1.8
+  },
+  "embedded_vs_external_texture_difference": {
+    "base": {
+      "mean_absolute_difference_0_1": 0.0068331933580338955,
+      "max_absolute_difference_0_1": 0.6352941393852234
+    },
+    "normal": {
+      "mean_absolute_difference_0_1": 0.0072731212712824345,
+      "max_absolute_difference_0_1": 0.2549019455909729
+    },
+    "roughness": {
+      "mean_absolute_difference_0_1": 0.003806952154263854,
+      "max_absolute_difference_0_1": 0.13725492358207703
+    },
+    "metallic": {
+      "mean_absolute_difference_0_1": 0.01084176730364561,
+      "max_absolute_difference_0_1": 0.5686274766921997
+    }
+  },
+  "materials": "Supplied base PNG; supplied tangent normals reprojected to low mesh when normal_reprojection is true; external roughness G and metallic B packed losslessly. No emission added. Opaque, double-sided as source.",
+  "rigging": "Single textured mesh, no skeleton; semantic joints/parts are not separated. Requires manual segmentation, retopology/weights and deformation tests; not rig-ready."
+}

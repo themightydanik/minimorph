@@ -44,3 +44,7 @@ See [architecture](docs/architecture.md), [deployment and manual verification](d
 ## Security
 
 No secrets or environment variables are required for this prototype. Never commit `.env`, private keys, seed phrases, wallet credentials or bot tokens. Telegram host data is not authentication. A future backend must validate Telegram `initData` server-side before trusting identity. The Telegram dependency graph contains no Minima adapter or blockchain functionality. Minima requests read permission only and never signs or submits transactions.
+
+## Character asset
+
+The official Meshy-derived character and measured validation reports are in [assets/characters/minimorph](assets/characters/minimorph/README.md). The untouched high-resolution master stays in the [assets-v1 Release](https://github.com/themightydanik/minimorph/releases/tag/assets-v1); see the [optimization pipeline](docs/character-model-v1.md) and [source-versus-optimized review](docs/character-visual-rework.md). PR #3 remains Draft for human visual approval. Production gameplay continues to use its existing procedural fallback.

@@ -1,0 +1,134 @@
+{
+  "source_release": "assets-v1",
+  "source_glb_bytes": 50384156,
+  "source_glb_sha256": "d5d53c934fd32b6bc70bc2eea6f328d88d756704a6e598e3fcde2950f10a6e9a",
+  "triangles": 1408570,
+  "exported_vertices": 762042,
+  "bounds_gltf": {
+    "min": [
+      -0.5956889986991882,
+      -0.9520270228385925,
+      -0.5110009908676147
+    ],
+    "max": [
+      0.5952290296554565,
+      0.9509869813919067,
+      0.5117809772491455
+    ]
+  },
+  "facing": "local positive Z, visually verified before normalization",
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 2,
+            "TEXCOORD_0": 1
+          },
+          "indices": 3,
+          "mode": 4,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 1.0,
+        "roughnessFactor": 1.0,
+        "baseColorTexture": {
+          "index": 0,
+          "texCoord": 0
+        },
+        "metallicRoughnessTexture": {
+          "index": 1,
+          "texCoord": 0
+        }
+      },
+      "normalTexture": {
+        "index": 2,
+        "texCoord": 0
+      },
+      "alphaMode": "OPAQUE",
+      "doubleSided": true
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 1,
+      "source": 1
+    },
+    {
+      "sampler": 2,
+      "source": 2
+    }
+  ],
+  "embedded_images": [
+    {
+      "index": 0,
+      "mime_type": "image/jpeg",
+      "bytes": 4032078,
+      "sha256": "26209c8a7289d24c4a724878be4d00e00e9fff0299a961b54ebded507e8f2ad9",
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "index": 1,
+      "mime_type": "image/jpeg",
+      "bytes": 2282930,
+      "sha256": "5915ea35617d847a6d8a40c893773039bc25f3b989dd6881883453576f5cadda",
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "index": 2,
+      "mime_type": "image/jpeg",
+      "bytes": 2778657,
+      "sha256": "c60dc78cce3f707e2a54f25a1f22e86c7eaee964baec15c5b52f5461edc0cbb1",
+      "width": 2048,
+      "height": 2048
+    }
+  ],
+  "uv_set": "TEXCOORD_0",
+  "skins": 0,
+  "animations": 0,
+  "topology": {
+    "vertices": 762042,
+    "triangles": 1408570,
+    "uv_layers": [
+      "UVMap"
+    ],
+    "boundary_edges": 112026,
+    "nonmanifold_edges": 112026,
+    "components": 1744,
+    "largest_components_vertices": [
+      7337,
+      6651,
+      4706,
+      4631,
+      4441,
+      4414,
+      4196,
+      4151,
+      3908,
+      3783,
+      3765,
+      3578
+    ],
+    "zero_area_triangles": 0
+  },
+  "separate_semantic_components": false,
+  "rigging": "Not rig-ready: unified mesh, no separate eyes/jaw/armor or deformation-oriented joint loops. Needs artist retopology/segmentation and weights; not implemented."
+}

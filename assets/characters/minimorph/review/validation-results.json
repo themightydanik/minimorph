@@ -1,0 +1,18 @@
+{
+  "scope": "local verification of the committed Meshy-derived candidate; browser mobile is viewport emulation, not physical device profiling",
+  "npm_run_check": "pass",
+  "glb_and_provenance_tests": 11,
+  "unit_tests": 27,
+  "browser_tests": 18,
+  "browser_projects": [
+    "desktop",
+    "mobile"
+  ],
+  "browser_executable": "system Chromium, software WebGL",
+  "blender_import": "pass, 4.3.2",
+  "telegram_production_build": "pass",
+  "minima_production_build": "pass",
+  "mds_packaging": "pass; read-only permissions; 561810 bytes",
+  "physical_mobile_performance": "not measured",
+  "human_visual_approval": false
+}

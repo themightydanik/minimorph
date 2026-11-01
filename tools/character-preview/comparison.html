@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Official Meshy — source versus optimized</title><style>
+:root{font:15px system-ui;color:#e6edf4;background:#151b24}body{margin:20px}h1{font-size:23px}p{max-width:95ch;line-height:1.5}select{padding:10px;color:inherit;background:#263445;border:1px solid #60728b;border-radius:7px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}figure{margin:0;background:#0b1018;border:1px solid #39485c;border-radius:10px;padding:10px}figcaption{font-weight:600;padding-bottom:10px}img{display:block;width:100%;height:auto}label{display:inline-block;margin:12px 16px 18px 0}.notice{border-left:4px solid #e2ad5e;padding-left:12px}@media(max-width:600px){body{margin:8px}.grid{gap:6px}figure{padding:5px}figcaption{font-size:12px}}
+</style></head><body>
+<h1>Official Meshy character — source vs optimized</h1>
+<p class="notice">Draft: human visual approval pending. Both columns use identical cameras, lighting, exposure and supplied Meshy PBR maps. Left: the actual 1,408,570-triangle Meshy mesh, normalized to game scale and facing. Right: the actual exported GLB re-imported into Blender. No character reconstruction or generated substitute.</p>
+<label>View: <select id="view"><option>front</option><option>three-quarter</option><option>side</option><option>back</option><option>face-front</option><option>face-three-quarter</option></select></label>
+<label>Candidate: <select id="candidate"><option value="selected">Selected runtime · 160k</option><option value="40k">40k target</option><option value="80k">80k target</option></select></label>
+<div class="grid" id="comparison"><figure><figcaption>Original Meshy geometry · 1,408,570 triangles</figcaption><img id="original" src="/renders/source/front.png" alt="Original high-resolution Meshy source"></figure><figure><figcaption id="candidate-label">Optimized Meshy · selected runtime</figcaption><img id="optimized" src="/renders/front.png" alt="Actual optimized Meshy GLB"></figure></div>
+<script type="module">
+const view=document.querySelector('#view'),candidate=document.querySelector('#candidate');const params=new URLSearchParams(location.search);view.value=params.get('view')||'front';candidate.value=params.get('candidate')||'selected';
+function update(){document.querySelector('#original').src='/renders/source/'+view.value+'.png';document.querySelector('#optimized').src=(candidate.value==='selected'?'/renders/':'/renders/candidates/'+candidate.value+'/')+view.value+'.png';document.querySelector('#candidate-label').textContent='Optimized Meshy · '+candidate.selectedOptions[0].textContent;}
+view.addEventListener('change',update);candidate.addEventListener('change',update);update();
+</script></body></html>

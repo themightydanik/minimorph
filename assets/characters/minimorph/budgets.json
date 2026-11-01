@@ -1,0 +1,8 @@
+{
+  "status": "official-meshy-optimized-awaiting-human-visual-approval",
+  "triangles": 160000,
+  "materials": 1,
+  "primitives": 1,
+  "bytes": 33554432,
+  "rationale": "160k Meshy review export selected over 40k/80k because UV-seam/eye detail is better preserved. One material and three 2k PNG maps. Temporary quality-review ceiling; physical-mobile profiling and human art approval pending."
+}

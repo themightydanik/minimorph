@@ -1,0 +1,9 @@
+{
+  "source": "official assets-v1 Meshy Release; hashes verified",
+  "human_visual_approved": false,
+  "selected_candidate": "160k with UV seam protection and normal reprojection",
+  "production_gameplay_enabled": false,
+  "rigging": false,
+  "animations": false,
+  "reason": "40k/80k still distort pupil/iris borders; retain more geometry for facial fidelity."
+}
