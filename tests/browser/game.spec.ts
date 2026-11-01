@@ -243,7 +243,10 @@ for (const [target, port] of [
     await startControlledRun(page, port);
     await playSegments(page, 4);
     await page.keyboard.down("KeyW");
-    await page.clock.runFor(100);
+    for (let i = 0; i < 10; i++) {
+      await page.clock.runFor(100);
+      if (await page.locator('canvas').getAttribute('aria-description') === 'Respawning') break;
+    }
     await page.keyboard.up("KeyW");
     await expect(page.getByRole("status")).toContainText("Sweeper hit");
     await expect(page.locator("canvas")).toHaveAttribute(
