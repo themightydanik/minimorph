@@ -161,13 +161,14 @@ async function setKeys(page: Page, keys: string[], held: Set<string>) {
     }
 }
 async function startControlledRun(page: Page, port: number) {
-  await page.clock.install();
+  // Pause a fixed epoch before navigation. Reading Date.now() in one protocol
+  // call and pausing only 100ms ahead in another races a busy CI renderer.
+  await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-01-01T00:01:00Z"));
   await page.route("https://telegram.org/**", (route) => route.abort());
   await page.goto(`http://127.0.0.1:${port}`);
+  await page.clock.runFor(100);
   await expect(page.locator("canvas")).toHaveAttribute("data-ready", "true");
-  await page.clock.pauseAt(
-    new Date(await page.evaluate(() => Date.now() + 100)),
-  );
   await page.getByRole("button", { name: "Restart" }).click();
   await page.clock.runFor(32);
 }
