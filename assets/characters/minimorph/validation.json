@@ -1,0 +1,26 @@
+{
+  "asset": "minimorph_v1.glb",
+  "bytes": 628440,
+  "glb_sha256": "4eeb288a5dd7fa0fd77e21329c931aec4bda8e18019588656ed9c365f6de1492",
+  "geometry_sha256_1e6": "7a50825286e70b0e2aa994e3ae37c9fb3ffcd3a182c9544c2a358b10f4eb1d51",
+  "rendered_triangles": 19388,
+  "rendered_primitives": 8,
+  "rendered_vertices": 14572,
+  "materials": 8,
+  "nodes": 9,
+  "glTF_world_min": [
+    -0.5530443787574768,
+    0.0,
+    -0.3765393793582916
+  ],
+  "glTF_world_max": [
+    0.5530443787574768,
+    1.7999999523162842,
+    0.43408024311065674
+  ],
+  "height": 1.7999999523162842,
+  "embedded_images": 0,
+  "skins": 0,
+  "animation_clips": 0,
+  "external_resources": 0
+}

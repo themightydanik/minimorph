@@ -1,0 +1,9 @@
+{
+  "blender": "4.3.2",
+  "runs": 2,
+  "geometry_sha256_1e6": "7a50825286e70b0e2aa994e3ae37c9fb3ffcd3a182c9544c2a358b10f4eb1d51",
+  "triangles_match": true,
+  "vertices_match": true,
+  "bounds_match": true,
+  "byte_identical": false
+}
