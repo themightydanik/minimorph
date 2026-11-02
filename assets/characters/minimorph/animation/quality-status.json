@@ -3,17 +3,29 @@
   "production_ready": false,
   "deformation_quality_pass": false,
   "static_reference_unchanged": true,
-  "technical_skin_clip_validation": "pass",
-  "blocking_defects": [
-    "Wrist/palm-to-body regions stretch into membranes under arm motion.",
-    "Hip/thigh seams and rigid armor need manual semantic segmentation and weight painting.",
-    "Run and Land penetrate ground; solver/contact corrections required."
+  "measured_gates": {
+    "edge_stretch": false,
+    "ground_penetration": true,
+    "foot_contacts": true,
+    "rigid_armor": true,
+    "neutral_fidelity": true,
+    "joint_influences": true
+  },
+  "remaining_blocker": "Maximum local edge stretch exceeds 2x. Named cuff-contact and knee/hip groups need manual refinement; see editable project.",
+  "fixed": [
+    "Lower palm vertices no longer carry thigh weights.",
+    "Inner toes and sole vertices no longer carry pelvis weights.",
+    "Whole PBR-connected armor cores are rigidly assigned.",
+    "Run/Land and stance contacts pass 60 Hz checks within 0.002 game units."
   ],
-  "plan": [
-    "Inspect manually selected wrist/paw/body regions and correct masks; repair contact topology only if inspection confirms a welded contact requiring separation. Preserve neutral silhouette and UVs.",
-    "Separate hard helmet/chest/pauldron/cuff/knee/shin regions; assign each region to one rigid bone or rigid accessory.",
-    "Retopologize elbow/hip/knee/ankle flexible bands and paint smooth normalized weights.",
-    "Add artist-authored IK foot contacts and pole targets, then revise Run/Land and verify soles across every frame.",
-    "Re-render all poses and test collisions/texture strain; seek human approval before production integration."
-  ]
+  "editable_project": "source/minimorph_rig_workbench.blend",
+  "selection_groups": [
+    "Manual_CuffContact_L",
+    "Manual_CuffContact_R",
+    "Manual_Knee_L",
+    "Manual_Knee_R",
+    "Manual_Hip_L",
+    "Manual_Hip_R"
+  ],
+  "no_geometry_cuts_performed": true
 }

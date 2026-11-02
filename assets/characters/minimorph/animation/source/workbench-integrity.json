@@ -1,0 +1,19 @@
+{
+  "file": "minimorph_rig_workbench.blend",
+  "bytes": 25697778,
+  "sha256": "c5fdae89780c60c6278908044985442fe01813495db09859b11d6636060cbe55",
+  "bones": 20,
+  "actions": 6,
+  "packed_images": 3,
+  "studio_camera": true,
+  "manual_selection_sets": [
+    "CuffContact_L",
+    "CuffContact_R",
+    "Knee_L",
+    "Knee_R",
+    "Hip_L",
+    "Hip_R"
+  ],
+  "exporter_tested": true,
+  "human_approved": false
+}

@@ -1,0 +1,65 @@
+[
+  {
+    "pose": "idle-neutral",
+    "minimum_z": -8.53505000009136e-09,
+    "maximum_z": 1.7999999523162842,
+    "head_rigid_max_error": 0.0,
+    "sampled_edge_stretch_max": 1.0000382866476207,
+    "sampled_edge_compression_min": 0.9998734337425642,
+    "ground_clearance_pass": true
+  },
+  {
+    "pose": "run-left",
+    "minimum_z": -0.02306196466088295,
+    "maximum_z": 1.7558519840240479,
+    "head_rigid_max_error": 1.3328003749250113e-07,
+    "sampled_edge_stretch_max": 151.2764794126518,
+    "sampled_edge_compression_min": 0.16095772543352146,
+    "ground_clearance_pass": false
+  },
+  {
+    "pose": "run-right",
+    "minimum_z": -0.02306196466088295,
+    "maximum_z": 1.7558519840240479,
+    "head_rigid_max_error": 1.3328003749250113e-07,
+    "sampled_edge_stretch_max": 74.35565440219376,
+    "sampled_edge_compression_min": 0.14183249143366516,
+    "ground_clearance_pass": false
+  },
+  {
+    "pose": "jump",
+    "minimum_z": 0.003938044421374798,
+    "maximum_z": 1.7904212474822998,
+    "head_rigid_max_error": 6.664001874625056e-08,
+    "sampled_edge_stretch_max": 51.572338666506596,
+    "sampled_edge_compression_min": 0.10603324573366026,
+    "ground_clearance_pass": true
+  },
+  {
+    "pose": "fall",
+    "minimum_z": 0.008938039653003216,
+    "maximum_z": 1.7999999523162842,
+    "head_rigid_max_error": 0.0,
+    "sampled_edge_stretch_max": 90.6453458315317,
+    "sampled_edge_compression_min": 0.18870133445429538,
+    "ground_clearance_pass": true
+  },
+  {
+    "pose": "land",
+    "minimum_z": -0.06056046858429909,
+    "maximum_z": 1.7111585140228271,
+    "head_rigid_max_error": 1.3328003749250113e-07,
+    "sampled_edge_stretch_max": 76.86264011538766,
+    "sampled_edge_compression_min": 0.16186778920255093,
+    "ground_clearance_pass": false
+  },
+  {
+    "pose": "victory",
+    "minimum_z": -0.006061946041882038,
+    "maximum_z": 1.7812329530715942,
+    "head_rigid_max_error": 6.664001874625056e-08,
+    "sampled_edge_stretch_max": 277.756590111036,
+    "sampled_edge_compression_min": 0.24613295621082398,
+    "ground_clearance_pass": true
+  }
+]

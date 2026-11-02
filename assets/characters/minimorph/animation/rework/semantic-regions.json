@@ -1,0 +1,111 @@
+{
+  "source_sha256": "52dff3dd1f96d7c7958f48a0a06013e2a0b1bb8f515183dabeed499fd584c851",
+  "vertex_count": 145409,
+  "welded_vertices": 79904,
+  "face_edge_connected_components": 1,
+  "connectivity_cuts": [
+    {
+      "maximum_z": 0.55,
+      "largest_face_components": [
+        19884,
+        1576,
+        1554,
+        19,
+        1
+      ]
+    },
+    {
+      "maximum_z": 0.6,
+      "largest_face_components": [
+        22316,
+        1716,
+        1671
+      ]
+    },
+    {
+      "maximum_z": 0.65,
+      "largest_face_components": [
+        27773
+      ]
+    }
+  ],
+  "paw_components_below_z_055": [
+    {
+      "side": "L",
+      "vertices": 816,
+      "min": [
+        0.3381368815898895,
+        -0.06429770588874817,
+        0.3030337691307068
+      ],
+      "max": [
+        0.522360622882843,
+        0.1759551763534546,
+        0.5494781136512756
+      ]
+    },
+    {
+      "side": "R",
+      "vertices": 807,
+      "min": [
+        -0.5221656560897827,
+        -0.0628100112080574,
+        0.3034447431564331
+      ],
+      "max": [
+        -0.33303943276405334,
+        0.1752222776412964,
+        0.5498847365379333
+      ]
+    }
+  ],
+  "harmonic_unknown_vertices": 13113,
+  "rigid_regions": [
+    {
+      "bone": "LowerArm.R",
+      "vertices": 278
+    },
+    {
+      "bone": "Chest",
+      "vertices": 2948
+    },
+    {
+      "bone": "UpperLeg.R",
+      "vertices": 523
+    },
+    {
+      "bone": "Foot.R",
+      "vertices": 286
+    },
+    {
+      "bone": "LowerLeg.R",
+      "vertices": 119
+    },
+    {
+      "bone": "Chest",
+      "vertices": 15
+    },
+    {
+      "bone": "Chest",
+      "vertices": 12
+    },
+    {
+      "bone": "UpperLeg.L",
+      "vertices": 525
+    },
+    {
+      "bone": "Foot.L",
+      "vertices": 259
+    },
+    {
+      "bone": "LowerLeg.L",
+      "vertices": 132
+    },
+    {
+      "bone": "LowerArm.L",
+      "vertices": 232
+    }
+  ],
+  "geometry_cut_or_moved": false,
+  "diagnosis": "Old hand masks excluded z<0.40, although paws reach z\u22480.303; old leg masks excluded inner toes x<0.095. Foot IK targets were correct; wrong weights caused floor penetration."
+}

@@ -94,7 +94,7 @@ void source
     if (animated) animationControls(app, loaded.root, canvas, events.signal);
     canvas.dataset.loaded = "true";
     status.textContent =
-      animated ? "Experimental skeletal GLB: six clips; known deformation defects, not production-ready." : "Official Meshy-derived GLB loaded via gltfCharacterSource. No rig or animation clips.";
+      animated ? "Revised skeletal GLB: contacts corrected within tolerance; remaining local strain blocks approval." : "Official Meshy-derived GLB loaded via gltfCharacterSource. No rig or animation clips.";
   })
   .catch((error) => {
     status.textContent = String(error);

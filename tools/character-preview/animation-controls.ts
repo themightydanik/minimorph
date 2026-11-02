@@ -46,6 +46,7 @@ export function animationControls(app: pc.Application, root: pc.Entity, canvas: 
   const update = () => {
     const hand = root.findByName('Hand.L');
     canvas.dataset.handPosition = hand ? hand.getPosition().toString() : '';
+    canvas.dataset.activeAnimation = anim.baseLayer!.activeState;
     canvas.dataset.animationTime = String(anim.baseLayer!.activeStateCurrentTime);
     canvas.dataset.playing = String(anim.playing && anim.enabled);
     canvas.dataset.animationSpeed = String(anim.speed);

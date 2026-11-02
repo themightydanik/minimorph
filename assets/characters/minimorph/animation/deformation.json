@@ -1,65 +1,65 @@
 [
   {
     "pose": "idle-neutral",
-    "minimum_z": -8.53505000009136e-09,
+    "minimum_z": 2.2992539427946213e-08,
     "maximum_z": 1.7999999523162842,
     "head_rigid_max_error": 0.0,
-    "sampled_edge_stretch_max": 1.0000382866476207,
-    "sampled_edge_compression_min": 0.9998734337425642,
+    "sampled_edge_stretch_max": 1.0000373237278015,
+    "sampled_edge_compression_min": 0.9999636625603624,
     "ground_clearance_pass": true
   },
   {
     "pose": "run-left",
-    "minimum_z": -0.02306196466088295,
-    "maximum_z": 1.7558519840240479,
-    "head_rigid_max_error": 1.3328003749250113e-07,
-    "sampled_edge_stretch_max": 151.2764794126518,
-    "sampled_edge_compression_min": 0.16095772543352146,
-    "ground_clearance_pass": false
+    "minimum_z": -1.8181028238473118e-08,
+    "maximum_z": 1.7618519067764282,
+    "head_rigid_max_error": 6.664001874625056e-08,
+    "sampled_edge_stretch_max": 3.4896283147408513,
+    "sampled_edge_compression_min": 0.08896195378250894,
+    "ground_clearance_pass": true
   },
   {
     "pose": "run-right",
-    "minimum_z": -0.02306196466088295,
-    "maximum_z": 1.7558519840240479,
-    "head_rigid_max_error": 1.3328003749250113e-07,
-    "sampled_edge_stretch_max": 74.35565440219376,
-    "sampled_edge_compression_min": 0.14183249143366516,
-    "ground_clearance_pass": false
+    "minimum_z": 1.207544642056746e-08,
+    "maximum_z": 1.7618519067764282,
+    "head_rigid_max_error": 6.664001874625056e-08,
+    "sampled_edge_stretch_max": 5.137678739647026,
+    "sampled_edge_compression_min": 0.21051232990043217,
+    "ground_clearance_pass": true
   },
   {
     "pose": "jump",
-    "minimum_z": 0.003938044421374798,
+    "minimum_z": 0.028000017628073692,
     "maximum_z": 1.7904212474822998,
     "head_rigid_max_error": 6.664001874625056e-08,
-    "sampled_edge_stretch_max": 51.572338666506596,
-    "sampled_edge_compression_min": 0.10603324573366026,
+    "sampled_edge_stretch_max": 5.541733291239287,
+    "sampled_edge_compression_min": 0.043177459153532285,
     "ground_clearance_pass": true
   },
   {
     "pose": "fall",
-    "minimum_z": 0.008938039653003216,
+    "minimum_z": 0.03999994695186615,
     "maximum_z": 1.7999999523162842,
     "head_rigid_max_error": 0.0,
-    "sampled_edge_stretch_max": 90.6453458315317,
-    "sampled_edge_compression_min": 0.18870133445429538,
+    "sampled_edge_stretch_max": 6.549272842784046,
+    "sampled_edge_compression_min": 0.10590464740200119,
     "ground_clearance_pass": true
   },
   {
     "pose": "land",
-    "minimum_z": -0.06056046858429909,
-    "maximum_z": 1.7111585140228271,
+    "minimum_z": 1.4337148357412843e-08,
+    "maximum_z": 1.7423326969146729,
     "head_rigid_max_error": 1.3328003749250113e-07,
-    "sampled_edge_stretch_max": 76.86264011538766,
-    "sampled_edge_compression_min": 0.16186778920255093,
-    "ground_clearance_pass": false
+    "sampled_edge_stretch_max": 5.940456866192624,
+    "sampled_edge_compression_min": 0.07548275040663598,
+    "ground_clearance_pass": true
   },
   {
     "pose": "victory",
-    "minimum_z": -0.006061946041882038,
-    "maximum_z": 1.7812329530715942,
-    "head_rigid_max_error": 6.664001874625056e-08,
-    "sampled_edge_stretch_max": 277.756590111036,
-    "sampled_edge_compression_min": 0.24613295621082398,
+    "minimum_z": 2.2992539427946213e-08,
+    "maximum_z": 1.796233057975769,
+    "head_rigid_max_error": 1.228781230931777e-07,
+    "sampled_edge_stretch_max": 9.008501509248289,
+    "sampled_edge_compression_min": 0.33933092168341517,
     "ground_clearance_pass": true
   }
 ]

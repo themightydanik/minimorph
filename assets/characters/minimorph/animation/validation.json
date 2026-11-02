@@ -1,7 +1,7 @@
 {
   "asset": "minimorph_animated_v1.glb",
-  "bytes": 28580676,
-  "sha256": "2e047ac83667a9bae14c7adb943299e6b6ba07081a91a6ca517f3da0eb98ab42",
+  "bytes": 28567788,
+  "sha256": "1bcecf7f25e35f1cfb7e4afce6542098a29c44bd9e86cd4ac281da3c3a818f76",
   "triangles": 160000,
   "exported_vertices": 145409,
   "bones": 20,
@@ -9,7 +9,7 @@
   "clips": {
     "Idle": {
       "duration": 2.0,
-      "varying_channels": 8
+      "varying_channels": 1
     },
     "Run": {
       "duration": 0.6000000238418579,
@@ -29,7 +29,7 @@
     },
     "Victory": {
       "duration": 2.0,
-      "varying_channels": 12
+      "varying_channels": 5
     }
   },
   "neutral_world_min": [

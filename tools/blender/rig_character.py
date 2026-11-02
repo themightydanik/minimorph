@@ -39,6 +39,7 @@ def rig(mesh):
     bpy.context.scene.collection.objects.link(ARM)
     bpy.context.view_layer.objects.active = ARM
     ARM.select_set(True)
+    ARM.show_in_front = True
     bpy.ops.object.mode_set(mode="EDIT")
     add("Root", (0, 0, 0), (0, 0, 0.15))
     add("Pelvis", (0, 0, 0.50), (0, 0, 0.60), "Root")
@@ -50,28 +51,31 @@ def rig(mesh):
         add("Shoulder." + side, (s * 0.21, 0, 0.91), (s * 0.36, 0, 0.88), "Chest")
         add(
             "UpperArm." + side,
-            (s * 0.36, 0, 0.88),
-            (s * 0.445, 0.015, 0.665),
+            (s * 0.36, 0, 0.85),
+            (s * 0.425, 0.015, 0.705),
             "Shoulder." + side,
         )
         add(
             "LowerArm." + side,
-            (s * 0.445, 0.015, 0.665),
-            (s * 0.46, 0.035, 0.475),
+            (s * 0.425, 0.015, 0.705),
+            (s * 0.46, 0.035, 0.435),
             "UpperArm." + side,
         )
         add(
             "Hand." + side,
-            (s * 0.46, 0.035, 0.475),
-            (s * 0.46, 0.07, 0.40),
+            (s * 0.46, 0.035, 0.435),
+            (s * 0.46, 0.07, 0.34),
             "LowerArm." + side,
         )
         add(
-            "UpperLeg." + side, (s * 0.205, 0, 0.47), (s * 0.225, 0.015, 0.29), "Pelvis"
+            "UpperLeg." + side,
+            (s * 0.205, 0, 0.47),
+            (s * 0.225, 0.015, 0.245),
+            "Pelvis",
         )
         add(
             "LowerLeg." + side,
-            (s * 0.225, 0.015, 0.29),
+            (s * 0.225, 0.015, 0.245),
             (s * 0.225, 0.02, 0.12),
             "UpperLeg." + side,
         )
@@ -82,50 +86,45 @@ def rig(mesh):
             "LowerLeg." + side,
         )
     bpy.ops.object.mode_set(mode="OBJECT")
-    groups = {n: mesh.vertex_groups.new(name=n) for n in BONES}
+    import numpy as np
 
-    def blend(a, b, t):
-        t = max(0, min(1, t))
-        t = t * t * (3 - 2 * t)
-        return {a: 1 - t, b: t}
-
-    for v in mesh.data.vertices:
-        x, y, z = v.co
-        s = "L" if x >= 0 else "R"
-        x = abs(x)
-        if z >= 0.98:
-            w = {"Head": 1}
-        elif x > 0.365 and z > 0.40:
-            if z > 0.75:
-                w = {"UpperArm." + s: 1}
-            elif z > 0.70:
-                w = blend("LowerArm." + s, "UpperArm." + s, (z - 0.70) / 0.05)
-            elif z > 0.51:
-                w = {"LowerArm." + s: 1}
-            elif z > 0.475:
-                w = blend("Hand." + s, "LowerArm." + s, (z - 0.475) / 0.035)
-            else:
-                w = {"Hand." + s: 1}
-        elif z < 0.50 and x > 0.095:
-            if z > 0.345:
-                w = {"UpperLeg." + s: 1}
-            elif z > 0.315:
-                w = blend("LowerLeg." + s, "UpperLeg." + s, (z - 0.315) / 0.030)
-            elif z > 0.18:
-                w = {"LowerLeg." + s: 1}
-            elif z > 0.155:
-                w = blend("Foot." + s, "LowerLeg." + s, (z - 0.155) / 0.025)
-            else:
-                w = {"Foot." + s: 1}
-        elif z > 0.58:
-            w = {"Chest": 1}
-        elif z > 0.53:
-            w = blend("Pelvis", "Chest", (z - 0.53) / 0.05)
-        else:
-            w = {"Pelvis": 1}
-        for name, weight in w.items():
-            if weight > 1e-6:
-                groups[name].add([v.index], weight, "REPLACE")
+    semantic = np.load(WEIGHTS_PATH)
+    actual = np.array([tuple(v.co) for v in mesh.data.vertices])
+    assert (
+        np.max(np.abs(actual - semantic["positions"])) < 1e-6
+    ), "Semantic weights do not match approved vertex ordering"
+    groups = {name: mesh.vertex_groups.new(name=name) for name in BONES}
+    for column, name in enumerate(semantic["names"]):
+        values = semantic["weights"][:, column]
+        for index in np.flatnonzero(values > 1e-7):
+            groups[str(name)].add([int(index)], float(values[index]), "REPLACE")
+    # Non-deforming selection sets in the editable project identify measured problem areas.
+    for side, sign in [("L", 1), ("R", -1)]:
+        for tag, mask in [
+            (
+                "CuffContact",
+                (actual[:, 0] * sign > 0.29)
+                & (actual[:, 0] * sign < 0.36)
+                & (actual[:, 2] > 0.57)
+                & (actual[:, 2] < 0.67),
+            ),
+            (
+                "Knee",
+                (actual[:, 0] * sign > 0.08)
+                & (actual[:, 0] * sign < 0.34)
+                & (actual[:, 2] > 0.18)
+                & (actual[:, 2] < 0.34),
+            ),
+            (
+                "Hip",
+                (actual[:, 0] * sign > 0.08)
+                & (actual[:, 0] * sign < 0.34)
+                & (actual[:, 2] > 0.44)
+                & (actual[:, 2] < 0.56),
+            ),
+        ]:
+            marker = mesh.vertex_groups.new(name="Manual_" + tag + "_" + side)
+            marker.add(np.flatnonzero(mask).tolist(), 1.0, "REPLACE")
     mesh.parent = ARM
     mod = mesh.modifiers.new("Minimorph skeletal deformation", "ARMATURE")
     mod.object = ARM
@@ -189,19 +188,19 @@ def pose(name, t):
     bob = 0
     targets = {s: (0.02, 0.12) for s in ["L", "R"]}
     if name == "Idle":
-        bob = -0.003 * (1 - math.cos(phase))
+        bob = 0.0  # Breathing stays above the pelvis; do not flex planted knees.
         rotate("Spine", 0.7 * math.sin(phase))
     elif name == "Run":
-        bob = -0.04 + 0.008 * math.cos(phase * 2)
+        bob = -0.03 + 0.004 * math.cos(phase * 2)
         rotate("Spine", -5)
         for side, offset in [("L", 0), ("R", 0.5)]:
             u = (t + offset) % 1
             if u < 0.5:
-                fy = 0.14 - 0.48 * u
+                fy = 0.12 - 0.48 * u
                 fz = 0.12
             else:
                 v = (u - 0.5) * 2
-                fy = -0.10 + 0.24 * v
+                fy = -0.12 + 0.24 * v
                 fz = 0.12 + 0.07 * math.sin(math.pi * v)
             targets[side] = (fy, fz)
             rotate(
@@ -222,15 +221,15 @@ def pose(name, t):
             rotate("UpperArm." + side, 15, -s * (18 + 2 * math.sin(phase)))
             rotate("LowerArm." + side, -18)
     elif name == "Land":
-        envelope = math.sin(math.pi * t) * (1 - t)
-        bob = -0.12 * envelope
+        envelope = math.sin(math.pi * t) ** 2 * (1 - t)
+        bob = -0.08 * envelope
         rotate("Spine", -12 * envelope)
         for side in ["L", "R"]:
             rotate("UpperArm." + side, 25 * envelope)
             rotate("LowerArm." + side, -12 * envelope)
     elif name == "Victory":
         envelope = math.sin(math.pi * t) ** 2
-        bob = -0.015 * envelope
+        bob = 0.0  # Keep the celebration feet/legs in their approved neutral shape.
         rotate("Spine", -2 * envelope)
         for side, s in [("L", 1), ("R", -1)]:
             rotate("UpperArm." + side, 12 * envelope, -s * 65 * envelope)
@@ -278,6 +277,33 @@ def make_actions():
     return result
 
 
+def save_workbench(path, arm):
+    """Keep an editable neutral project with actions, markers and a ready studio."""
+    arm.animation_data.action = None
+    for track in arm.animation_data.nla_tracks:
+        track.mute = True
+    bpy.context.scene.frame_set(0)
+    for bone in arm.pose.bones:
+        bone.matrix_basis.identity()
+    arm.show_in_front = True
+    if bpy.context.scene.camera is None:
+        camera = stage(32)
+        camera.data.ortho_scale = 2.4
+        camera.location = (2.5, 4, 1.15)
+        camera.rotation_euler = (
+            (Vector((0, 0, 0.9)) - camera.location).to_track_quat("-Z", "Y").to_euler()
+        )
+    bpy.context.scene.frame_start = 0
+    bpy.context.scene.frame_end = 60
+    bpy.context.scene["quality_status"] = (
+        "FAIL: remaining cuff/knee strain; human approval pending"
+    )
+    bpy.context.view_layer.update()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    bpy.context.preferences.filepaths.save_version = 0
+    bpy.ops.wm.save_as_mainfile(filepath=str(path), compress=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -288,6 +314,7 @@ def main():
     parser.add_argument(
         "--output", type=Path, default=Path("assets/characters/minimorph/animation")
     )
+    parser.add_argument("--weights", type=Path, required=True)
     parser.add_argument("--renders", action="store_true")
     parser.add_argument("--save-source", type=Path)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1 :])
@@ -309,6 +336,8 @@ def main():
     for obj in list(bpy.context.scene.objects):
         if obj != mesh:
             bpy.data.objects.remove(obj, do_unlink=True)
+    global WEIGHTS_PATH
+    WEIGHTS_PATH = args.weights
     arm = rig(mesh)
     metadata = make_actions()
     # Neutral binding, no animation evaluated during export.
@@ -334,10 +363,6 @@ def main():
         export_force_sampling=True,
         export_frame_range=False,
     )
-    if args.save_source:
-        args.save_source.parent.mkdir(parents=True, exist_ok=True)
-        bpy.context.preferences.filepaths.save_version = 0
-        bpy.ops.wm.save_as_mainfile(filepath=str(args.save_source), compress=True)
     report = {
         "source_sha256": source_hash,
         "blender": bpy.app.version_string,
@@ -346,7 +371,7 @@ def main():
         "in_place": True,
         "run_reference_speed_units_per_second": 0.8,
         "status": "experimental, requires human deformation review",
-        "weights": "Conservative anatomical rigid masks with smooth bands at elbows/knees/ankles/abdomen. No automatic heat weights. No semantic armor retopology.",
+        "weights": "Topology/UV/PBR semantic seeds and harmonic joint bands; no geometry cuts or heat weights.",
         "limitations": [
             "Unified mesh has no semantic joint loops; masks require artist weight-paint refinement.",
             "No independent head turns: avoids stressing shared neck/helmet boundary.",
@@ -420,6 +445,8 @@ def main():
             bpy.context.scene.render.filepath = str(args.output / (label + ".png"))
             bpy.ops.render.render(write_still=True)
         (args.output / "deformation.json").write_text(json.dumps(rows, indent=2) + "\n")
+    if args.save_source:
+        save_workbench(args.save_source, arm)
     print("RIG_EXPORT_COMPLETE", args.output)
 
 

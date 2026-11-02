@@ -70,7 +70,7 @@
   "in_place": true,
   "run_reference_speed_units_per_second": 0.8,
   "status": "experimental, requires human deformation review",
-  "weights": "Conservative anatomical rigid masks with smooth bands at elbows/knees/ankles/abdomen. No automatic heat weights. No semantic armor retopology.",
+  "weights": "Topology/UV/PBR semantic seeds and harmonic joint bands; no geometry cuts or heat weights.",
   "limitations": [
     "Unified mesh has no semantic joint loops; masks require artist weight-paint refinement.",
     "No independent head turns: avoids stressing shared neck/helmet boundary.",

@@ -1,0 +1,67 @@
+{
+  "baseline_commit": "a83af6f8e524e992bfe291a033b227fbdd895f3a",
+  "baseline_asset_sha256": "2e047ac83667a9bae14c7adb943299e6b6ba07081a91a6ca517f3da0eb98ab42",
+  "revised_asset_sha256": "1bcecf7f25e35f1cfb7e4afce6542098a29c44bd9e86cd4ac281da3c3a818f76",
+  "sample_rate_hz": 60,
+  "frames_per_version": 378,
+  "clips": {
+    "Idle": {
+      "old_max_stretch": 19.365155544173014,
+      "new_max_stretch": 1.0861820555523782,
+      "old_minimum_y": -2.781922882262398e-06,
+      "new_minimum_y": 4.214014591555035e-09,
+      "old_contact_failures": 0,
+      "new_contact_failures": 0
+    },
+    "Run": {
+      "old_max_stretch": 153.8874177353664,
+      "new_max_stretch": 9.312497802330746,
+      "old_minimum_y": -0.038579502142968514,
+      "new_minimum_y": -0.0008425251937895327,
+      "old_contact_failures": 37,
+      "new_contact_failures": 0
+    },
+    "Jump": {
+      "old_max_stretch": 69.17979949147674,
+      "new_max_stretch": 5.830097910902472,
+      "old_minimum_y": -0.016061960719525814,
+      "new_minimum_y": -1.261576097788774e-07,
+      "old_contact_failures": 0,
+      "new_contact_failures": 0
+    },
+    "Fall": {
+      "old_max_stretch": 91.11955632748091,
+      "new_max_stretch": 6.5492769192444245,
+      "old_minimum_y": 0.008938039653003216,
+      "new_minimum_y": 0.039999940633076124,
+      "old_contact_failures": 0,
+      "new_contact_failures": 0
+    },
+    "Land": {
+      "old_max_stretch": 76.74291417542443,
+      "new_max_stretch": 6.080788544736071,
+      "old_minimum_y": -0.06034399289637804,
+      "new_minimum_y": -0.001051607565991356,
+      "old_contact_failures": 19,
+      "new_contact_failures": 0
+    },
+    "Victory": {
+      "old_max_stretch": 277.93611441292137,
+      "new_max_stretch": 9.008516119302119,
+      "old_minimum_y": -0.006061960011720657,
+      "new_minimum_y": 4.214014591555035e-09,
+      "old_contact_failures": 41,
+      "new_contact_failures": 0
+    }
+  },
+  "gates": {
+    "edge_stretch": false,
+    "ground_penetration": true,
+    "foot_contacts": true,
+    "rigid_armor": true,
+    "neutral_fidelity": true,
+    "joint_influences": true
+  },
+  "overall_deformation_pass": false,
+  "human_approved": false
+}
