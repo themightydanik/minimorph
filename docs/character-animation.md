@@ -1,3 +1,8 @@
+> Focused correction follow-up: **FAILED / manual intervention necessary**.
+> The one attempted candidate was rejected for a Run regression to 19.02×.
+> The retained asset stays at 9.31× against the unchanged 2× threshold.
+> [Exact vertices, manual workflow, reports and fresh renders](../assets/characters/minimorph/animation/focused/README.md).
+
 # PR #4 skinning rework — improved, still NOT approved
 
 **The complete deformation-quality gate still fails.** Palm/thigh and inner-toe/pelvis assignment errors are corrected, contacts now pass the declared tolerance, and selected PBR armor cores remain rigid. Remaining cuff-to-waist and knee/hip strain prevents claiming that the character is fixed or production-ready. PR #4 must remain Draft. Gameplay and the approved static GLB are unchanged.

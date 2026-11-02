@@ -1,3 +1,13 @@
+# Focused pass: candidate rejected; manual intervention required
+
+The subsequent single correction pass did not satisfy the unchanged 2× gate.
+Run worsened from 9.31× to 19.02×, so **the existing functional GLB and editable
+workbench are preserved unchanged**. See the [focused report and exact Blender edits](focused/README.md),
+[full-frame candidate measurements](focused/rejected-export-full-frame.json), and
+[new same-camera before/after render sheet](focused/before-after-contact-sheet.jpg).
+The retained and candidate renders both show unacceptable knee/underlay folding;
+the candidate does not fix the cuff/torso connection. Human approval remains pending.
+
 # Revised rig — improved intermediate, strain gate still FAILED
 
 Incorrect palm/thigh and inner-toe/pelvis masks are corrected. Five measured gates pass at 60 Hz, including foot contacts and selected rigid armor cores. **Local cuff/knee strain still exceeds 2x; production readiness and human approval remain false.** The approved static GLB is unchanged.

@@ -1,0 +1,37 @@
+{
+  "POSITION": {
+    "identical": true,
+    "maximum_absolute_difference": 0.0
+  },
+  "NORMAL": {
+    "identical": true,
+    "maximum_absolute_difference": 0.0
+  },
+  "TANGENT": {
+    "identical": false,
+    "maximum_absolute_difference": 0.00010001659393310547
+  },
+  "TEXCOORD_0": {
+    "identical": true,
+    "maximum_absolute_difference": 0.0
+  },
+  "triangles_identical": true,
+  "animation_fingerprint_before": "74434bf314453e18f86845c9795077f1f3883eb718eb1e596c648cff6ae17732",
+  "animation_fingerprint_candidate": "74434bf314453e18f86845c9795077f1f3883eb718eb1e596c648cff6ae17732",
+  "animation_tracks_identical": true,
+  "materials_identical": true,
+  "embedded_image_hashes_before": [
+    "f10035de6e468b40361e66af222d93436a1a79fdfc7727b5481a9c066b637df7",
+    "6d39e7c86827c92ebab5d4749112bc96dcde6192d45415037dd28b5f24b65373",
+    "26be96bdbbdcb28a19f6304685fe32d551f7066fc78073134fd468fe798ed56b"
+  ],
+  "embedded_image_hashes_candidate": [
+    "f10035de6e468b40361e66af222d93436a1a79fdfc7727b5481a9c066b637df7",
+    "6d39e7c86827c92ebab5d4749112bc96dcde6192d45415037dd28b5f24b65373",
+    "26be96bdbbdcb28a19f6304685fe32d551f7066fc78073134fd468fe798ed56b"
+  ],
+  "textures_identical": true,
+  "static_sha256": "52dff3dd1f96d7c7958f48a0a06013e2a0b1bb8f515183dabeed499fd584c851",
+  "retained_animated_sha256": "1bcecf7f25e35f1cfb7e4afce6542098a29c44bd9e86cd4ac281da3c3a818f76",
+  "rejected_export_sha256": "3456d69a31de976651f10dda6f8ef544b1534898b98699cdb678e4d588cdf100"
+}
