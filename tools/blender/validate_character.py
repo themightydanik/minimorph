@@ -13,7 +13,7 @@ import struct
 import sys
 
 
-def read_glb(path):
+def read_glb(path, *, require_identity_root=True):
     data = path.read_bytes()
     assert len(data) >= 20, "Truncated GLB"
     magic, version, length = struct.unpack_from("<4sII", data)
@@ -68,38 +68,39 @@ def read_glb(path):
     assert (
         len(roots) == 1
     ), "Expected one character root for the existing source interface"
-    root = document["nodes"][roots[0]]
-    assert root.get("translation", [0, 0, 0]) == [
-        0,
-        0,
-        0,
-    ], "Root translation must be applied"
-    assert root.get("scale", [1, 1, 1]) == [1, 1, 1], "Root scale must be applied"
-    assert root.get("rotation", [0, 0, 0, 1]) == [
-        0,
-        0,
-        0,
-        1,
-    ], "Root rotation must be applied"
-    if "matrix" in root:
-        assert root["matrix"] == [
-            1,
+    if require_identity_root:
+        root = document["nodes"][roots[0]]
+        assert root.get("translation", [0, 0, 0]) == [
             0,
+            0,
+            0,
+        ], "Root translation must be applied"
+        assert root.get("scale", [1, 1, 1]) == [1, 1, 1], "Root scale must be applied"
+        assert root.get("rotation", [0, 0, 0, 1]) == [
             0,
             0,
             0,
             1,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            1,
-        ], "Root matrix must be identity"
+        ], "Root rotation must be applied"
+        if "matrix" in root:
+            assert root["matrix"] == [
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+            ], "Root matrix must be identity"
     return document, len(data)
 
 

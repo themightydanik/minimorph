@@ -1,0 +1,49 @@
+{
+  "asset": "minimorph_animated_v1.glb",
+  "bytes": 28580676,
+  "sha256": "2e047ac83667a9bae14c7adb943299e6b6ba07081a91a6ca517f3da0eb98ab42",
+  "triangles": 160000,
+  "exported_vertices": 145409,
+  "bones": 20,
+  "skins": 1,
+  "clips": {
+    "Idle": {
+      "duration": 2.0,
+      "varying_channels": 8
+    },
+    "Run": {
+      "duration": 0.6000000238418579,
+      "varying_channels": 9
+    },
+    "Jump": {
+      "duration": 0.4000000059604645,
+      "varying_channels": 12
+    },
+    "Fall": {
+      "duration": 0.800000011920929,
+      "varying_channels": 2
+    },
+    "Land": {
+      "duration": 0.4000000059604645,
+      "varying_channels": 12
+    },
+    "Victory": {
+      "duration": 2.0,
+      "varying_channels": 12
+    }
+  },
+  "neutral_world_min": [
+    -0.5630382299423218,
+    0.0,
+    -0.4838324785232544
+  ],
+  "neutral_world_max": [
+    0.5632855296134949,
+    1.7999999523162842,
+    0.48363322019577026
+  ],
+  "embedded_images": 3,
+  "texture_hashes_match_static": true,
+  "neutral_geometry_max_component_error": 0.0,
+  "quality_status": "technical pass does not approve deformation; see documented pose defects"
+}

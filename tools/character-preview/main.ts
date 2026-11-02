@@ -1,4 +1,5 @@
 import * as pc from "playcanvas";
+import { animationControls } from "./animation-controls";
 import { gltfCharacterSource } from "@minimorph/game-engine";
 const canvas = document.querySelector("canvas")!;
 const status = document.querySelector<HTMLElement>("#status")!;
@@ -58,7 +59,8 @@ document
       signal: events.signal,
     }),
   );
-const source = gltfCharacterSource("/minimorph_v1.glb");
+const animated = location.pathname.endsWith("animation.html");
+const source = gltfCharacterSource(animated ? "/animation/minimorph_animated_v1.glb" : "/minimorph_v1.glb");
 let visual: Awaited<ReturnType<typeof source.load>> | undefined;
 void source
   .load(app, events.signal)
@@ -87,10 +89,12 @@ void source
     ));
     canvas.dataset.pbrChannels = `${material?.glossMapChannel}/${material?.metalnessMapChannel}`;
     canvas.dataset.ground = String(bounds.center.y - bounds.halfExtents.y);
+    canvas.dataset.bones = String(meshes[0].skinInstance?.bones.length ?? 0);
     canvas.dataset.meshes = String(meshes.length);
+    if (animated) animationControls(app, loaded.root, canvas, events.signal);
     canvas.dataset.loaded = "true";
     status.textContent =
-      "Official Meshy-derived GLB loaded via gltfCharacterSource. No rig or animation clips.";
+      animated ? "Experimental skeletal GLB: six clips; known deformation defects, not production-ready." : "Official Meshy-derived GLB loaded via gltfCharacterSource. No rig or animation clips.";
   })
   .catch((error) => {
     status.textContent = String(error);

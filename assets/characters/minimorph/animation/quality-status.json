@@ -1,0 +1,19 @@
+{
+  "human_approved": false,
+  "production_ready": false,
+  "deformation_quality_pass": false,
+  "static_reference_unchanged": true,
+  "technical_skin_clip_validation": "pass",
+  "blocking_defects": [
+    "Wrist/palm-to-body regions stretch into membranes under arm motion.",
+    "Hip/thigh seams and rigid armor need manual semantic segmentation and weight painting.",
+    "Run and Land penetrate ground; solver/contact corrections required."
+  ],
+  "plan": [
+    "Inspect manually selected wrist/paw/body regions and correct masks; repair contact topology only if inspection confirms a welded contact requiring separation. Preserve neutral silhouette and UVs.",
+    "Separate hard helmet/chest/pauldron/cuff/knee/shin regions; assign each region to one rigid bone or rigid accessory.",
+    "Retopologize elbow/hip/knee/ankle flexible bands and paint smooth normalized weights.",
+    "Add artist-authored IK foot contacts and pole targets, then revise Run/Land and verify soles across every frame.",
+    "Re-render all poses and test collisions/texture strain; seek human approval before production integration."
+  ]
+}
