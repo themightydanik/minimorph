@@ -35,9 +35,24 @@ gates is not approval of skinning or visual quality.
 ## Exact remaining defects and minimal manual workflow
 
 Open the preserved workbench. All NLA tracks are muted in the saved neutral state.
-Activate the named action and inspect the stated time (scene FPS is 30). Select IDs
-in Edit Mode with `mesh.vertices[id].select = True` after deselecting all vertices;
-use the named `Manual_*` groups for surrounding context. Inspect in solid wireframe
+Activate the named action and inspect the stated time (scene FPS is 30). Select IDs in Object Mode before switching to Edit Mode (direct mesh selections
+are not synchronized while Edit Mode owns the mesh); use the named `Manual_*`
+groups for surrounding context. For example, run this in Blender’s Text Editor:
+
+```python
+import bpy
+obj = bpy.data.objects["Minimorph_Meshy"]
+if bpy.context.object and bpy.context.object.mode != "OBJECT":
+    bpy.ops.object.mode_set(mode="OBJECT")
+bpy.ops.object.select_all(action="DESELECT")
+obj.select_set(True)
+bpy.context.view_layer.objects.active = obj
+ids = {54390, 54553}  # replace with the diagnosed edge IDs
+for vertex in obj.data.vertices:
+    vertex.select = vertex.index in ids
+bpy.ops.object.mode_set(mode="EDIT")
+```
+ Inspect in solid wireframe
 and textured material mode. Do not merge coincident vertices automatically: UV seams
 can share positions without being a single surface.
 
