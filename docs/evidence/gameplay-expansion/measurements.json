@@ -1,0 +1,126 @@
+{
+  "environment": "Cloud Chromium / forced SwiftShader software rendering, not physical-phone FPS. Run alone without regression browsers.",
+  "url": "http://127.0.0.1:5173",
+  "samples": [
+    {
+      "device": "desktop",
+      "arena": "cosmic-sprint",
+      "navigationToCharacterSelectedMs": 2601,
+      "frames": 14,
+      "durationMs": 3324.7999999999993,
+      "softwareFps": 4.2107795957651595,
+      "medianFrameMs": 233.39999999999964,
+      "p95FrameMs": 466.7000000000007,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 549.5
+        }
+      ]
+    },
+    {
+      "device": "desktop",
+      "arena": "orbit-chaos",
+      "navigationToCharacterSelectedMs": 2601,
+      "frames": 15,
+      "durationMs": 3129.9000000003725,
+      "softwareFps": 4.792485382919011,
+      "medianFrameMs": 216.59999999999854,
+      "p95FrameMs": 313.300000000374,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 549.5
+        }
+      ]
+    },
+    {
+      "device": "desktop",
+      "arena": "gravity-mayhem",
+      "navigationToCharacterSelectedMs": 2601,
+      "frames": 17,
+      "durationMs": 3020.3999999998123,
+      "softwareFps": 5.628393590253297,
+      "medianFrameMs": 183.3000000000029,
+      "p95FrameMs": 333.40000000000146,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 549.5
+        }
+      ]
+    },
+    {
+      "device": "mobile-emulation",
+      "arena": "cosmic-sprint",
+      "navigationToCharacterSelectedMs": 2533,
+      "frames": 15,
+      "durationMs": 3373.799999999628,
+      "softwareFps": 4.4460252534239295,
+      "medianFrameMs": 216.60000000000036,
+      "p95FrameMs": 433.3000000000011,
+      "bufferWidth": 618,
+      "bufferHeight": 1258,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 313.90000000037253
+        }
+      ]
+    },
+    {
+      "device": "mobile-emulation",
+      "arena": "orbit-chaos",
+      "navigationToCharacterSelectedMs": 2533,
+      "frames": 15,
+      "durationMs": 3111.699999999815,
+      "softwareFps": 4.820516116592503,
+      "medianFrameMs": 216.60000000000218,
+      "p95FrameMs": 466.59999999999854,
+      "bufferWidth": 618,
+      "bufferHeight": 1258,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 313.90000000037253
+        }
+      ]
+    },
+    {
+      "device": "mobile-emulation",
+      "arena": "gravity-mayhem",
+      "navigationToCharacterSelectedMs": 2533,
+      "frames": 13,
+      "durationMs": 3213.0999999999985,
+      "softwareFps": 4.045936945628834,
+      "medianFrameMs": 233.29999999999927,
+      "p95FrameMs": 383.3000000000029,
+      "bufferWidth": 618,
+      "bufferHeight": 1258,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 313.90000000037253
+        }
+      ]
+    }
+  ]
+}

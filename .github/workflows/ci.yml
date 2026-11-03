@@ -6,10 +6,10 @@ on:
 permissions:
   contents: read
 jobs:
-  validate:
+  core:
+    name: Core checks and packages
     runs-on: ubuntu-latest
-    # Includes full skinned desktop/mobile course playback on software rendering.
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,17 +24,45 @@ jobs:
       - run: python -m pip install -r tools/blender/requirements-test.txt
       - run: npm ci
       - run: npm run check
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:browser
       - uses: actions/upload-artifact@v4
         with:
           name: minima-minidapp
           path: artifacts/*.mds.zip
-      - uses: actions/upload-artifact@v4
-        if: failure()
+  browser:
+    name: Browser (${{ matrix.project }})
+    needs: core
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [desktop, mobile]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          name: browser-results
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser -- --project=${{ matrix.project }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-results-${{ matrix.project }}
           path: test-results/
+  # Keep the original required check name; neither project can silently be skipped.
+  validate:
+    needs: [core, browser]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Require core and both browser projects
+        env:
+          CORE_RESULT: ${{ needs.core.result }}
+          BROWSER_RESULT: ${{ needs.browser.result }}
+        run: test "$CORE_RESULT" = success && test "$BROWSER_RESULT" = success
 
   rig-deformation-quality:
     # Accepted temporary art defects: functional validation above remains blocking.

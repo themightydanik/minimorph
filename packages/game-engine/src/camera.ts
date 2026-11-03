@@ -1,4 +1,5 @@
-import { spawn, checkpoints } from "@minimorph/game-content";
+import { legacyCourse } from "@minimorph/game-content";
+import type { CourseDefinition } from "@minimorph/game-content";
 import type { PlayerState } from "./physics";
 export interface CameraPose {
   x: number;
@@ -29,8 +30,9 @@ export function updateCamera(
   yaw: number,
   aspect: number,
   dt: number,
+  course: CourseDefinition = legacyCourse,
 ): void {
-  const safe = checkpoints[player.checkpoint - 1] ?? spawn;
+  const safe = course.checkpoints[player.checkpoint - 1] ?? course.spawn;
   const targetY = Math.max(safe.y - 0.8, player.y) + 1;
   // Hold above the course while falling; damp the look target as well as the eye.
   pose.lookX = damp(pose.lookX, player.x, 7, dt, 24);

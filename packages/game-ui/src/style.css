@@ -396,3 +396,143 @@ button {
     top: 140px;
   }
 }
+
+/* Orbit Circuit: shared host UI, compact racing HUD and accessible arena cards. */
+[hidden] { display: none !important; }
+html, body { touch-action: manipulation; }
+.game-shell { --arena-accent: #48f5dc; }
+.brand span { color: var(--arena-accent); }
+.mission { top: 110px; left: 28px; max-width: 44%; }
+.mission h1 { font-size: clamp(20px, 2.5vw, 32px); letter-spacing: -1px; margin: 8px 0; }
+.mission .eyebrow { display: none; }
+.mission p { margin: 0; font-size: 10px; letter-spacing: 2px; }
+.telemetry { top: 110px; right: 28px; grid-template-columns: repeat(2, auto); gap: 16px 24px; }
+.telemetry strong { font-size: 22px; font-variant-numeric: tabular-nums; }
+.race-progress { position: absolute; top: 190px; left: 28px; width: min(260px, 38%); font-size: 10px; color: var(--arena-accent); }
+.race-progress > div { background: #ffffff1c; height: 4px; border-radius: 8px; overflow: hidden; margin-top: 7px; }
+.race-progress i { display: block; height: 100%; background: var(--arena-accent); transition: width .1s linear; }
+.arena-menu { font-size: 12px; padding: 11px 14px; margin-left: auto; }
+.screen { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; padding: 110px 28px 90px; background: #071121b8; overflow-y: auto; touch-action: pan-y; }
+.selection { flex-direction: column; background: radial-gradient(ellipse at 65% 20%, #36508088, #071121ee 70%); }
+.selection-heading { width: min(1080px, 100%); }
+.screen h2 { font-size: clamp(30px, 4vw, 50px); letter-spacing: -2px; line-height: 1.06; margin: 14px 0; }
+.selection-heading h2 { font-size: clamp(34px, 4.8vw, 64px); }
+.selection-heading p { max-width: 540px; margin: 10px 0 25px; }
+.level-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; width: min(1080px, 100%); }
+.level-card { position: relative; display: flex; flex-direction: column; align-items: start; text-align: left; min-height: 225px; overflow: hidden; padding: 22px; background: linear-gradient(155deg, color-mix(in srgb, var(--arena-deck), #14203c 65%), #101a31); border: 1px solid color-mix(in srgb, var(--arena-color), transparent 60%); border-radius: 20px; box-shadow: 0 12px 45px #0003; }
+.level-card::after { content: ''; position: absolute; width: 150px; height: 150px; border: 24px solid #ffffff06; border-radius: 50%; right: -45px; top: 40px; pointer-events: none; }
+.level-card:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--arena-color); background: linear-gradient(155deg, var(--arena-deck), #13203b); }
+.level-number { font-size: 40px; line-height: 1; color: var(--arena-color); font-weight: 800; }
+.level-difficulty { position: absolute; top: 24px; right: 20px; font-size: 9px; letter-spacing: 2px; border: 1px solid #ffffff33; border-radius: 20px; padding: 6px 9px; }
+.level-card strong { font-size: 23px; letter-spacing: -1px; margin: 17px 0 8px; }
+.level-description { font-size: 12px; line-height: 1.6; color: #c2cee4; padding-right: 15px; }
+.level-record { margin-top: auto; padding-top: 20px; font-size: 9px; line-height: 1.6; color: var(--arena-color); letter-spacing: 1px; }
+.level-card:disabled { opacity: .48; cursor: default; }
+.storage-status { font-size: 10px; color: #9aadc9; margin-top: 18px; }
+.panel { width: min(420px, 100%); padding: 30px; background: linear-gradient(145deg, #213b57f5, #101d34fa); border: 1px solid #84afc04d; border-radius: 24px; box-shadow: 0 20px 100px #0005; }
+.panel button { margin: 8px 8px 0 0; font-size: 12px; }
+.primary { background: var(--arena-accent); border-color: transparent; color: #102432; font-weight: 800; }
+.primary:hover { background: #efffff; }
+.route-list { font-size: 11px; color: var(--arena-accent); border-top: 1px solid #ffffff1a; border-bottom: 1px solid #ffffff1a; padding: 12px 0; }
+.brief-controls { font-size: 11px; }
+.results { background: transparent; justify-content: flex-end; pointer-events: none; }
+.results .panel { pointer-events: auto; width: 340px; }
+.results h2 { font-size: 36px; }
+.result-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0; }
+.result-stats span { font-size: 9px; letter-spacing: 1px; color: #abbed5; }
+.result-stats strong { display: block; font-size: 24px; color: white; margin-top: 6px; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.result-badge { color: var(--arena-accent); font-size: 10px; }
+.countdown { position: absolute; z-index: 4; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; background: #07112144; }
+.countdown strong { font-size: clamp(90px, 16vw, 180px); font-weight: 900; letter-spacing: -8px; color: var(--arena-accent); text-shadow: 0 12px 55px #0008; }
+.countdown span { letter-spacing: 4px; font-size: 10px; }
+[data-phase="selection"] .mission, [data-phase="selection"] .telemetry, [data-phase="selection"] .race-progress,
+[data-phase="prepare"] .mission, [data-phase="prepare"] .telemetry, [data-phase="prepare"] .race-progress { visibility: hidden; }
+[data-phase="selection"] .touch-controls, [data-phase="prepare"] .touch-controls, [data-phase="paused"] .touch-controls, [data-phase="finished"] .touch-controls { visibility: hidden; }
+[data-phase="selection"] .camera-controls, [data-phase="prepare"] .camera-controls, [data-phase="paused"] .camera-controls,
+[data-phase="selection"] .message, [data-phase="prepare"] .message { visibility: hidden; }
+header, footer { z-index: 6; }
+footer { pointer-events: none; }
+footer button, footer a { pointer-events: auto; }
+[data-phase="selection"] footer .restart, [data-phase="selection"] footer .arena-menu { visibility: hidden; }
+@media (max-width: 700px) {
+  header { inset: max(20px, env(safe-area-inset-top)) 20px auto; }
+  .target { font-size: 7px; letter-spacing: 1px; max-width: 45%; }
+  .mission { top: 88px; left: 20px; max-width: 48%; }
+  .mission h1 { font-size: 20px; }
+  .mission p { display: block; font-size: 8px; letter-spacing: 1px; }
+  .telemetry { top: 87px; right: 20px; gap: 9px 16px; font-size: 7px; }
+  .telemetry strong { font-size: 17px; margin-top: 4px; }
+  .race-progress { top: 161px; left: 20px; }
+  .camera-controls { top: 187px; }
+  .camera-controls button { width: 48px; height: 48px; font-size: 21px; }
+  .screen { padding: 90px 20px 74px; }
+  .selection-heading h2 { font-size: 31px; margin: 8px 0; }
+  .selection-heading p { font-size: 11px; line-height: 1.5; margin-bottom: 15px; }
+  .level-grid { grid-template-columns: 1fr; gap: 10px; }
+  .level-card { min-height: 120px; padding: 14px 18px 14px 75px; border-radius: 16px; }
+  .level-number { position: absolute; top: 17px; left: 17px; font-size: 32px; }
+  .level-card strong { font-size: 20px; margin: 0 70px 6px 0; }
+  .level-difficulty { top: 15px; right: 14px; font-size: 7px; padding: 4px 6px; }
+  .level-description { font-size: 10px; padding-right: 0; line-height: 1.5; }
+  .level-record { padding-top: 8px; font-size: 8px; }
+  .storage-status { font-size: 9px; margin: 12px 0 0; }
+  .panel { padding: 24px; }
+  .panel h2 { font-size: 32px; }
+  .results { justify-content: center; align-items: flex-start; padding-top: 180px; }
+  .results .panel { width: min(340px, 100%); }
+  .results .panel h2 { font-size: 28px; margin: 9px 0; }
+  .result-stats strong { font-size: 21px; }
+  .host-status { font-size: 8px; max-width: 40%; }
+  footer { gap: 8px; }
+  footer button { font-size: 10px !important; padding: 10px !important; }
+}
+@media (max-height: 700px) and (max-width: 700px) {
+  .selection-heading h2 { font-size: 26px; }
+  .selection-heading p, .level-description { display: none; }
+  .level-card { min-height: 85px; }
+  .selection-heading { margin-top: auto; }
+}
+@media (max-height: 500px) {
+  .selection { justify-content: flex-start; padding-top: 86px; }
+  .selection-heading h2 { font-size: 25px; margin: 4px 0; }
+  .selection-heading h2 br, .selection-heading p { display: none; }
+  .level-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .level-card { min-height: 140px; padding: 14px; }
+  .level-number { position: static; font-size: 24px; }
+  .level-card strong { font-size: 18px; margin: 10px 0; }
+  .level-description { display: none; }
+  .level-record { padding-top: 5px; font-size: 8px; }
+  .level-difficulty { font-size: 7px; top: 15px; right: 12px; }
+  .mission { top: 78px; }
+  .telemetry { top: 77px; }
+  .race-progress { top: 147px; }
+  .camera-controls { top: 20px; }
+  .prepare, .pause { padding: 80px 20px 60px; }
+  .panel { padding: 18px 24px; }
+  .panel h2 { font-size: 26px; margin: 8px 0; }
+  .panel p { margin: 8px 0; line-height: 1.4; }
+  .brief-controls { display: none; }
+  .results { padding: 80px 20px 60px; align-items: center; justify-content: flex-end; }
+  .results .panel { width: 310px; }
+  .results h2 br { display: none; }
+  .result-stats { margin: 8px 0; gap: 6px; }
+  .result-stats strong { font-size: 18px; }
+  .results .storage-status { display: none; }
+}
+
+[data-phase="finished"] .telemetry { visibility: hidden; }
+
+footer button, .panel button { min-height: 48px; }
+@media (max-width: 700px) and (min-height: 501px) {
+  .results { align-items: flex-end; padding: 0 20px max(86px, calc(env(safe-area-inset-bottom) + 70px)); }
+  .results .panel { width: min(372px, 100%); padding: 16px 18px; }
+  .results .panel h2 { font-size: 22px; margin: 6px 0; letter-spacing: -1px; }
+  .results h2 br { display: none; }
+  .results .eyebrow { font-size: 8px; }
+  .results .result-badge { font-size: 8px; margin: 6px 0; line-height: 1.4; }
+  .results .result-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 6px; }
+  .results .result-stats strong { font-size: 18px; }
+  .results .result-stats span { font-size: 7px; }
+  .results .panel button { font-size: 11px; padding: 8px 9px; margin: 6px 6px 0 0; }
+  .results .storage-status { font-size: 9px; margin-top: 9px; line-height: 1.3; }
+}

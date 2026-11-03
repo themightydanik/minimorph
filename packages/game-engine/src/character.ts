@@ -133,7 +133,7 @@ export function createProceduralCat(
     },
   };
 }
-/** Optional local GLB/GLTF source. No model is downloaded by the default game. */
+/** Generic static GLB/GLTF source; the animated source adds gameplay clip control. */
 export function gltfCharacterSource(url: string, scale = 1): CharacterSource {
   return {
     load(app, signal) {
@@ -286,7 +286,8 @@ export function animatedCharacterSource(config: AnimatedCharacterConfig): Charac
         canvas.dataset.character = config.version;
         return {
           root,
-          update(state) {
+          update(state, dt) {
+            root.anim!.speed = dt > 0 ? 1 : 0;
             const next = characterClip(state);
             if (next !== current) {
               root.anim!.baseLayer!.transition(next, current ? 0.08 : 0, 0);

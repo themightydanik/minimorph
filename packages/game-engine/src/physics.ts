@@ -1,12 +1,20 @@
 import {
   platforms,
-  spawn,
-  finish,
-  checkpoints,
+  legacyCourse,
   obstacles,
 } from "@minimorph/game-content";
-import type { Platform, MovingObstacle } from "@minimorph/game-content";
+import type { ArenaConfig, CourseDefinition, Platform, MovingObstacle } from "@minimorph/game-content";
+import { advanceCheckpoints, respawnPoint } from "./checkpoints";
+import type { CollisionSurface } from "./obstacles";
+import { arenaSurfaces, surfaceContains, supportDisplacement, mechanismContact, sampleMechanism } from "./obstacles";
 export interface PlayerState {
+  supportId: string | null;
+  lastHazard: string | null;
+  knockTime: number;
+  knockX: number;
+  knockZ: number;
+  eventSerial: number;
+  lastEvent: "jump" | "land" | "hit" | "pad" | null;
   x: number;
   y: number;
   z: number;
@@ -48,9 +56,10 @@ export const JUMP_BUFFER_TIME = 0.12;
 export const RESPAWN_DELAY = 0.4;
 export const PLAYER_RADIUS = 0.25;
 export const idleInput: Input = { x: 0, z: 0, jump: false };
-export function createPlayer(): PlayerState {
+export function createPlayer(course: CourseDefinition = legacyCourse): PlayerState {
   return {
-    ...spawn,
+    ...course.spawn,
+    supportId: null, lastHazard: null, knockTime: 0, knockX: 0, knockZ: 0, eventSerial: 0, lastEvent: null,
     vx: 0,
     vy: 0,
     vz: 0,
@@ -109,9 +118,10 @@ export function beginRecovery(
   state.jumpBuffer = state.coyote = 0;
   state.grounded = false;
 }
-function restoreCheckpoint(state: PlayerState): void {
-  const point = checkpoints[state.checkpoint - 1] ?? spawn;
+function restoreCheckpoint(state: PlayerState, course: CourseDefinition): void {
+  const point = respawnPoint(state, course);
   Object.assign(state, {
+    supportId: null, knockTime: 0, knockX: 0, knockZ: 0,
     x: point.x,
     y: point.y,
     z: point.z,
@@ -151,8 +161,10 @@ export function stepPlayer(
   state: PlayerState,
   input: Input,
   dt: number,
-  surfaces: readonly Platform[] = platforms,
+  surfaces: readonly CollisionSurface[] = platforms,
   hazards: readonly MovingObstacle[] = obstacles,
+  course: CourseDefinition = legacyCourse,
+  evaluateCourse = true,
 ): void {
   if (state.won) return;
   state.elapsed += dt;
@@ -161,7 +173,7 @@ export function stepPlayer(
   state.protection = Math.max(0, state.protection - dt);
   if (state.recovery) {
     state.respawnTimer -= dt;
-    if (state.respawnTimer <= 0) restoreCheckpoint(state);
+    if (state.respawnTimer <= 0) restoreCheckpoint(state, course);
     return;
   }
   state.coyote = state.grounded ? COYOTE_TIME : Math.max(0, state.coyote - dt);
@@ -172,12 +184,15 @@ export function stepPlayer(
   approachVelocity(state, movement.x * SPEED, movement.z * SPEED, dt);
   if (state.jumpBuffer > 0 && state.coyote > 0) {
     state.vy = JUMP_SPEED;
+    state.lastEvent = "jump"; state.eventSerial++;
     state.grounded = false;
     state.jumpBuffer = state.coyote = 0;
   }
   const oldY = state.y;
-  state.x += state.vx * dt;
-  state.z += state.vz * dt;
+  state.x += (state.vx + state.knockX) * dt;
+  state.z += (state.vz + state.knockZ) * dt;
+  state.knockTime = Math.max(0, state.knockTime - dt);
+  state.knockX *= Math.exp(-5 * dt); state.knockZ *= Math.exp(-5 * dt);
   if (Math.hypot(state.vx, state.vz) > 0.05) {
     const target = Math.atan2(-state.vx, -state.vz);
     state.heading = wrapAngle(
@@ -192,17 +207,18 @@ export function stepPlayer(
   let landing: Platform | undefined;
   for (const p of surfaces) {
     if (
-      Math.abs(state.x - p.x) <= p.width / 2 &&
-      Math.abs(state.z - p.z) <= p.depth / 2 &&
-      oldY >= p.y - 0.001 &&
+      surfaceContains(p, state.x, state.z) &&
+      oldY >= (p.previousY ?? p.y) - 0.001 &&
       state.y <= p.y &&
-      state.vy <= 0 &&
+      state.vy <= (dt > 0 ? (p.y - (p.previousY ?? p.y)) / dt : 0) &&
       (!landing || p.y > landing.y)
     )
       landing = p;
   }
+  state.supportId = landing?.id ?? null;
   if (landing) {
     if (!wasGrounded) {
+      state.lastEvent = "land"; state.eventSerial++;
       state.landingTime = 0.2;
       state.landingImpact = Math.min(1, -state.vy / 10);
     }
@@ -234,25 +250,44 @@ export function stepPlayer(
     beginRecovery(state, "fall");
     return;
   }
-  if (state.grounded) {
-    // Ordered activation prevents shortcuts from unlocking later respawn points.
-    const checkpoint = checkpoints[state.checkpoint];
-    if (
-      checkpoint &&
-      Math.abs(state.y - checkpoint.y) < 0.01 &&
-      Math.hypot(state.x - checkpoint.x, state.z - checkpoint.z) <
-        checkpoint.radius
-    ) {
-      state.checkpoint++;
-      state.checkpointFlash = 1.2;
-    }
-    if (
-      state.checkpoint === checkpoints.length &&
-      Math.abs(state.y - finish.y) < 0.01 &&
-      Math.hypot(state.x - finish.x, state.z - finish.z) < finish.radius
-    ) {
-      state.won = true;
-      state.vx = state.vy = state.vz = 0;
+  if (evaluateCourse) advanceCheckpoints(state, course);
+}
+
+/** Extends the original controller; rendering uses the exact same mechanism sampler. */
+export function stepArenaPlayer(state: PlayerState, input: Input, dt: number, arena: ArenaConfig): void {
+  if (state.won) return;
+  if (state.grounded && !state.supportId && !state.recovery) {
+    state.supportId = arenaSurfaces(arena, state.elapsed).find(p => surfaceContains(p, state.x, state.z) && Math.abs(p.y - state.y) < 0.01)?.id ?? null;
+  }
+  if (state.grounded && state.supportId && !state.recovery) {
+    const support = arena.mechanisms.find(o => o.id === state.supportId);
+    if (support) {
+      const delta = supportDisplacement(support, state.elapsed, dt, state.x, state.z);
+      state.x += delta.x; state.y += delta.y; state.z += delta.z;
     }
   }
+  const surfaces = arenaSurfaces(arena, state.elapsed + dt, state.elapsed);
+  // A carried foot is already in the support's new frame; airborne contacts use swept Y.
+  if (state.grounded) for (const surface of surfaces) if (surface.id === state.supportId) surface.previousY = surface.y;
+  stepPlayer(state, input, dt, surfaces, arena.obstacles, arena, false);
+  if (state.recovery || state.won) return;
+  for (const o of arena.mechanisms) {
+    if (o.kind === "jump-pad" && state.grounded && Math.abs(state.y - o.y) < 0.05 && Math.abs(state.x - o.x) < o.width / 2 && Math.abs(state.z - o.z) < o.depth / 2) {
+      state.vy = o.boost; state.grounded = false; state.coyote = state.jumpBuffer = 0;
+      state.supportId = null; state.lastEvent = "pad"; state.eventSerial++;
+    }
+    if (state.protection <= 0 && mechanismContact(o, state.elapsed, state)) {
+      const p = sampleMechanism(o, state.elapsed);
+      let dx = state.x - p.x, dz = state.z - p.z;
+      if (Math.hypot(dx, dz) < 0.05) { dx = Math.cos(p.angle + Math.PI / 2); dz = Math.sin(p.angle + Math.PI / 2); }
+      const length = Math.hypot(dx, dz);
+      state.lastHazard = o.id;
+      state.knockX = dx / length * 8; state.knockZ = dz / length * 8;
+      state.vy = Math.max(state.vy, 4.8); state.grounded = false; state.supportId = null;
+      state.knockTime = 0.55; state.protection = 0.8; state.obstacleHits++;
+      state.coyote = state.jumpBuffer = 0; state.lastEvent = "hit"; state.eventSerial++;
+      break;
+    }
+  }
+  advanceCheckpoints(state, arena);
 }

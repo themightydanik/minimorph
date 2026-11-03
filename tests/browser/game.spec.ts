@@ -1,3 +1,4 @@
+import { chooseAndStart } from "../helpers/race-ui";
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { courseRun } from "../helpers/course-run";
@@ -16,6 +17,7 @@ for (const [target, port] of [
     const canvas = page.locator("canvas");
     await expect(canvas).toHaveAttribute("data-ready", "true");
     await expect(canvas).toHaveAttribute("data-character", "minimorph-animated-v1-temporary", { timeout: 30000 });
+    await chooseAndStart(page);
     await expect(page.locator(".host-status")).toContainText(
       "Browser practice",
     );
@@ -179,8 +181,7 @@ async function startControlledRun(page: Page, port: number) {
       canvas.dataset.seenClips = [...seen].join(',');
     }).observe(canvas, { attributes: true, attributeFilter: ['data-character-active', 'data-character-clip'] });
   });
-  await page.getByRole("button", { name: "Restart" }).click();
-  await page.clock.runFor(32);
+  await chooseAndStart(page, "Cosmic Sprint", true);
 }
 async function playSegments(page: Page, count: number) {
   const held = new Set<string>();
@@ -219,7 +220,7 @@ for (const [target, port] of [
       path: `test-results/${target}-finish-${page.viewportSize()!.width}.png`,
     });
     await page.getByRole("button", { name: "Restart" }).click();
-    await page.clock.runFor(16);
+    await page.clock.fastForward(3100);
     await expect(page.locator("[data-checkpoints]")).toHaveText("0 / 2");
     await expect(page.locator("#app")).not.toHaveClass(/celebrating/);
     await playSegments(page, 2);
@@ -286,6 +287,7 @@ for (const port of [5173, 5174]) {
     await page.goto(`http://127.0.0.1:${port}`);
     const canvas = page.locator('canvas');
     await expect(canvas).toHaveAttribute('data-character', 'procedural-fallback', { timeout: 30000 });
+    await chooseAndStart(page);
     await canvas.focus();
     await page.keyboard.press('Space');
     await expect(canvas).toHaveAttribute('aria-description', 'Airborne');
