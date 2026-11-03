@@ -99,6 +99,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
   function selectArena(id: string) {
     if (!progression.isUnlocked(id)) return;
     clearInput(); won = false; checkpoint = recoveries = obstacleHits = respawns = 0;
+    announce("Reach the finish beacon");
     game?.selectLevel(id);
     canvas.focus();
   }

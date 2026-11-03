@@ -27,6 +27,7 @@ test('whole circuit: countdown, all arenas, physical routes, records, unlocks an
   await page.clock.fastForward(1000); await expect(page.locator('.countdown strong')).toHaveText('1');
   await page.clock.fastForward(1100); await expect(canvas).toHaveAttribute('data-phase','racing');
   await expect(canvas).toHaveAttribute('data-arena',id);
+  await expect(page.getByRole('status')).toHaveText('Reach the finish beacon');
   await canvas.focus();
   await playRun(page,arenaRuns[id],async segment=>{
    if(segment===4)await page.screenshot({path:`test-results/pr5-${id}-${info.project.name}.png`});
@@ -62,6 +63,7 @@ for(const port of [5173,5174]) test(`arena switching and safe focus recovery on 
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  for(const [id,name] of circuit) {
   await chooseAndStart(page,name,true); await expect(canvas).toHaveAttribute('data-arena',id);
+  await expect(page.getByRole('status')).toHaveText('Reach the finish beacon');
   await page.keyboard.down('KeyW'); await page.clock.runFor(200);
   await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
   await expect(canvas).toHaveAttribute('data-phase','paused');
