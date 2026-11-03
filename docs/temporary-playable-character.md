@@ -39,3 +39,5 @@ Node 24.19.0, Python 3.12.14, Chromium 154.0.8037.57 on Debian 13, SwiftShader s
 - Approved static GLB and editable Blender workbench remain byte-for-byte unchanged. Gameplay, checkpoint recovery, hazards, controls, camera and Telegram/read-only Minima bridge checks pass.
 
 Ready for review/merge as a **temporary playable character**, with the documented visual defects accepted by the product decision. Final deformation approval and physical-device performance acceptance remain future work.
+
+First GitHub run: [41657676368](https://github.com/themightydanik/minimorph/actions/runs/41657676368) passed all game-level scenarios (23/24 total); the legacy mobile animation viewer hit its overall 90s timeout. Its overall budget was raised to 180s without removing any clip, motion, pause or screenshot assertions. The viewer is a separate diagnostic route, not the shipped game.

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 test('experimental skeletal GLB switches and plays actual animation clips', async ({ page }, info) => {
-  test.setTimeout(90000);
+  // Six clips plus full-resolution captures need headroom on CI software GPUs.
+  test.setTimeout(180000);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
