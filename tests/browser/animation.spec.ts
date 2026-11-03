@@ -38,7 +38,7 @@ test('experimental skeletal GLB switches and plays actual animation clips', asyn
     await expect(canvas).toHaveAttribute('data-active-animation', name);
     if (name !== 'Fall') await expect(page.locator('#loop')).toBeDisabled();
   }
-  await expect.poll(async () => Number(await canvas.getAttribute('data-animation-time'))).toBeGreaterThan(0.8);
+  await expect.poll(async () => Number(await canvas.getAttribute('data-animation-time')), { timeout: 15000 }).toBeGreaterThan(0.8);
   await page.getByRole('button', { name: 'Pause', exact: true }).click();
   await expect(canvas).toHaveAttribute('data-playing', 'false');
   await page.screenshot({ path: `test-results/animation-victory-${info.project.name}.png`, fullPage: true });

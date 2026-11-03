@@ -16,7 +16,7 @@ import type { Input, PlayerState } from "./physics";
 import { createProceduralCat, loadCharacterVisual } from "./character";
 import type { CharacterSource } from "./character";
 import { createCameraPose, updateCamera } from "./camera";
-export { gltfCharacterSource } from "./character";
+export { animatedCharacterSource, gltfCharacterSource } from "./character";
 export type { CharacterSource, CharacterVisual } from "./character";
 export { createPlayer, stepPlayer } from "./physics";
 export type { PlayerState } from "./physics";

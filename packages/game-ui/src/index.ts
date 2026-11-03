@@ -1,4 +1,5 @@
-import { createGame } from "@minimorph/game-engine";
+import { characterConfig } from "./character-config";
+import { animatedCharacterSource, createGame } from "@minimorph/game-engine";
 import type { Game } from "@minimorph/game-engine";
 export interface MountedGame {
   destroy(): void;
@@ -16,6 +17,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     <nav class="touch-controls" aria-label="Touch controls"><div class="dpad"><button data-key="ArrowUp" aria-label="Move forward">▲</button><button data-key="ArrowLeft" aria-label="Move left">◀︎</button><button data-key="ArrowDown" aria-label="Move backward">▼</button><button data-key="ArrowRight" aria-label="Move right">▶︎</button></div><button class="jump" data-key="Space" aria-label="Jump">JUMP</button></nav>
   </main>`;
   const canvas = root.querySelector("canvas")!;
+  canvas.dataset.character = "procedural-loading";
   const message = root.querySelector<HTMLElement>(".message")!;
   const host = root.querySelector<HTMLElement>(".host-status")!;
   const checkpointCounter = root.querySelector("[data-checkpoints]")!;
@@ -180,6 +182,10 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
               : "Airborne",
         );
         if (!canvas.dataset.ready) canvas.dataset.ready = "true";
+      },
+      {
+        character: animatedCharacterSource(characterConfig),
+        onCharacterError: () => { canvas.dataset.character = "procedural-fallback"; },
       },
     );
     message.textContent = "Reach the finish beacon";

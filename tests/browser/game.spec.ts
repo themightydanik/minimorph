@@ -15,6 +15,7 @@ for (const [target, port] of [
     await page.goto(`http://127.0.0.1:${port}`);
     const canvas = page.locator("canvas");
     await expect(canvas).toHaveAttribute("data-ready", "true");
+    await expect(canvas).toHaveAttribute("data-character", "minimorph-animated-v1-temporary", { timeout: 30000 });
     await expect(page.locator(".host-status")).toContainText(
       "Browser practice",
     );
@@ -161,14 +162,23 @@ async function setKeys(page: Page, keys: string[], held: Set<string>) {
     }
 }
 async function startControlledRun(page: Page, port: number) {
-  // Pause a fixed epoch before navigation. Reading Date.now() in one protocol
-  // call and pausing only 100ms ahead in another races a busy CI renderer.
+  // Load with a live frame loop, then use a fixed epoch for reproducible controls.
   await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
-  await page.clock.pauseAt(new Date("2026-01-01T00:01:00Z"));
   await page.route("https://telegram.org/**", (route) => route.abort());
   await page.goto(`http://127.0.0.1:${port}`);
+  // Let GLB decode/upload finish with a live frame loop before freezing time.
+  await expect(page.locator("canvas")).toHaveAttribute("data-character", "minimorph-animated-v1-temporary", { timeout: 30000 });
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.clock.runFor(100);
   await expect(page.locator("canvas")).toHaveAttribute("data-ready", "true");
+  await page.evaluate(() => {
+    const canvas = document.querySelector('canvas')!;
+    const seen = new Set<string>();
+    new MutationObserver(() => {
+      if (canvas.dataset.characterActive === canvas.dataset.characterClip) seen.add(canvas.dataset.characterActive!);
+      canvas.dataset.seenClips = [...seen].join(',');
+    }).observe(canvas, { attributes: true, attributeFilter: ['data-character-active', 'data-character-clip'] });
+  });
   await page.getByRole("button", { name: "Restart" }).click();
   await page.clock.runFor(32);
 }
@@ -188,7 +198,8 @@ for (const [target, port] of [
   test(`${target}: completes course, celebrates, restarts and restores checkpoint after a fall`, async ({
     page,
   }) => {
-    test.setTimeout(60000);
+    // Full skinned course playback is slower on CI software rendering.
+    test.setTimeout(180000);
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await startControlledRun(page, port);
@@ -197,6 +208,10 @@ for (const [target, port] of [
     await expect(page.locator("[data-falls]")).toHaveText("0");
     await expect(page.getByRole("status")).toContainText("Orbit complete");
     await expect(page.locator("#app")).toHaveClass(/celebrating/);
+    await page.clock.runFor(100);
+    await expect(page.locator('canvas')).toHaveAttribute('data-character-active', 'Victory');
+    const seen = (await page.locator('canvas').getAttribute('data-seen-clips'))!.split(',');
+    expect(seen).toEqual(expect.arrayContaining(['Idle', 'Run', 'Jump', 'Fall', 'Land', 'Victory']));
     const finishTime = await page.locator("[data-time]").textContent();
     await page.clock.runFor(500);
     await expect(page.locator("[data-time]")).toHaveText(finishTime!);
@@ -240,7 +255,8 @@ for (const [target, port] of [
   test(`${target}: sweeper collision gives readable feedback and checkpoint recovery`, async ({
     page,
   }) => {
-    test.setTimeout(60000);
+    // Full skinned course playback is slower on CI software rendering.
+    test.setTimeout(180000);
     await startControlledRun(page, port);
     await playSegments(page, 4);
     await page.keyboard.down("KeyW");
@@ -261,5 +277,20 @@ for (const [target, port] of [
       "aria-description",
       "On platform",
     );
+  });
+}
+
+for (const port of [5173, 5174]) {
+  test(`character load failure preserves playable fallback on ${port}`, async ({ page }) => {
+    await page.route('**/*minimorph_animated_v1*.glb', route => route.abort());
+    await page.goto(`http://127.0.0.1:${port}`);
+    const canvas = page.locator('canvas');
+    await expect(canvas).toHaveAttribute('data-character', 'procedural-fallback', { timeout: 30000 });
+    await canvas.focus();
+    await page.keyboard.press('Space');
+    await expect(canvas).toHaveAttribute('aria-description', 'Airborne');
+    await expect(canvas).toHaveAttribute('aria-description', 'On platform');
+    await page.getByRole('button', { name: 'Restart' }).click();
+    await expect(page.locator('[data-falls]')).toHaveText('0');
   });
 }

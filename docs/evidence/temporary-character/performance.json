@@ -1,0 +1,21 @@
+{
+  "environment": "Cloud Chromium SwiftShader software renderer; Pixel 7 emulation; concurrent regression suite; not physical-device FPS",
+  "results": [
+    {
+      "name": "desktop",
+      "loadMs": 4199,
+      "frames": 7,
+      "elapsedMs": 3835.799999999983,
+      "medianFrameMs": 483.3000000000002,
+      "p95FrameMs": 933.3000000000002
+    },
+    {
+      "name": "mobile",
+      "loadMs": 4454,
+      "frames": 8,
+      "elapsedMs": 3593.9999999999827,
+      "medianFrameMs": 483.39999999999964,
+      "p95FrameMs": 716.6999999999998
+    }
+  ]
+}
