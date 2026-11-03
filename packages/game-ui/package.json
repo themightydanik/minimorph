@@ -8,6 +8,7 @@
     "./style.css": "./src/style.css"
   },
   "dependencies": {
-    "@minimorph/game-engine": "*"
+    "@minimorph/game-engine": "*",
+    "@minimorph/game-content": "*"
   }
 }

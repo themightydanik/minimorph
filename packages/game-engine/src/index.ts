@@ -1,30 +1,40 @@
 import * as pc from "playcanvas";
 import {
-  platforms,
-  finish,
-  checkpoints,
-  obstacles,
-} from "@minimorph/game-content";
-import {
   createPlayer,
-  stepPlayer,
+  stepArenaPlayer,
   FIXED_STEP,
-  obstaclePosition,
   wrapAngle,
 } from "./physics";
 import type { Input, PlayerState } from "./physics";
 import { createProceduralCat, loadCharacterVisual } from "./character";
 import type { CharacterSource } from "./character";
 import { createCameraPose, updateCamera } from "./camera";
+import { LevelManager } from "./levels";
+import { RaceSession } from "./session";
+import type { RaceSnapshot } from "./session";
+import { createArenaScene } from "./arena-scene";
+import { createEffects } from "./effects";
+export { RaceSession } from "./session";
+export type { RaceSnapshot, RacePhase } from "./session";
+export { LevelManager } from "./levels";
+export { stepArenaPlayer } from "./physics";
 export { animatedCharacterSource, gltfCharacterSource } from "./character";
 export type { CharacterSource, CharacterVisual } from "./character";
 export { createPlayer, stepPlayer } from "./physics";
 export type { PlayerState } from "./physics";
 export interface GameOptions {
+  initialArena?: string;
+  raceFlow?: boolean;
+  onSession?: (snapshot: RaceSnapshot & { progress: number }) => void;
   character?: CharacterSource;
   onCharacterError?: (error: unknown) => void;
 }
 export interface Game {
+  selectLevel(id: string): void;
+  start(): void;
+  chooseLevel(): void;
+  pause(): void;
+  resume(): void;
   restart(): void;
   destroy(): void;
 }
@@ -55,9 +65,11 @@ export function createGame(
     canvas.parentElement!.clientHeight,
   );
   app.setCanvasResolution(pc.RESOLUTION_AUTO);
+  const levels = new LevelManager(options.initialArena);
+  const session = new RaceSession(levels.current.id, options.raceFlow);
   const materials: pc.StandardMaterial[] = [];
   const sceneryGroup = app.batcher!.addGroup("Static scenery", false, 100).id;
-  const material = (hex: string, glow = false) => {
+  const makeMaterial = (hex: string, glow = false) => {
     const m = new pc.StandardMaterial();
     m.diffuse = new pc.Color().fromString(hex);
     if (glow) {
@@ -66,13 +78,12 @@ export function createGame(
     }
     m.shininess = 40;
     m.update();
-    materials.push(m);
     return m;
   };
+  const material = (hex: string, glow = false) => { const m = makeMaterial(hex, glow); materials.push(m); return m; };
   const silver = material("#b9cbe2"),
     cyan = material("#38edec", true),
     navy = material("#141d3c"),
-    purple = material("#6756ac"),
     white = material("#f1f7ff", true);
   const shape = (
     name: string,
@@ -84,7 +95,7 @@ export function createGame(
   ) => {
     const e = new pc.Entity(name);
     e.addComponent("render", { type });
-    if (parent === app.root || parent.name === "Finish beacon")
+    if (parent.name === "Arena static" || parent.parent?.name === "Arena static")
       e.render!.batchGroupId = sceneryGroup;
     e.render!.meshInstances.forEach((mesh) => {
       mesh.material = mat;
@@ -111,98 +122,11 @@ export function createGame(
     fov: 58,
   });
   app.root.addChild(camera);
-  platforms.forEach((p, i) => {
-    shape(
-      "Orbit platform " + i,
-      "box",
-      app.root,
-      [p.x, p.y - 0.45, p.z],
-      [p.width, 0.9, p.depth],
-      i % 2 ? purple : navy,
-    );
-    shape(
-      "Runway light " + i,
-      "box",
-      app.root,
-      [p.x, p.y + 0.015, p.z - p.depth / 2 + 0.12],
-      [p.width, 0.03, 0.12],
-      cyan,
-    );
-  });
-  // Static low-poly scenery, shared materials, no downloaded assets or dynamic shadows.
-  for (let i = 0; i < 60; i++) {
-    const x = Math.sin(i * 127.1) * 55,
-      y = 6 + ((i * 17) % 35),
-      z = -70 + ((i * 29) % 100);
-    shape("Star", "sphere", app.root, [x, y, z], [0.1, 0.1, 0.1], white);
-  }
-  shape(
-    "Distant planet",
-    "sphere",
-    app.root,
-    [-24, 15, -65],
-    [15, 15, 15],
-    purple,
-  );
-  const goal = new pc.Entity("Finish beacon");
-  goal.setPosition(finish.x, finish.y, finish.z);
-  app.root.addChild(goal);
-  shape("Finish pad", "cylinder", goal, [0, 0.04, 0], [3.6, 0.08, 3.6], cyan);
-  for (const side of [-1, 1])
-    shape(
-      "Finish pillar",
-      "box",
-      goal,
-      [side * 2, 1.8, 0],
-      [0.18, 3.6, 0.18],
-      cyan,
-    );
-  shape("Finish arch", "box", goal, [0, 3.6, 0], [4.2, 0.2, 0.2], white);
-  const dynamic = new pc.Entity("Dynamic course");
-  app.root.addChild(dynamic);
-  const amber = material("#ffb959", true);
-  const checkpointPads = checkpoints.map((point, i) => {
-    const pad = shape(
-      "Checkpoint " + (i + 1),
-      "cylinder",
-      dynamic,
-      [point.x, point.y + 0.04, point.z],
-      [2.4, 0.06, 2.4],
-      amber,
-    );
-    for (const side of [-1, 1])
-      shape(
-        "Checkpoint marker",
-        "box",
-        dynamic,
-        [point.x + side * 1.6, point.y + 0.5, point.z],
-        [0.1, 1, 0.1],
-        cyan,
-      );
-    return pad;
-  });
-  const hazardEntities = obstacles.map((obstacle) =>
-    shape(
-      "Moving sweeper",
-      "box",
-      dynamic,
-      [obstacle.x, obstacle.y + obstacle.height / 2, obstacle.z],
-      [obstacle.width, obstacle.height, obstacle.depth],
-      amber,
-    ),
-  );
-  const confetti = Array.from({ length: 20 }, (_, i) => {
-    const piece = shape(
-      "Finish sparkle",
-      "box",
-      dynamic,
-      [0, 0, 0],
-      [0.09, 0.09, 0.09],
-      i % 2 ? cyan : white,
-    );
-    piece.enabled = false;
-    return piece;
-  });
+  let arenaScene = createArenaScene(app, levels.current, shape, makeMaterial);
+  const effectRoot = new pc.Entity("Pooled visual effects"); app.root.addChild(effectRoot);
+  const effects = createEffects(effectRoot, shape, white);
+  camera.camera!.clearColor = new pc.Color().fromString(levels.current.palette.sky);
+  canvas.dataset.arena = levels.current.id;
   const cat = new pc.Entity("Character controller anchor");
   app.root.addChild(cat);
   const character = loadCharacterVisual(
@@ -212,13 +136,13 @@ export function createGame(
     options.character,
     options.onCharacterError,
   );
-  let player = createPlayer(),
+  let player = createPlayer(levels.current),
     previous = { ...player },
     accumulator = 0,
     destroyed = false,
     pendingJump = false,
-    cameraYaw = 0,
-    visualTime = 0;
+    cameraYaw = 0;
+  let lastWallTime = performance.now();
   const pose = createCameraPose();
   const resize = () => {
     if (!destroyed) {
@@ -235,28 +159,44 @@ export function createGame(
   const observer = new ResizeObserver(resize);
   observer.observe(canvas.parentElement!);
   window.addEventListener("resize", resize);
+  const notify = () => {
+    const arena = levels.current;
+    const progress = player.won ? 1 : Math.min(1, Math.max(0, (arena.spawn.z - player.z) / (arena.spawn.z - arena.finish.z)));
+    canvas.dataset.phase = session.phase;
+    canvas.dataset.progress = String(Math.round(progress * 100));
+    canvas.dataset.event = player.lastEvent ?? "none";
+    onState(player);
+    options.onSession?.({ ...session.snapshot(), progress });
+  };
   const visibility = () => {
     accumulator = 0;
     pendingJump = false;
+    if (document.hidden) { session.pause(); character.update(player, 0); }
     app.timeScale = document.hidden ? 0 : 1;
+    notify();
   };
   document.addEventListener("visibilitychange", visibility);
   const update = (delta: number) => {
     const dt = Math.min(delta, 0.1);
-    visualTime += dt;
-    accumulator += dt;
+    const wasRacing = session.phase === "racing";
+    const now = performance.now();
+    session.tick(Math.max(0, (now - lastWallTime) / 1000));
+    lastWallTime = now;
+    if (wasRacing && session.phase === "racing") accumulator += dt; else accumulator = 0;
     const input = readInput();
-    pendingJump ||= input.jump;
+    pendingJump ||= wasRacing && input.jump;
     while (accumulator >= FIXED_STEP) {
       previous = { ...player };
       cameraYaw = wrapAngle(
-        cameraYaw + (input.cameraTurn ?? 0) * FIXED_STEP * 1.5,
+        cameraYaw + (session.phase === "racing" ? input.cameraTurn ?? 0 : 0) * FIXED_STEP * 1.5,
       );
-      stepPlayer(
+      if (session.phase === "racing") stepArenaPlayer(
         player,
         { ...input, cameraYaw, jump: pendingJump },
         FIXED_STEP,
+        levels.current,
       );
+      if (player.won) session.finish();
       if (previous.respawns !== player.respawns) previous = { ...player };
       pendingJump = false;
       accumulator -= FIXED_STEP;
@@ -279,46 +219,21 @@ export function createGame(
       ? Math.max(0, player.respawnTimer / 0.4)
       : 1;
     cat.setLocalScale(recoveryScale, recoveryScale, recoveryScale);
-    character.update(player, dt);
-    checkpointPads.forEach((pad, i) => {
-      pad.render!.meshInstances[0].material =
-        player.checkpoint > i ? cyan : amber;
-      const pulse =
-        player.checkpoint === i + 1
-          ? 1 +
-            Math.sin(player.checkpointFlash * Math.PI * 5) *
-              player.checkpointFlash *
-              0.15
-          : 1;
-      pad.setLocalScale(2.4 * pulse, 0.06, 2.4 * pulse);
-    });
-    hazardEntities.forEach((entity, i) => {
-      const p = obstaclePosition(obstacles[i], player.elapsed);
-      entity.setLocalPosition(p.x, p.y + obstacles[i].height / 2, p.z);
-    });
-    confetti.forEach((piece, i) => {
-      piece.enabled = player.won;
-      if (player.won) {
-        const angle = i * 2.4 + visualTime * 1.2;
-        piece.setLocalPosition(
-          finish.x + Math.cos(angle) * (1.5 + (i % 3) * 0.35),
-          finish.y + 0.6 + ((visualTime * 1.4 + i * 0.2) % 3.8),
-          finish.z + Math.sin(angle) * 2,
-        );
-        piece.setLocalEulerAngles(visualTime * 90, i * 30, visualTime * 70);
-      }
-    });
+    character.update(player, session.phase === "paused" || session.phase === "countdown" ? 0 : dt);
+    arenaScene.update(player);
+    effects.update(player, levels.current, dt);
     updateCamera(
       pose,
       player,
       cameraYaw,
       canvas.clientWidth / Math.max(1, canvas.clientHeight),
       dt,
+      levels.current,
     );
     camera.setPosition(pose.x, pose.y, pose.z);
     camera.lookAt(pose.lookX, pose.lookY, pose.lookZ);
     camera.camera!.fov = pose.fov;
-    onState(player);
+    notify();
   };
   const destroy = () => {
     if (destroyed) return;
@@ -328,6 +243,8 @@ export function createGame(
     document.removeEventListener("visibilitychange", visibility);
     app.off("update", update);
     character.destroy();
+    effects.destroy();
+    arenaScene.destroy();
     app.destroy();
     materials.forEach((m) => m.destroy());
   };
@@ -340,13 +257,31 @@ export function createGame(
     destroy();
     throw error;
   }
+  function resetPlayer(reframe = false) {
+    player = createPlayer(levels.current); previous = { ...player };
+    accumulator = 0; pendingJump = false; effects.reset();
+    if (reframe) { cameraYaw = 0; Object.assign(pose, { x: player.x, y: player.y + 5, z: player.z + 9, lookX: player.x, lookY: player.y + 1, lookZ: player.z - 1 }); }
+  }
   return {
+    selectLevel(id) {
+      if (destroyed) return;
+      levels.load(id); arenaScene.destroy();
+      arenaScene = createArenaScene(app, levels.current, shape, makeMaterial);
+      camera.camera!.clearColor = new pc.Color().fromString(levels.current.palette.sky);
+      canvas.dataset.arena = id;
+      app.batcher!.generate();
+      resetPlayer(true); session.select(id); notify();
+    },
+    start() { lastWallTime = performance.now(); session.start(); character.update(player, 0); pendingJump = false; notify(); },
+    chooseLevel() { session.choose(); pendingJump = false; notify(); },
+    pause() { session.pause(); character.update(player, 0); pendingJump = false; accumulator = 0; notify(); },
+    resume() { lastWallTime = performance.now(); session.start(); character.update(player, 0); pendingJump = false; notify(); },
     restart() {
-      player = createPlayer();
-      previous = { ...player };
-      accumulator = 0;
-      pendingJump = false;
-      onState(player);
+      resetPlayer();
+      session.select(levels.current.id);
+      lastWallTime = performance.now();
+      if (options.raceFlow) session.start(); else session.phase = "racing";
+      notify();
     },
     destroy,
   };
