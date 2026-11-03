@@ -1,0 +1,79 @@
+{
+  "source_sha256": "52dff3dd1f96d7c7958f48a0a06013e2a0b1bb8f515183dabeed499fd584c851",
+  "blender": "4.3.2",
+  "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Shoulder.L",
+    "UpperArm.L",
+    "LowerArm.L",
+    "Hand.L",
+    "UpperLeg.L",
+    "LowerLeg.L",
+    "Foot.L",
+    "Shoulder.R",
+    "UpperArm.R",
+    "LowerArm.R",
+    "Hand.R",
+    "UpperLeg.R",
+    "LowerLeg.R",
+    "Foot.R"
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "duration": 2.0,
+      "frames": 60,
+      "fps": 30,
+      "loop": true
+    },
+    {
+      "name": "Run",
+      "duration": 0.6,
+      "frames": 18,
+      "fps": 30,
+      "loop": true
+    },
+    {
+      "name": "Jump",
+      "duration": 0.4,
+      "frames": 12,
+      "fps": 30,
+      "loop": false
+    },
+    {
+      "name": "Fall",
+      "duration": 0.8,
+      "frames": 24,
+      "fps": 30,
+      "loop": true
+    },
+    {
+      "name": "Land",
+      "duration": 0.4,
+      "frames": 12,
+      "fps": 30,
+      "loop": false
+    },
+    {
+      "name": "Victory",
+      "duration": 2.0,
+      "frames": 60,
+      "fps": 30,
+      "loop": false
+    }
+  ],
+  "in_place": true,
+  "run_reference_speed_units_per_second": 0.8,
+  "status": "experimental, requires human deformation review",
+  "weights": "Topology/UV/PBR semantic seeds and harmonic joint bands; no geometry cuts or heat weights.",
+  "limitations": [
+    "Unified mesh has no semantic joint loops; masks require artist weight-paint refinement.",
+    "No independent head turns: avoids stressing shared neck/helmet boundary.",
+    "No production gameplay integration or production-ready claim."
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "human_approved": false,
+  "production_ready": false,
+  "deformation_quality_pass": false,
+  "static_reference_unchanged": true,
+  "measured_gates": {
+    "edge_stretch": false,
+    "ground_penetration": true,
+    "foot_contacts": true,
+    "rigid_armor": true,
+    "neutral_fidelity": true,
+    "joint_influences": true
+  },
+  "remaining_blocker": "Maximum local edge stretch exceeds 2x. Named cuff-contact and knee/hip groups need manual refinement; see editable project.",
+  "fixed": [
+    "Lower palm vertices no longer carry thigh weights.",
+    "Inner toes and sole vertices no longer carry pelvis weights.",
+    "Whole PBR-connected armor cores are rigidly assigned.",
+    "Run/Land and stance contacts pass 60 Hz checks within 0.002 game units."
+  ],
+  "editable_project": "source/minimorph_rig_workbench.blend",
+  "selection_groups": [
+    "Manual_CuffContact_L",
+    "Manual_CuffContact_R",
+    "Manual_Knee_L",
+    "Manual_Knee_R",
+    "Manual_Hip_L",
+    "Manual_Hip_R"
+  ],
+  "no_geometry_cuts_performed": true,
+  "focused_correction_pass": {
+    "accepted": false,
+    "retained_maximum_edge_stretch": 9.312497802330746,
+    "rejected_maximum_edge_stretch": 19.01927993959926,
+    "threshold": 2.0,
+    "manual_intervention_required": true,
+    "report": "focused/README.md",
+    "exact_regional_vertices": "focused/retained-region-worst-edges.json",
+    "geometry_modified": false,
+    "animations_modified": false
+  }
+}

@@ -8,13 +8,20 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Includes full skinned desktop/mobile course playback on software rendering.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tools/blender/requirements-test.txt
+      - run: python -m pip install -r tools/blender/requirements-test.txt
       - run: npm ci
       - run: npm run check
       - run: npx playwright install --with-deps chromium
@@ -28,3 +35,27 @@ jobs:
         with:
           name: browser-results
           path: test-results/
+
+  rig-deformation-quality:
+    # Accepted temporary art defects: functional validation above remains blocking.
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tools/blender/requirements-test.txt
+      - run: python -m pip install -r tools/blender/requirements-test.txt
+      - name: Measure delivered GLB at every half-frame; require all quality gates
+        run: python tools/blender/evaluate_skin.py --input assets/characters/minimorph/animation/minimorph_animated_v1.glb --semantic assets/characters/minimorph/animation/rework/semantic-weights.npz --report artifacts/rig-deformation.json --require-pass
+      - name: Explain temporary art quality failure
+        if: failure()
+        run: echo "::warning::Temporary character art did not pass the strict deformation diagnostic. The 2x threshold is unchanged; functional integration is checked in validate. See rig-deformation-report and docs/temporary-playable-character.md."
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rig-deformation-report
+          path: artifacts/rig-deformation.json

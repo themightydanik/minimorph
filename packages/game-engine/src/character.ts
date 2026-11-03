@@ -236,3 +236,72 @@ export function loadCharacterVisual(
     },
   };
 }
+
+export const CHARACTER_CLIPS = ["Idle", "Run", "Jump", "Fall", "Land", "Victory"] as const;
+export type CharacterClip = typeof CHARACTER_CLIPS[number];
+/** Physics owns movement; clips are in-place and only change the visual skeleton. */
+export function characterClip(state: Readonly<PlayerState>): CharacterClip {
+  if (state.won) return "Victory";
+  if (state.recovery) return "Idle";
+  if (!state.grounded) return state.vy > 0 ? "Jump" : "Fall";
+  if (state.landingTime > 0) return "Land";
+  return Math.hypot(state.vx, state.vz) > 0.15 ? "Run" : "Idle";
+}
+export interface AnimatedCharacterConfig {
+  url: string;
+  version: string;
+  scale?: number;
+  yaw?: number;
+  loadTimeoutMs?: number;
+}
+export function animatedCharacterSource(config: AnimatedCharacterConfig): CharacterSource {
+  return {
+    async load(app, signal) {
+      const controller = new AbortController();
+      const abort = () => controller.abort();
+      signal.addEventListener("abort", abort, { once: true });
+      if (signal.aborted) abort();
+      const timer = setTimeout(abort, config.loadTimeoutMs ?? 20000);
+      let visual: CharacterVisual;
+      try {
+        visual = await gltfCharacterSource(config.url, config.scale ?? 1).load(app, controller.signal);
+      } finally {
+        clearTimeout(timer);
+        signal.removeEventListener("abort", abort);
+      }
+      try {
+        const asset = app.assets.find("Character model", "container");
+        const resource = asset?.resource as pc.ContainerResource | undefined;
+        const tracks = new Map(resource?.animations.map(a => {
+          const track = a.resource as pc.AnimTrack;
+          return [track.name || a.name, track];
+        }));
+        for (const name of CHARACTER_CLIPS) if (!tracks.has(name)) throw new Error(`Missing character clip: ${name}`);
+        const root = visual.root;
+        root.setLocalEulerAngles(0, config.yaw ?? 0, 0);
+        root.addComponent("anim", { activate: true });
+        for (const name of CHARACTER_CLIPS) root.anim!.assignAnimation(name, tracks.get(name)!, undefined, 1, ["Idle", "Run", "Fall"].includes(name));
+        let current: CharacterClip | undefined;
+        const canvas = app.graphicsDevice.canvas as HTMLCanvasElement;
+        canvas.dataset.character = config.version;
+        return {
+          root,
+          update(state) {
+            const next = characterClip(state);
+            if (next !== current) {
+              root.anim!.baseLayer!.transition(next, current ? 0.08 : 0, 0);
+              current = next;
+            }
+            canvas.dataset.characterClip = next;
+            canvas.dataset.characterActive = root.anim!.baseLayer!.activeState;
+            canvas.dataset.characterTime = String(root.anim!.baseLayer!.activeStateCurrentTime);
+          },
+          destroy() { visual.destroy(); },
+        };
+      } catch (error) {
+        visual.destroy();
+        throw error;
+      }
+    },
+  };
+}

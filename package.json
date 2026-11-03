@@ -21,7 +21,8 @@
     "package:mds": "npm run build -w @minimorph/minima && node scripts/package-mds.mjs",
     "check": "npm run test:character && npm run typecheck && npm run lint && npm test && npm run build && node scripts/package-mds.mjs",
     "preview:character": "vite --config tools/character-preview/vite.config.ts",
-    "test:character": "python3 tools/blender/inspect_character.py --input assets/characters/minimorph/minimorph_v1.glb && python3 -m unittest discover -s tools/blender -p \"test_*.py\""
+    "test:character": "python3 tools/blender/inspect_character.py --input assets/characters/minimorph/minimorph_v1.glb && python3 -m unittest discover -s tools/blender -p \"test_*.py\"",
+    "check:rig-quality": "python3 tools/blender/evaluate_skin.py --input assets/characters/minimorph/animation/minimorph_animated_v1.glb --semantic assets/characters/minimorph/animation/rework/semantic-weights.npz --report artifacts/rig-deformation.json --require-pass"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

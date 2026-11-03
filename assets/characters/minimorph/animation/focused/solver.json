@@ -1,0 +1,68 @@
+{
+  "input_asset_sha256": "1bcecf7f25e35f1cfb7e4afce6542098a29c44bd9e86cd4ac281da3c3a818f76",
+  "input_semantic_sha256": "5548a7673fa5306229f00e6e8b8b695810f1937724ba0b6394b5d410e42951c3",
+  "output_semantic_sha256": "e899447b05dbaaf636d9d47357ba7a8f5d07d8b56513a6de4858403f59e22af1",
+  "one_pass": true,
+  "geometry_modified": false,
+  "animations_modified": false,
+  "rigid_constraints_unchanged": true,
+  "regions": [
+    {
+      "region": "Manual_Knee_L",
+      "unique_vertices": 546,
+      "iterations": 1200,
+      "converged": false,
+      "relative_edge_objective_before": 106.85414839985712,
+      "relative_edge_objective_after": 95.6231374055322,
+      "allowed_bones": [
+        "UpperLeg.L",
+        "LowerLeg.L",
+        "Foot.L"
+      ]
+    },
+    {
+      "region": "Manual_Hip_L",
+      "unique_vertices": 701,
+      "iterations": 297,
+      "converged": true,
+      "relative_edge_objective_before": 24.74799397105613,
+      "relative_edge_objective_after": 13.45549474342503,
+      "allowed_bones": [
+        "Pelvis",
+        "UpperLeg.L",
+        "Chest"
+      ]
+    },
+    {
+      "region": "Manual_Knee_R",
+      "unique_vertices": 572,
+      "iterations": 1200,
+      "converged": false,
+      "relative_edge_objective_before": 104.56988685459176,
+      "relative_edge_objective_after": 93.15473024027561,
+      "allowed_bones": [
+        "UpperLeg.R",
+        "LowerLeg.R",
+        "Foot.R"
+      ]
+    },
+    {
+      "region": "Manual_Hip_R",
+      "unique_vertices": 612,
+      "iterations": 287,
+      "converged": true,
+      "relative_edge_objective_before": 16.672766819667793,
+      "relative_edge_objective_after": 13.360436033853304,
+      "allowed_bones": [
+        "Pelvis",
+        "UpperLeg.R",
+        "Chest"
+      ]
+    }
+  ],
+  "contact_repair": "Rejected automatically: proposed contact boundary is open, so no blind topology split or cap was performed.",
+  "selected_gpu_vertices": 4026,
+  "selected_unique_vertices": 2431,
+  "actually_changed_gpu_vertices": 3911,
+  "candidate_promoted": false
+}
