@@ -536,3 +536,26 @@ footer button, .panel button { min-height: 48px; }
   .results .panel button { font-size: 11px; padding: 8px 9px; margin: 6px 6px 0 0; }
   .results .storage-status { font-size: 9px; margin-top: 9px; line-height: 1.3; }
 }
+.mode-tabs { display:flex; gap:8px; width:min(1080px,100%); margin:0 0 14px; }
+.mode-tabs button { min-height:48px; font-size:12px; }
+.mode-tabs [aria-pressed="true"] { background:#48f5dc; color:#102432; border-color:transparent; font-weight:800; }
+.section-hint { max-width:340px; letter-spacing:0 !important; font-size:11px !important; line-height:1.5; color:#c1d8e5; margin-top:9px !important; }
+.countdown strong { min-width:1.65em; min-height:1.65em; display:grid; place-items:center; border:3px solid var(--arena-accent); border-radius:50%; box-shadow:0 0 45px #48f5dc22,inset 0 0 35px #48f5dc11; animation:launch-pulse 1s ease-out infinite; }
+@keyframes launch-pulse { from { transform:scale(.92); } to { transform:scale(1); } }
+@media(max-width:700px) { .mode-tabs { margin-bottom:10px; } .mode-tabs button{font-size:11px;min-height:48px;} .section-hint{font-size:9px !important;max-width:175px;line-height:1.35;} }
+@media(max-height:500px) { .section-hint{display:none !important;} .mode-tabs{position:absolute;right:24px;top:75px;width:auto;} .mode-tabs button{min-height:42px;font-size:10px;padding:8px 10px;} }
+.result-splits { font-size:9px; line-height:1.7; color:#a9c6d7; margin:10px 0; max-height:54px; overflow:auto; touch-action:pan-y; }
+.dpad { grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:6px; }
+.dpad button { width:54px;height:54px; }
+.dpad [data-key="ArrowUp+ArrowLeft"]{grid-area:1/1}.dpad [data-key="ArrowUp"]{grid-area:1/2}.dpad [data-key="ArrowUp+ArrowRight"]{grid-area:1/3}
+.dpad [data-key="ArrowLeft"]{grid-area:2/1}.dpad [data-key="ArrowRight"]{grid-area:2/3}
+.dpad [data-key="ArrowDown+ArrowLeft"]{grid-area:3/1}.dpad [data-key="ArrowDown"]{grid-area:3/2}.dpad [data-key="ArrowDown+ArrowRight"]{grid-area:3/3}
+.direction-arrow { display:block;transform:rotate(var(--turn));font-size:18px; }
+.dpad-label { grid-area:2/2;display:grid;place-items:center;font-size:7px;letter-spacing:1px;color:#9cc0d2;pointer-events:none; }
+@media(max-width:700px) and (min-height:501px){.message{bottom:300px}}
+@media(max-height:500px){.dpad{grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);gap:4px}.dpad button{width:48px;height:48px}}
+/* Reserve a stable area for two-line sector guidance above progress. */
+.section-hint { min-height:33px; }
+.race-progress { top:235px; }
+@media(max-width:700px) { .section-hint { min-height:38px; } .race-progress { top:210px; } .camera-controls { top:240px; } }
+@media(max-height:500px) { .race-progress { top:147px; } .camera-controls { top:20px; } }

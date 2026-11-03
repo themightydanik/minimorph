@@ -1,7 +1,8 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import type { RunSegment } from './arena-runs';
-export async function chooseAndStart(page: Page, name = 'Cosmic Sprint', controlled = false) {
+export async function chooseAndStart(page: Page, name = 'Cosmic Sprint', controlled = false, training = true) {
+  if (training && await page.getByRole('button', { name: 'Training tracks', exact: true }).isVisible()) await page.getByRole('button', { name: 'Training tracks', exact: true }).click();
   await page.getByRole('button', { name: `Play ${name}`, exact: true }).click();
   await expect(page.getByRole('region', { name: 'Race preparation', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Start race', exact: true }).click();

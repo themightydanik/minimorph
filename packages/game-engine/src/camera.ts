@@ -31,6 +31,7 @@ export function updateCamera(
   aspect: number,
   dt: number,
   course: CourseDefinition = legacyCourse,
+  framing?: { cameraDistance?: number; cameraLift?: number },
 ): void {
   const safe = course.checkpoints[player.checkpoint - 1] ?? course.spawn;
   const targetY = Math.max(safe.y - 0.8, player.y) + 1;
@@ -39,16 +40,24 @@ export function updateCamera(
   pose.lookY = damp(pose.lookY, targetY, 5, dt, 12);
   pose.lookZ = damp(pose.lookZ, player.z - 1, 7, dt, 24);
   const lag = Math.hypot(player.x - pose.lookX, player.z - 1 - pose.lookZ);
-  const distance = (aspect < 1 ? 11.5 : 8.5) + Math.min(lag * 0.8, 12);
+  const distance = (aspect < 1 ? 11.5 : 8.5) + (framing?.cameraDistance ?? 0) + Math.min(lag * 0.8, 12);
   const speed = Math.hypot(player.vx, player.vz);
   pose.x = damp(pose.x, pose.lookX + Math.sin(yaw) * distance, 6, dt, 18);
   pose.z = damp(pose.z, pose.lookZ + Math.cos(yaw) * distance, 6, dt, 18);
   pose.y = damp(
     pose.y,
-    pose.lookY + (aspect < 1 ? 7 : 4.7) + Math.min(lag * 0.4, 6),
+    pose.lookY + (aspect < 1 ? 7 : 4.7) + (framing?.cameraLift ?? 0) + Math.min(lag * 0.4, 6),
     5,
     dt,
     12,
   );
   pose.fov = damp(pose.fov, (aspect < 1 ? 64 : 58) + speed * 0.6, 4, dt);
+}
+
+/** Long rounds can respawn 50m away; reframe at re-entry instead of leaving the avatar off screen. */
+export function reframeRecovery(pose:CameraPose,player:Readonly<PlayerState>,yaw:number,aspect:number):void {
+ const distance=aspect<1?11.5:8.5;
+ pose.lookX=player.x;pose.lookY=player.y+1;pose.lookZ=player.z-1;
+ pose.x=pose.lookX+Math.sin(yaw)*distance;pose.z=pose.lookZ+Math.cos(yaw)*distance;
+ pose.y=pose.lookY+(aspect<1?7:4.7);pose.fov=aspect<1?64:58;
 }

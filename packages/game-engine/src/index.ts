@@ -1,3 +1,4 @@
+import type { RaceMode } from "@minimorph/game-content";
 import * as pc from "playcanvas";
 import {
   createPlayer,
@@ -8,7 +9,7 @@ import {
 import type { Input, PlayerState } from "./physics";
 import { createProceduralCat, loadCharacterVisual } from "./character";
 import type { CharacterSource } from "./character";
-import { createCameraPose, updateCamera } from "./camera";
+import { createCameraPose, updateCamera, reframeRecovery } from "./camera";
 import { LevelManager } from "./levels";
 import { RaceSession } from "./session";
 import type { RaceSnapshot } from "./session";
@@ -24,13 +25,14 @@ export { createPlayer, stepPlayer } from "./physics";
 export type { PlayerState } from "./physics";
 export interface GameOptions {
   initialArena?: string;
+  mode?: RaceMode;
   raceFlow?: boolean;
-  onSession?: (snapshot: RaceSnapshot & { progress: number }) => void;
+  onSession?: (snapshot: RaceSnapshot & { progress: number; mode: RaceMode; section: string; hint: string }) => void;
   character?: CharacterSource;
   onCharacterError?: (error: unknown) => void;
 }
 export interface Game {
-  selectLevel(id: string): void;
+  selectLevel(id: string, mode?: RaceMode): void;
   start(): void;
   chooseLevel(): void;
   pause(): void;
@@ -65,7 +67,7 @@ export function createGame(
     canvas.parentElement!.clientHeight,
   );
   app.setCanvasResolution(pc.RESOLUTION_AUTO);
-  const levels = new LevelManager(options.initialArena);
+  const levels = new LevelManager(options.initialArena, options.mode);
   const session = new RaceSession(levels.current.id, options.raceFlow);
   const materials: pc.StandardMaterial[] = [];
   const sceneryGroup = app.batcher!.addGroup("Static scenery", false, 100).id;
@@ -162,11 +164,15 @@ export function createGame(
   const notify = () => {
     const arena = levels.current;
     const progress = player.won ? 1 : Math.min(1, Math.max(0, (arena.spawn.z - player.z) / (arena.spawn.z - arena.finish.z)));
+    canvas.dataset.heading = String(player.heading);
+    canvas.dataset.hits = String(player.obstacleHits);
+    canvas.dataset.mode = levels.mode;
     canvas.dataset.phase = session.phase;
     canvas.dataset.progress = String(Math.round(progress * 100));
     canvas.dataset.event = player.lastEvent ?? "none";
     onState(player);
-    options.onSession?.({ ...session.snapshot(), progress });
+    const section = arena.sections?.find(s => -player.z >= s.start && -player.z < s.end);
+    options.onSession?.({ ...session.snapshot(), progress, mode: levels.mode, section: section?.name ?? arena.subtitle, hint: section?.hint ?? "" });
   };
   const visibility = () => {
     accumulator = 0;
@@ -197,7 +203,10 @@ export function createGame(
         levels.current,
       );
       if (player.won) session.finish();
-      if (previous.respawns !== player.respawns) previous = { ...player };
+      if (previous.respawns !== player.respawns) {
+        previous = { ...player };
+        if (levels.current.sections) reframeRecovery(pose,player,cameraYaw,canvas.clientWidth/Math.max(1,canvas.clientHeight));
+      }
       pendingJump = false;
       accumulator -= FIXED_STEP;
     }
@@ -222,6 +231,7 @@ export function createGame(
     character.update(player, session.phase === "paused" || session.phase === "countdown" ? 0 : dt);
     arenaScene.update(player);
     effects.update(player, levels.current, dt);
+    const framing = levels.current.sections?.find(s => -player.z >= s.start && -player.z < s.end);
     updateCamera(
       pose,
       player,
@@ -229,6 +239,7 @@ export function createGame(
       canvas.clientWidth / Math.max(1, canvas.clientHeight),
       dt,
       levels.current,
+      framing,
     );
     camera.setPosition(pose.x, pose.y, pose.z);
     camera.lookAt(pose.lookX, pose.lookY, pose.lookZ);
@@ -263,9 +274,9 @@ export function createGame(
     if (reframe) { cameraYaw = 0; Object.assign(pose, { x: player.x, y: player.y + 5, z: player.z + 9, lookX: player.x, lookY: player.y + 1, lookZ: player.z - 1 }); }
   }
   return {
-    selectLevel(id) {
+    selectLevel(id, mode) {
       if (destroyed) return;
-      levels.load(id); arenaScene.destroy();
+      levels.load(id, mode); arenaScene.destroy();
       arenaScene = createArenaScene(app, levels.current, shape, makeMaterial);
       camera.camera!.clearColor = new pc.Color().fromString(levels.current.palette.sky);
       canvas.dataset.arena = id;

@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { arenas, getArena } from './arenas';
+import { trainingArenas as arenas, getTrainingArena as getArena } from './arenas';
 it('has three independently named, finite, valid configurations and all seven mechanisms',()=>{
  expect(new Set(arenas.map(a=>a.id)).size).toBe(3);
  const kinds=new Set<string>();

@@ -20,3 +20,10 @@ describe('local progression without host authentication',()=>{
   expect(p.persistent).toBe(false);expect(p.complete('cosmic-sprint',10)).toBe(true);expect(p.isUnlocked('orbit-chaos')).toBe(true);
  });
 });
+it('keeps old compact records in Training and never treats them as full-round records',()=>{
+ const storage=store();storage.setItem('minimorph.progress.v1',JSON.stringify({version:1,unlocked:3,best:{'cosmic-sprint':6}}));
+ const race=new Progression(storage),training=new Progression(storage,'training');
+ expect(race.value.unlocked).toBe(1);expect(race.value.best['cosmic-sprint']).toBeUndefined();expect(training.value.best['cosmic-sprint']).toBe(6);
+ race.complete('cosmic-sprint',66);expect(new Progression(storage).value.best['cosmic-sprint']).toBe(66);
+ expect(new Progression(storage,'training').value.best['cosmic-sprint']).toBe(6);
+});

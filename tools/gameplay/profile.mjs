@@ -13,7 +13,7 @@ try {
   for (const [device, settings] of [['desktop', { viewport: { width: 1280, height: 720 } }], ['mobile-emulation', devices['Pixel 7']]]) {
     const context = await browser.newContext(settings);
     // Unlocks only selection for profiling; no race completion or score is fabricated.
-    await context.addInitScript(() => localStorage.setItem('minimorph.progress.v1', JSON.stringify({ version: 1, unlocked: 3, best: {} })));
+    await context.addInitScript(() => localStorage.setItem('minimorph.progress.v2', JSON.stringify({ version: 2, unlocked: 3, best: {} })));
     const page = await context.newPage();
     await page.route('https://telegram.org/**', route => route.abort());
     const start = Date.now();
