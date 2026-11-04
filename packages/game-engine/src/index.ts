@@ -1,3 +1,5 @@
+import type { OnlineDriver } from '@minimorph/multiplayer-client';
+import { createRemotePlayers } from './remote-players';
 import type { RaceMode } from "@minimorph/game-content";
 import * as pc from "playcanvas";
 import {
@@ -24,6 +26,7 @@ export type { CharacterSource, CharacterVisual } from "./character";
 export { createPlayer, stepPlayer } from "./physics";
 export type { PlayerState } from "./physics";
 export interface GameOptions {
+  remoteCharacter?: CharacterSource;
   initialArena?: string;
   mode?: RaceMode;
   raceFlow?: boolean;
@@ -32,6 +35,7 @@ export interface GameOptions {
   onCharacterError?: (error: unknown) => void;
 }
 export interface Game {
+  setOnline(driver: OnlineDriver | undefined, arenaId?: string): void;
   selectLevel(id: string, mode?: RaceMode): void;
   start(): void;
   chooseLevel(): void;
@@ -138,6 +142,8 @@ export function createGame(
     options.character,
     options.onCharacterError,
   );
+  const remotes=createRemotePlayers(app,canvas,options.remoteCharacter,()=>createProceduralCat(shape,{silver,navy,cyan}),shape);
+  let online:OnlineDriver|undefined;
   let player = createPlayer(levels.current),
     previous = { ...player },
     accumulator = 0,
@@ -172,12 +178,12 @@ export function createGame(
     canvas.dataset.event = player.lastEvent ?? "none";
     onState(player);
     const section = arena.sections?.find(s => -player.z >= s.start && -player.z < s.end);
-    options.onSession?.({ ...session.snapshot(), progress, mode: levels.mode, section: section?.name ?? arena.subtitle, hint: section?.hint ?? "" });
+    if (!online) options.onSession?.({ ...session.snapshot(), progress, mode: levels.mode, section: section?.name ?? arena.subtitle, hint: section?.hint ?? "" });
   };
   const visibility = () => {
     accumulator = 0;
     pendingJump = false;
-    if (document.hidden) { session.pause(); character.update(player, 0); }
+    if (document.hidden && !online) { session.pause(); character.update(player, 0); }
     app.timeScale = document.hidden ? 0 : 1;
     notify();
   };
@@ -189,9 +195,11 @@ export function createGame(
     session.tick(Math.max(0, (now - lastWallTime) / 1000));
     lastWallTime = now;
     if (wasRacing && session.phase === "racing") accumulator += dt; else accumulator = 0;
-    const input = readInput();
+    const network=online?.frame(Date.now());
+    if(network){previous={...player};player=network.local;cameraYaw=network.yaw;session.phase=network.phase==="waiting"?"prepare":network.phase;accumulator=0;}
+    const input = online ? {x:0,z:0,jump:false} : readInput();
     pendingJump ||= wasRacing && input.jump;
-    while (accumulator >= FIXED_STEP) {
+    while (!online && accumulator >= FIXED_STEP) {
       previous = { ...player };
       cameraYaw = wrapAngle(
         cameraYaw + (session.phase === "racing" ? input.cameraTurn ?? 0 : 0) * FIXED_STEP * 1.5,
@@ -210,7 +218,7 @@ export function createGame(
       pendingJump = false;
       accumulator -= FIXED_STEP;
     }
-    const alpha = accumulator / FIXED_STEP;
+    const alpha = online ? 1 : accumulator / FIXED_STEP;
     cat.setPosition(
       previous.x + (player.x - previous.x) * alpha,
       previous.y + (player.y - previous.y) * alpha,
@@ -229,7 +237,7 @@ export function createGame(
       : 1;
     cat.setLocalScale(recoveryScale, recoveryScale, recoveryScale);
     character.update(player, session.phase === "paused" || session.phase === "countdown" ? 0 : dt);
-    arenaScene.update(player);
+    arenaScene.update(network ? {...player,elapsed:network.elapsed} : player);
     effects.update(player, levels.current, dt);
     const framing = levels.current.sections?.find(s => -player.z >= s.start && -player.z < s.end);
     updateCamera(
@@ -244,6 +252,7 @@ export function createGame(
     camera.setPosition(pose.x, pose.y, pose.z);
     camera.lookAt(pose.lookX, pose.lookY, pose.lookZ);
     camera.camera!.fov = pose.fov;
+    remotes.update(network?.remotes??[],camera,dt);
     notify();
   };
   const destroy = () => {
@@ -253,6 +262,7 @@ export function createGame(
     window.removeEventListener("resize", resize);
     document.removeEventListener("visibilitychange", visibility);
     app.off("update", update);
+    remotes.destroy();
     character.destroy();
     effects.destroy();
     arenaScene.destroy();
@@ -274,6 +284,12 @@ export function createGame(
     if (reframe) { cameraYaw = 0; Object.assign(pose, { x: player.x, y: player.y + 5, z: player.z + 9, lookX: player.x, lookY: player.y + 1, lookZ: player.z - 1 }); }
   }
   return {
+    setOnline(driver,arenaId){
+      online=undefined;
+      if(arenaId)this.selectLevel(arenaId,"race");
+      online=driver;accumulator=0;pendingJump=false;
+      if(!driver){session.choose();notify();}
+    },
     selectLevel(id, mode) {
       if (destroyed) return;
       levels.load(id, mode); arenaScene.destroy();
@@ -285,7 +301,7 @@ export function createGame(
     },
     start() { lastWallTime = performance.now(); session.start(); character.update(player, 0); pendingJump = false; notify(); },
     chooseLevel() { session.choose(); pendingJump = false; notify(); },
-    pause() { session.pause(); character.update(player, 0); pendingJump = false; accumulator = 0; notify(); },
+    pause() { if(online)return;session.pause(); character.update(player, 0); pendingJump = false; accumulator = 0; notify(); },
     resume() { lastWallTime = performance.now(); session.start(); character.update(player, 0); pendingJump = false; notify(); },
     restart() {
       resetPlayer();

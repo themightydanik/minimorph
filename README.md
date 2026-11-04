@@ -1,6 +1,6 @@
 # Minimorph
 
-A cosmic 3D obstacle racer with three full-length racing arenas, starring a space-cat biorobot. Two browser shells share the same PlayCanvas engine: a free-to-play Telegram Mini App and a read-only Minima MiniDapp. This foundation has no accounts, rewards, transactions, leaderboards or multiplayer.
+A cosmic 3D obstacle racer with three full-length racing arenas, starring a space-cat biorobot. Two browser shells share the same PlayCanvas engine: a free-to-play Telegram Mini App and a read-only Minima MiniDapp. Solo and Training remain available; an optional authoritative WebSocket service adds eight-participant Quick Match and private rooms with server bots. There are no accounts, rewards, transactions or public leaderboards.
 
 ## Develop
 
@@ -34,12 +34,20 @@ npm run test:browser
 | ------------------------- | ----------------------------------------------------------------------------- |
 | `apps/telegram`           | Telegram bridge, browser fallback, Vite target                                |
 | `apps/minima`             | Classic MDS shell, local official SDK, MiniDapp metadata                      |
+| `apps/multiplayer-server` | Authoritative WebSocket rooms, bots, matchmaking and results |
+| `packages/game-simulation` | Shared deterministic movement, supports, collisions and checkpoints |
+| `packages/multiplayer-protocol` | Versioned wire types and strict input validation |
+| `packages/multiplayer-client` | Input networking, prediction, reconciliation and interpolation |
 | `packages/game-engine`    | Fixed-step controller, camera, replaceable character visuals, scene lifecycle |
 | `packages/game-content`   | Shared platform course and finish coordinates                                 |
 | `packages/game-ui`        | HUD, keyboard and multi-pointer controls, restart and errors                  |
 | `packages/minima-adapter` | Optional read-only MDS `status` integration                                   |
 
 See [architecture](docs/architecture.md), [deployment and manual verification](docs/deployment.md), and [reference review](docs/references.md). Additional services and packages are deliberately deferred until they have real implementations.
+
+## Multiplayer
+
+See [multiplayer architecture, local setup and manual Render Free deployment](docs/multiplayer.md). Build the server with `npm run build:server`, run `npm run start:server`, and set `VITE_MULTIPLAYER_WS_URL` when building a frontend. No Render domain is hardcoded, and no paid service is required. `npm run profile:multiplayer` records actual eight-connection CPU/RAM/tick/traffic measurements.
 
 ## Security
 

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: minimorph-multiplayer
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build:server
+    startCommand: npm start -w @minimorph/multiplayer-server
+    healthCheckPath: /readyz
+    envVars:
+      - key: NODE_VERSION
+        value: '24'
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: RACE_TIMEOUT_SECONDS
+        value: '240'
+      - key: MAX_ROOMS
+        value: '32'

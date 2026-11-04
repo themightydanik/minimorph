@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@minimorph/game-engine": "*",
-    "@minimorph/game-content": "*"
+    "@minimorph/game-content": "*",
+    "@minimorph/multiplayer-client": "*",
+    "@minimorph/multiplayer-protocol": "*"
   }
 }

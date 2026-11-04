@@ -16,13 +16,16 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:browser": "npm run build && playwright test",
+    "test:browser": "VITE_MULTIPLAYER_WS_URL=ws://127.0.0.1:3001/ws npm run build && playwright test",
     "build": "npm run build --workspaces --if-present",
     "package:mds": "npm run build -w @minimorph/minima && node scripts/package-mds.mjs",
     "check": "npm run test:character && npm run typecheck && npm run lint && npm test && npm run build && node scripts/package-mds.mjs",
     "preview:character": "vite --config tools/character-preview/vite.config.ts",
     "test:character": "python3 tools/blender/inspect_character.py --input assets/characters/minimorph/minimorph_v1.glb && python3 -m unittest discover -s tools/blender -p \"test_*.py\"",
-    "check:rig-quality": "python3 tools/blender/evaluate_skin.py --input assets/characters/minimorph/animation/minimorph_animated_v1.glb --semantic assets/characters/minimorph/animation/rework/semantic-weights.npz --report artifacts/rig-deformation.json --require-pass"
+    "check:rig-quality": "python3 tools/blender/evaluate_skin.py --input assets/characters/minimorph/animation/minimorph_animated_v1.glb --semantic assets/characters/minimorph/animation/rework/semantic-weights.npz --report artifacts/rig-deformation.json --require-pass",
+    "start:server": "npm start -w @minimorph/multiplayer-server",
+    "build:server": "npm run build -w @minimorph/multiplayer-server",
+    "profile:multiplayer": "esbuild tools/multiplayer/profile.ts --bundle --platform=node --format=esm --external:ws --outfile=artifacts/multiplayer-profile-runner.mjs && node artifacts/multiplayer-profile-runner.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

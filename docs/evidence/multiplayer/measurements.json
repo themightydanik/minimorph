@@ -1,0 +1,52 @@
+{
+  "method": "Real loopback WebSockets, eight human connections across two rooms, four humans + four authoritative bots per room. No browser renderer. CPU/RSS include the colocated load generator; tick costs measure server simulation/broadcast only.",
+  "wallSeconds": 100.191532315,
+  "cpuUserMs": 5841.08,
+  "cpuSystemMs": 1229.173,
+  "cpuPercentOfOneCore": 7.056737068129946,
+  "clientSentPayloadBytes": 1829235,
+  "clientReceivedPayloadBytes": 51961666,
+  "serverInboundPayloadBytesPerSecond": 18257.381215100344,
+  "serverOutboundPayloadBytesPerSecond": 518623.32873234886,
+  "metrics": {
+    "ticks": 3005,
+    "rooms": 2,
+    "connections": 8,
+    "bytesIn": 1829235,
+    "bytesOut": 51961666,
+    "messagesIn": 23277,
+    "messagesOut": 8012,
+    "slowTicks": 0,
+    "overloadDrops": 0,
+    "storeFailures": 0,
+    "tickMedianMs": 0.34790500000235625,
+    "tickP95Ms": 0.8904230000007374,
+    "tickMaxMs": 5.7846560000034515,
+    "memory": {
+      "rss": 68276224,
+      "heapTotal": 24113152,
+      "heapUsed": 18094648,
+      "external": 6222453,
+      "arrayBuffers": 2393893
+    },
+    "peakRssBytes": 71589888
+  },
+  "rooms": [
+    {
+      "arena": "cosmic-sprint",
+      "participants": 8,
+      "humans": 4,
+      "bots": 4,
+      "finishedBots": 4,
+      "elapsed": 97.06666666666666
+    },
+    {
+      "arena": "orbit-chaos",
+      "participants": 8,
+      "humans": 4,
+      "bots": 4,
+      "finishedBots": 4,
+      "elapsed": 96.96666666666667
+    }
+  ]
+}

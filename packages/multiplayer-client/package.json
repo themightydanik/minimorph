@@ -1,0 +1,15 @@
+{
+  "name": "@minimorph/multiplayer-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@minimorph/game-simulation": "*",
+    "@minimorph/multiplayer-protocol": "*",
+    "@minimorph/game-content": "*"
+  }
+}

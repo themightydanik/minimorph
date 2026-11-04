@@ -559,3 +559,27 @@ footer button, .panel button { min-height: 48px; }
 .race-progress { top:235px; }
 @media(max-width:700px) { .section-hint { min-height:38px; } .race-progress { top:210px; } .camera-controls { top:240px; } }
 @media(max-height:500px) { .race-progress { top:147px; } .camera-controls { top:20px; } }
+/* Real multiplayer shares the original scene and control surface. */
+.online-entry {width:min(1080px,100%);margin:8px 0 16px;border-top:1px solid #ffffff26;padding-top:12px;flex-shrink:0;}
+.online-entry .eyebrow {font-size:8px;display:block;margin-bottom:8px;}
+.online-entry label {font-size:8px;color:#b8cce0;margin-right:12px;display:inline-flex;align-items:center;gap:8px;}
+.online-entry input,.online-entry select {font:inherit;font-size:11px;background:#13243c;color:#fff;border:1px solid #ffffff40;border-radius:8px;padding:10px;min-height:40px;max-width:180px;}
+.online-actions {display:inline-flex;gap:8px;margin:8px 0;flex-wrap:wrap;}
+.online-entry button {font-size:11px;min-height:44px;padding:10px 14px;}
+.multiplayer-panel {z-index:8;}
+.multiplayer-panel ul {padding:0;list-style:none;max-height:40vh;overflow:auto;}
+.multiplayer-panel li {font-size:12px;border-bottom:1px solid #ffffff16;padding:8px;}
+.local-result {color:#48f5dc;background:#48f5dc15;}
+[data-mp-code] {font-weight:800;letter-spacing:3px;color:#48f5dc;}
+.multiplayer-live {position:absolute;top:20px;left:50%;transform:translateX(-50%);z-index:7;text-align:center;background:#10213de8;border:1px solid #48f5dc55;border-radius:12px;padding:8px 14px;font-size:10px;}
+.multiplayer-live strong,.multiplayer-live span {display:block;margin-bottom:4px;}
+.multiplayer-live button {font-size:9px;padding:6px 10px;}
+.participant-labels {position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2;}
+.participant-labels span {position:absolute;top:0;left:0;border-bottom:3px solid;border-radius:8px;padding:4px 8px;background:#09152bd9;color:white;font-size:10px;white-space:nowrap;}
+.selection {justify-content:flex-start;}
+.selection-heading {flex-shrink:0;}
+.level-grid {flex-shrink:0;}
+[data-online-state] .restart {visibility:hidden;}
+@media(max-width:700px){.online-entry{margin-bottom:8px}.online-entry label{margin-right:4px}.online-entry input{max-width:115px}.online-entry select{max-width:150px}.online-entry button{font-size:10px;min-height:48px}.multiplayer-live{top:auto;bottom:250px;left:auto;right:12px;transform:none;padding:6px;max-width:160px}.multiplayer-live strong{font-size:8px}}
+@media(max-height:500px){.online-entry{display:flex;align-items:center;gap:10px;padding:4px 0;margin:4px 0}.online-entry>.eyebrow{display:none}.online-entry label{font-size:0}.online-entry input{max-width:90px}.online-entry select{max-width:130px}.online-entry button{font-size:9px;padding:6px;min-height:40px}.online-actions{flex-wrap:nowrap;gap:4px}.multiplayer-live{top:12px;bottom:auto;right:150px;left:auto;transform:none}}
+@media(min-width:701px) and (min-height:501px){[data-online-state] .camera-controls{top:110px}}

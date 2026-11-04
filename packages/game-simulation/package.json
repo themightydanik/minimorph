@@ -1,0 +1,13 @@
+{
+  "name": "@minimorph/game-simulation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@minimorph/game-content": "*"
+  }
+}
