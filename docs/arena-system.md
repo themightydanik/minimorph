@@ -1,4 +1,6 @@
-# Orbit Circuit: arenas, mechanisms and progression
+# Original Training tracks: arenas, mechanisms and progression
+
+This document describes the compact tracks retained in **Training**. The default Racing mode and its expanded layouts are documented in [full-length-rounds.md](full-length-rounds.md).
 
 Minimorph remains a manual party platform racer built on the shared TypeScript/PlayCanvas controller. Both Telegram and Minima mount the same UI and engine. This expansion adds three playable courses, not a new engine or a simulated online lobby. There are no competitors, server authentication, rewards, tokens, transactions or mandatory host connections.
 

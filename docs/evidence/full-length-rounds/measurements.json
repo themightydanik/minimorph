@@ -1,0 +1,126 @@
+{
+  "environment": "Cloud Chromium / forced SwiftShader software rendering, not physical-phone FPS. Run alone without regression browsers.",
+  "url": "http://127.0.0.1:5173",
+  "samples": [
+    {
+      "device": "desktop",
+      "arena": "cosmic-sprint",
+      "navigationToCharacterSelectedMs": 2965,
+      "frames": 16,
+      "durationMs": 3213.7999999999975,
+      "softwareFps": 4.97853008899123,
+      "medianFrameMs": 200,
+      "p95FrameMs": 316.60000000000036,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 1022.1999999999971
+        }
+      ]
+    },
+    {
+      "device": "desktop",
+      "arena": "orbit-chaos",
+      "navigationToCharacterSelectedMs": 2965,
+      "frames": 16,
+      "durationMs": 3180.799999999992,
+      "softwareFps": 5.030181086519128,
+      "medianFrameMs": 200,
+      "p95FrameMs": 264.299999999992,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 1022.1999999999971
+        }
+      ]
+    },
+    {
+      "device": "desktop",
+      "arena": "gravity-mayhem",
+      "navigationToCharacterSelectedMs": 2965,
+      "frames": 15,
+      "durationMs": 3316.499999999989,
+      "softwareFps": 4.522840343735881,
+      "medianFrameMs": 216.60000000000218,
+      "p95FrameMs": 400,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 1022.1999999999971
+        }
+      ]
+    },
+    {
+      "device": "mobile-emulation",
+      "arena": "cosmic-sprint",
+      "navigationToCharacterSelectedMs": 1923,
+      "frames": 15,
+      "durationMs": 3124.6000000000095,
+      "softwareFps": 4.800614478653253,
+      "medianFrameMs": 216.70000000000073,
+      "p95FrameMs": 266.7000000000007,
+      "bufferWidth": 618,
+      "bufferHeight": 1258,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 319
+        }
+      ]
+    },
+    {
+      "device": "mobile-emulation",
+      "arena": "orbit-chaos",
+      "navigationToCharacterSelectedMs": 1923,
+      "frames": 12,
+      "durationMs": 3343.700000000008,
+      "softwareFps": 3.588838711606894,
+      "medianFrameMs": 249.89999999999782,
+      "p95FrameMs": 733.2999999999993,
+      "bufferWidth": 618,
+      "bufferHeight": 1258,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 319
+        }
+      ]
+    },
+    {
+      "device": "mobile-emulation",
+      "arena": "gravity-mayhem",
+      "navigationToCharacterSelectedMs": 1923,
+      "frames": 13,
+      "durationMs": 3215.9000000000124,
+      "softwareFps": 4.042414254174554,
+      "medianFrameMs": 233.29999999999927,
+      "p95FrameMs": 399.90000000000146,
+      "bufferWidth": 618,
+      "bufferHeight": 1258,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "glbResources": [
+        {
+          "encodedBytes": 28567788,
+          "transferBytes": 28568088,
+          "durationMs": 319
+        }
+      ]
+    }
+  ]
+}

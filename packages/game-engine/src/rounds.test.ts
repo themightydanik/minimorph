@@ -28,3 +28,17 @@ it('recorded ordinary controls complete each full round',()=>{
   expect(state.won,`${arena.id} replay, ${JSON.stringify(state)}`).toBe(true);expect(state.falls).toBe(0);
  }
 });
+it('a late full-round fall restores the latest checkpoint and preserves ordered splits',()=>{
+ const arena=arenas[2],state=createPlayer(arena);
+ for(const segment of recordings['gravity-mayhem'].segments){
+  for(let tick=0;tick<Math.round(segment.seconds/FIXED_STEP)&&state.checkpoint<5;tick++)stepArenaPlayer(state,{x:Number(segment.keys.includes('KeyD'))-Number(segment.keys.includes('KeyA')),z:-Number(segment.keys.includes('KeyW')),jump:segment.jump&&tick===0},FIXED_STEP,arena);
+  if(state.checkpoint===5)break;
+ }
+ expect(state.checkpoint).toBe(5);const splits=[...state.splits],elapsed=state.elapsed;
+ for(let tick=0;tick<1200&&state.falls===0;tick++)stepArenaPlayer(state,{x:1,z:0,jump:false},FIXED_STEP,arena);
+ expect(state.falls).toBe(1);
+ for(let tick=0;tick<180;tick++)stepArenaPlayer(state,{x:0,z:0,jump:false},FIXED_STEP,arena);
+ expect(state.respawns).toBe(1);expect(state.checkpoint).toBe(5);expect(state.splits).toEqual(splits);
+ expect(state.z).toBeCloseTo(arena.checkpoints[4].z);expect(state.x).toBeCloseTo(arena.checkpoints[4].x);expect(state.elapsed).toBeGreaterThan(elapsed);
+ const restarted=createPlayer(arena);expect(restarted.collapseTimes).toEqual({});expect(restarted.splits).toEqual([]);expect(restarted.elapsed).toBe(0);
+});

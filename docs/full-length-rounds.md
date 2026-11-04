@@ -46,7 +46,7 @@ Full races use `minimorph.progress.v2` with schema 2. Training retains `minimorp
 
 ## Verification and limits
 
-`npm run check` passes 22 Python character tests, type checking, ESLint, 64 unit tests, both production builds and validated Minima packaging. Unit tests cover the new obstacles, all mainlines and alternatives, exact recorded input replay, progress isolation and camera recovery. Character/rig files have no diff from main. The existing strict 2x deformation diagnostic remains unchanged and temporarily non-blocking under the accepted art exception.
+`npm run check` passes 22 Python character tests, type checking, ESLint, 65 unit tests, both production builds and validated Minima packaging. Unit tests cover the new obstacles, all mainlines and alternatives, exact recorded input replay, progress isolation and late-sector checkpoint/camera recovery. Character/rig files have no diff from main. The existing strict 2x deformation diagnostic remains unchanged and temporarily non-blocking under the accepted art exception.
 
 Browser tests retain the original Training regression suite and add a complete full-length three-round circuit, persisted full records, separate old Training records and two-pointer diagonal/jump controls. Full circuit playback advances browser frames in 100 ms increments, exercising the actual fixed-step controller at a controlled 10 Hz render cadence. This is a low-frame-rate functional test, not a real-time FPS measurement; no player or hazard state is injected. Screenshots come from that PlayCanvas implementation.
 
