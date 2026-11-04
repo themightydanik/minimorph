@@ -127,7 +127,8 @@ export function beginRecovery(
 ): void {
   if (state.recovery || state.won) return;
   state.recovery = reason;
-  state.action = "normal"; state.actionTime = 0; state.diveUsed = false;
+  state.action = "normal"; state.actionTime = 0;
+  // Only checkpoint restoration rearms the dive; entering respawn is an interruption.
   state.respawnTimer = RESPAWN_DELAY;
   state.falls++;
   if (reason === "obstacle") state.obstacleHits++;
@@ -204,6 +205,8 @@ export function stepPlayer(
     ? JUMP_BUFFER_TIME
     : Math.max(0, state.jumpBuffer - dt);
   const movement = cameraRelativeMovement(input.x, input.z, input.cameraYaw);
+  // Consume edges even while locked; expiry must not accept an input from a locked tick.
+  const actionAtStart = state.action;
   // Action timers and physics live here so prediction and the authoritative server agree.
   if (state.action === "slide" || state.action === "recover") {
     state.actionTime = Math.max(0, state.actionTime - dt);
@@ -212,7 +215,7 @@ export function stepPlayer(
       state.actionTime = state.action === "recover" ? ACTION_RECOVERY_TIME : 0;
     }
   }
-  if (divePressed && state.action === "normal" && state.diveCooldown === 0 &&
+  if (divePressed && actionAtStart === "normal" && state.action === "normal" && state.diveCooldown === 0 &&
       !state.diveUsed && state.knockTime === 0) {
     const magnitude = Math.hypot(movement.x, movement.z);
     const dx = magnitude > 0.1 ? movement.x / magnitude : -Math.sin(state.heading);
@@ -280,6 +283,8 @@ export function stepPlayer(
     state.vy = 0;
     state.grounded = true;
     if (state.action === "dive") { state.action = "slide"; state.actionTime = SLIDE_TIME; }
+    // Ground contact only rearms after the action chain, never during Slide/Recovery.
+    // Cooldown and the held-input latch survive landing and all interruptions.
     if (state.action === "normal") state.diveUsed = false;
   }
   // Sample hazards from simulation time, not wall-clock/render frames.

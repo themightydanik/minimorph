@@ -209,7 +209,7 @@ export function createGame(
       );
       if (session.phase === "racing") stepArenaPlayer(
         player,
-        { ...input, cameraYaw, jump: pendingJump, dive: pendingDive },
+        { ...input, cameraYaw, jump: pendingJump, dive: pendingDive || !!input.dive },
         FIXED_STEP,
         levels.current,
       );

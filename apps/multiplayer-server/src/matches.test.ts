@@ -242,3 +242,37 @@ it('authoritatively applies analog jump/dive actions and matches client predicti
   expect([...actions]).toEqual(expect.arrayContaining(['normal', 'dive', 'slide', 'recover']));
   expect(human.room!.snapshot(6000).participants.find(p => p.id === participant.id)!.state.action).toBe(participant.state.action);
 });
+it.each(['held', 'rapid'] as const)('%s Dive remains deterministic through action boundaries and delayed reconciliation', async pattern => {
+  const { Prediction } = await import('@minimorph/multiplayer-client');
+  const service = new MatchService(), human = peer();
+  service.handle(human, join('create'), 0);
+  service.handle(human, { v: 2, type: 'start' }, 0); service.tick(3000);
+  const participant = human.participant!, prediction = new Prediction(), arenaId = human.room!.arena.id;
+  prediction.receive(participant.state, participant.ack, arenaId, true);
+  const history: { seq: number; state: typeof participant.state }[] = [];
+  let starts = 0;
+  for (let i = 0; i < 90; i++) {
+    const before = participant.state.diveCooldown;
+    const command = prediction.command({ x: 0, z: 0, jump: false, dive: pattern === 'held' || i % 2 === 0 }, 0);
+    service.handle(human, { v: 2, type: 'input', command }, 3001 + i * 34);
+    human.room!.simulate();
+    if (participant.state.diveCooldown > before) starts++;
+    expect(participant.state.diveHeld).toBe(command.dive);
+    expect(prediction.local).toEqual(participant.state);
+    history.push({ seq: command.seq, state: structuredClone(participant.state) });
+    if (i >= 2 && i % 5 === 0) {
+      // A stale snapshot must replay unacknowledged Dive/neutral commands with their held latch intact.
+      const older = history[i - 2];
+      prediction.receive(older.state, older.seq, arenaId, true);
+      expect(prediction.pending).toHaveLength(2);
+      expect(prediction.local).toEqual(participant.state);
+    }
+  }
+  if (pattern === 'held') {
+    expect(starts).toBe(1); expect(participant.state.action).toBe('normal');
+    expect(participant.state.diveCooldown).toBe(0);
+    human.room!.simulate(); // No new packet must not manufacture a Dive release.
+    expect(participant.state.diveHeld).toBe(true);
+    expect(participant.state.action).toBe('normal');
+  } else expect(starts).toBeGreaterThan(1);
+});

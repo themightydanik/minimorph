@@ -45,10 +45,11 @@ export class Prediction {
   }
   simulate(c: InputCommand) {
     if (!this.local) return;
+    // Preserve the Dive level across all substeps, exactly as the authoritative room does.
     for (let i = 0; i < 4; i++)
       stepArenaPlayer(
         this.local,
-        { x: c.x, z: c.z, jump: c.jump && i === 0, dive: !!c.dive && i === 0, cameraYaw: c.yaw },
+        { x: c.x, z: c.z, jump: c.jump && i === 0, dive: !!c.dive, cameraYaw: c.yaw },
         FIXED_STEP,
         getArena(this.arenaId),
       );

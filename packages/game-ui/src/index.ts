@@ -246,7 +246,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     options,
   );
   const readControls = () => {
-    const jump = jumpQueued, dive = diveQueued;
+    const jump = jumpQueued, dive = diveQueued || pressed("ShiftLeft") || pressed("ShiftRight");
     jumpQueued = diveQueued = false;
     const stick = joystick.read();
     const keyboardX = Number(pressed("KeyD") || pressed("ArrowRight")) - Number(pressed("KeyA") || pressed("ArrowLeft"));

@@ -179,7 +179,7 @@ export class Room {
         if (p.status !== "racing") continue;
         stepArenaPlayer(
           p.state,
-          { ...input, jump: input.jump && sub === 0, dive: !!input.dive && sub === 0 },
+          { ...input, jump: input.jump && sub === 0, dive: !!input.dive },
           FIXED_STEP,
           this.arena,
           p.world,
@@ -190,8 +190,9 @@ export class Room {
         }
       }
     }
+    // Dive is a held level: only a neutral/new command or stale-input timeout releases it.
     for (const p of this.participants)
-      p.lastInput = { ...p.lastInput, jump: false, dive: false };
+      p.lastInput = { ...p.lastInput, jump: false };
     this.tick++;
     this.elapsed = this.tick / 30;
   }

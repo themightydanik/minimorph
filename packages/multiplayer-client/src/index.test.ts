@@ -152,7 +152,7 @@ it('dive prediction and replay exactly match authoritative substeps through slid
   for (let n = 0; n < 80; n++) {
     const command = prediction.command({ x: .13, z: -.65, jump: n === 5, dive: n === 12 }, .1);
     for (let i = 0; i < 4; i++) stepArenaPlayer(server, {
-      ...command, cameraYaw: command.yaw, jump: command.jump && i === 0, dive: command.dive && i === 0,
+      ...command, cameraYaw: command.yaw, jump: command.jump && i === 0, dive: command.dive,
     }, FIXED_STEP, arenas[0]);
     actions.add(server.action);
     expect(prediction.local).toEqual(server);

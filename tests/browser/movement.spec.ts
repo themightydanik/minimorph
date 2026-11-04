@@ -11,7 +11,7 @@ test('production character follows jump, forward dive, slide, recovery and run',
   await canvas.focus(); await page.keyboard.down('KeyW'); await page.clock.runFor(220);
   await page.keyboard.press('Space'); await page.clock.runFor(180);
   await expect(canvas).toHaveAttribute('data-character-clip', 'Jump');
-  await page.keyboard.press('ShiftLeft'); await page.clock.runFor(50);
+  await page.keyboard.down('ShiftLeft'); await page.clock.runFor(50);
   await expect(canvas).toHaveAttribute('data-action', 'dive');
   await expect(canvas).toHaveAttribute('data-character-clip', 'Fall');
   await page.screenshot({ path: `test-results/pr9-dive-${info.project.name}.png` });
@@ -26,6 +26,7 @@ test('production character follows jump, forward dive, slide, recovery and run',
   await expect(canvas).toHaveAttribute('data-character-clip', 'Land');
   await page.clock.runFor(400); await expect(canvas).toHaveAttribute('data-action', 'normal');
   await expect(canvas).toHaveAttribute('data-character-clip', 'Run');
+  await page.keyboard.up('ShiftLeft');
   await page.keyboard.up('KeyW');
 });
 test('mobile analog stick supports partial intensity, three fingers and cancellation without stuck input', async ({ page }, info) => {
