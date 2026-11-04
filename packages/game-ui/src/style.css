@@ -177,17 +177,7 @@ footer {
   padding: 0;
   background: #1d3054c9;
 }
-.dpad {
-  display: grid;
-  grid-template-columns: repeat(3, 54px);
-  gap: 5px;
-}
-.dpad [data-key="ArrowUp"] {
-  grid-column: 2;
-}
-.dpad [data-key="ArrowLeft"] {
-  grid-column: 1;
-}
+
 .jump {
   border-radius: 50%;
   width: 76px !important;
@@ -273,10 +263,7 @@ footer {
   .touch-controls {
     bottom: 75px;
   }
-  .dpad {
-    gap: 3px;
-    grid-template-columns: repeat(3, 42px);
-  }
+
   .touch-controls button {
     width: 42px;
     height: 42px;
@@ -323,10 +310,7 @@ button {
   width: 60px;
   height: 60px;
 }
-.dpad {
-  grid-template-columns: repeat(3, 60px);
-  gap: 7px;
-}
+
 .jump {
   width: 88px !important;
   height: 88px !important;
@@ -359,10 +343,7 @@ button {
   }
 }
 @media (max-height: 500px) {
-  .dpad {
-    grid-template-columns: repeat(3, 48px);
-    gap: 4px;
-  }
+
   .touch-controls button {
     width: 48px;
     height: 48px;
@@ -545,15 +526,8 @@ footer button, .panel button { min-height: 48px; }
 @media(max-width:700px) { .mode-tabs { margin-bottom:10px; } .mode-tabs button{font-size:11px;min-height:48px;} .section-hint{font-size:9px !important;max-width:175px;line-height:1.35;} }
 @media(max-height:500px) { .section-hint{display:none !important;} .mode-tabs{position:absolute;right:24px;top:75px;width:auto;} .mode-tabs button{min-height:42px;font-size:10px;padding:8px 10px;} }
 .result-splits { font-size:9px; line-height:1.7; color:#a9c6d7; margin:10px 0; max-height:54px; overflow:auto; touch-action:pan-y; }
-.dpad { grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:6px; }
-.dpad button { width:54px;height:54px; }
-.dpad [data-key="ArrowUp+ArrowLeft"]{grid-area:1/1}.dpad [data-key="ArrowUp"]{grid-area:1/2}.dpad [data-key="ArrowUp+ArrowRight"]{grid-area:1/3}
-.dpad [data-key="ArrowLeft"]{grid-area:2/1}.dpad [data-key="ArrowRight"]{grid-area:2/3}
-.dpad [data-key="ArrowDown+ArrowLeft"]{grid-area:3/1}.dpad [data-key="ArrowDown"]{grid-area:3/2}.dpad [data-key="ArrowDown+ArrowRight"]{grid-area:3/3}
-.direction-arrow { display:block;transform:rotate(var(--turn));font-size:18px; }
-.dpad-label { grid-area:2/2;display:grid;place-items:center;font-size:7px;letter-spacing:1px;color:#9cc0d2;pointer-events:none; }
+
 @media(max-width:700px) and (min-height:501px){.message{bottom:300px}}
-@media(max-height:500px){.dpad{grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);gap:4px}.dpad button{width:48px;height:48px}}
 /* Reserve a stable area for two-line sector guidance above progress. */
 .section-hint { min-height:33px; }
 .race-progress { top:235px; }
@@ -583,3 +557,13 @@ footer button, .panel button { min-height: 48px; }
 @media(max-width:700px){.online-entry{margin-bottom:8px}.online-entry label{margin-right:4px}.online-entry input{max-width:115px}.online-entry select{max-width:150px}.online-entry button{font-size:10px;min-height:48px}.multiplayer-live{top:auto;bottom:250px;left:auto;right:12px;transform:none;padding:6px;max-width:160px}.multiplayer-live strong{font-size:8px}}
 @media(max-height:500px){.online-entry{display:flex;align-items:center;gap:10px;padding:4px 0;margin:4px 0}.online-entry>.eyebrow{display:none}.online-entry label{font-size:0}.online-entry input{max-width:90px}.online-entry select{max-width:130px}.online-entry button{font-size:9px;padding:6px;min-height:40px}.online-actions{flex-wrap:nowrap;gap:4px}.multiplayer-live{top:12px;bottom:auto;right:150px;left:auto;transform:none}}
 @media(min-width:701px) and (min-height:501px){[data-online-state] .camera-controls{top:110px}}
+
+/* Analog control surface: fixed origin, radial feedback, independent action fingers. */
+.joystick { position:relative;width:156px;height:156px;flex-shrink:0;border-radius:50%;border:1px solid #70e9e980;background:radial-gradient(circle,#31597b99,#132c4bcc);box-shadow:inset 0 0 28px #07162980;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none; }
+.joystick::before { content:"";position:absolute;inset:21%;border:1px solid #a5d3e333;border-radius:50%;pointer-events:none; }
+.joystick-knob { position:absolute;left:calc(50% - 26px);top:calc(50% - 26px);width:52px;height:52px;border-radius:50%;border:2px solid #87f5ee;background:#317b91;box-shadow:0 4px 16px #0005;pointer-events:none; }
+.joystick.pressed .joystick-knob { background:#45a9b8;box-shadow:0 0 18px #54eeea66; }
+.joystick-label { position:absolute;bottom:9px;left:0;right:0;text-align:center;color:#b3dce5;font-size:9px;letter-spacing:2px;pointer-events:none; }
+.touch-actions { display:flex;flex-direction:column;gap:12px;align-items:center;pointer-events:none; }
+.touch-controls .dive { width:70px;height:54px;border-radius:20px;border-color:#ffd38a;background:#66513bdb;font-size:11px;font-weight:bold; }
+@media(max-height:500px) { .joystick{width:128px;height:128px}.joystick-knob{width:44px;height:44px;left:calc(50% - 22px);top:calc(50% - 22px)}.touch-actions{gap:8px}.touch-controls .dive{height:44px} }

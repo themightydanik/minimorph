@@ -1,5 +1,8 @@
 # PR #8: owner-approved character optimization study
 
+**PR #9 update:** The owner explicitly approved activation of the exact PR #8 candidate. Production now selects it; the original and historical study evidence remain intact. See [activation, movement and rollback](character-movement.md). Any statements below about an unapproved candidate describe the earlier PR #8 study stage.
+
+
 The owner approved exploration and preparation of a moderately simplified version of the original Minimorph. This is a specific exception to the earlier model-quality protection policy; it does not approve replacing the production character.
 
 The recognizable silhouette, proportions, face, palette, visual identity, rig and six existing animations must be retained. Avoid obvious differences at ordinary gameplay distance. The original assets remain intact. Do not simplify arenas, scenery, lighting, environmental materials or effects, lower rendering resolution, or add automatic quality reductions without separate owner approval.

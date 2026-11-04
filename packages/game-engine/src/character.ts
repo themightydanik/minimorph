@@ -204,6 +204,8 @@ export type CharacterClip = typeof CHARACTER_CLIPS[number];
 export function characterClip(state: Readonly<PlayerState>): CharacterClip {
   if (state.won) return "Victory";
   if (state.recovery) return "Idle";
+  if (state.action === "dive" || state.action === "slide") return "Fall";
+  if (state.action === "recover") return "Land";
   if (!state.grounded) return state.vy > 0 ? "Jump" : "Fall";
   if (state.landingTime > 0) return "Land";
   return Math.hypot(state.vx, state.vz) > 0.15 ? "Run" : "Idle";
@@ -240,28 +242,37 @@ export function animatedCharacterSource(config: AnimatedCharacterConfig): Charac
         }));
         for (const name of CHARACTER_CLIPS) if (!tracks.has(name)) throw new Error(`Missing character clip: ${name}`);
         const root = visual.root;
-        root.setLocalEulerAngles(0, config.yaw ?? 0, 0);
+        const presentation = new pc.Entity("Character action presentation");
+        presentation.addChild(root);
+        root.setLocalEulerAngles(0, 0, 0);
+        presentation.setLocalEulerAngles(0, config.yaw ?? 0, 0);
         root.addComponent("anim", { activate: true });
         for (const name of CHARACTER_CLIPS) root.anim!.assignAnimation(name, tracks.get(name)!, undefined, 1, ["Idle", "Run", "Fall"].includes(name));
         let current: CharacterClip | undefined;
+        let pitch = 0;
         const canvas = app.graphicsDevice.canvas as HTMLCanvasElement;
         if (config.reportOnCanvas !== false) canvas.dataset.character = config.version;
         return {
-          root,
+          root: presentation,
           update(state, dt) {
             root.anim!.speed = dt > 0 ? 1 : 0;
             const next = characterClip(state);
+            // Temporary existing-clip presentation, no new skeletal animation or scaling.
+            const targetPitch = state.recovery || state.won ? 0 : state.action === "dive" ? -25 : state.action === "slide" ? -65 : 0;
+            pitch += (targetPitch - pitch) * (1 - Math.exp(-18 * dt));
+            presentation.setLocalEulerAngles(pitch, config.yaw ?? 0, 0);
             if (next !== current) {
-              root.anim!.baseLayer!.transition(next, current ? 0.08 : 0, 0);
+              root.anim!.baseLayer!.transition(next, current ? 0.12 : 0, 0);
               current = next;
             }
             if (config.reportOnCanvas !== false) {
+            canvas.dataset.characterPitch = String(pitch);
             canvas.dataset.characterClip = next;
             canvas.dataset.characterActive = root.anim!.baseLayer!.activeState;
             canvas.dataset.characterTime = String(root.anim!.baseLayer!.activeStateCurrentTime);
             }
           },
-          destroy() { visual.destroy(); },
+          destroy() { visual.destroy(); presentation.destroy(); },
         };
       } catch (error) {
         visual.destroy();

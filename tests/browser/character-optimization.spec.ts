@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-test("unapproved candidate stays in the isolated review harness with unchanged resolution policy", async ({
+test("original and approved candidate remain comparable in the review harness with unchanged resolution policy", async ({
   page,
 }) => {
   test.setTimeout(90000);
@@ -46,7 +46,7 @@ test("unapproved candidate stays in the isolated review harness with unchanged r
   expect(
     Math.abs(info.bufferHeight - info.cssHeight * info.pixelRatio),
   ).toBeLessThanOrEqual(1);
-  await expect(page.locator("#status")).toContainText("UNAPPROVED STUDY");
-  await expect(page.locator("#right")).toContainText("NOT APPROVED");
+  await expect(page.locator("#status")).toContainText("candidate approved in PR #9");
+  await expect(page.locator("#right")).toContainText("PRODUCTION APPROVED");
   expect(errors).toEqual([]);
 });

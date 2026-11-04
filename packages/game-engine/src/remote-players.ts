@@ -79,6 +79,7 @@ export function createRemotePlayers(
         e.anchor.setEulerAngles(0, (p.state.heading * 180) / Math.PI, 0);
         e.anchor.enabled = p.status !== "dnf";
         e.visual.update(p.state, dt);
+        e.label.dataset.action = p.state.action;
         e.label.dataset.animation = characterClip(p.state);
         e.label.dataset.player = p.id;
         e.label.dataset.x = String(p.state.x);

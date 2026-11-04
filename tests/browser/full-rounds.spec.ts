@@ -10,7 +10,7 @@ test('full racing circuit with ordinary keys, checkpoints, Victory and persisten
  await page.route('https://telegram.org/**',r=>r.abort());
  await page.goto('http://127.0.0.1:5173');
  const canvas=page.locator('canvas');
- await expect(canvas).toHaveAttribute('data-character','minimorph-animated-v1-temporary',{timeout:60000});
+ await expect(canvas).toHaveAttribute('data-character','minimorph-optimized-v1',{timeout:60000});
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await page.getByRole('button',{name:'Play Cosmic Sprint',exact:true}).click();
  for(const [id,,checkpoints] of circuit){
@@ -44,16 +44,16 @@ test('two-touch diagonal movement and jump release safely in portrait and landsc
  test.skip(info.project.name!=='mobile','Actual multi-touch emulation uses the mobile project');
  test.setTimeout(120000);
  await page.clock.install({time:new Date('2026-01-01T00:00:00Z')});await page.goto('http://127.0.0.1:5173');
- const canvas=page.locator('canvas');await expect(canvas).toHaveAttribute('data-character','minimorph-animated-v1-temporary',{timeout:60000});
+ const canvas=page.locator('canvas');await expect(canvas).toHaveAttribute('data-character','minimorph-optimized-v1',{timeout:60000});
  await page.getByRole('button',{name:'Training tracks',exact:true}).click();await page.getByRole('button',{name:'Play Cosmic Sprint',exact:true}).click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  const cdp=await page.context().newCDPSession(page);
  for(const [width,height] of [[393,851],[900,450]]){
   await page.setViewportSize({width,height});
   if(width===393)await page.getByRole('button',{name:'Start race',exact:true}).click();else await page.getByRole('button',{name:'Restart',exact:false}).click();
   await page.clock.fastForward(3100);await expect(canvas).toHaveAttribute('data-phase','racing');
-  const direction=(await page.getByRole('button',{name:'Move forward right',exact:true}).boundingBox())!,jump=(await page.getByRole('button',{name:'Jump',exact:true}).boundingBox())!;
+  const direction=(await page.getByRole('group',{name:'Movement joystick'}).boundingBox())!,jump=(await page.getByRole('button',{name:'Jump',exact:true}).boundingBox())!;
   expect(direction.width).toBeGreaterThanOrEqual(48);expect(direction.height).toBeGreaterThanOrEqual(48);
-  const first={x:direction.x+direction.width/2,y:direction.y+direction.height/2,id:1};
+  const first={x:direction.x+direction.width*.73,y:direction.y+direction.height*.27,id:1};
   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[first]});await page.clock.runFor(200);
   expect(Number(await canvas.getAttribute('data-heading'))).toBeLessThan(-.3);
   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[first,{x:jump.x+jump.width/2,y:jump.y+jump.height/2,id:2}]});await page.clock.runFor(100);await expect(canvas).toHaveAttribute('aria-description','Airborne');

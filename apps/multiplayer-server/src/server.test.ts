@@ -50,7 +50,7 @@ it("real sockets share rooms, authoritative snapshots and reconnect slots; HTTP 
     const a = await open(server.port),
       first = next(a, (m) => m.type === "welcome");
     send(a, {
-      v: 1,
+      v: 2,
       type: "join",
       mode: "create",
       name: "Alice",
@@ -61,7 +61,7 @@ it("real sockets share rooms, authoritative snapshots and reconnect slots; HTTP 
     const b = await open(server.port),
       second = next(b, (m) => m.type === "welcome");
     send(b, {
-      v: 1,
+      v: 2,
       type: "join",
       mode: "private",
       name: "Bob",
@@ -71,7 +71,7 @@ it("real sockets share rooms, authoritative snapshots and reconnect slots; HTTP 
     const wb = await second;
     if (wb.type !== "welcome") throw Error("welcome");
     expect(wb.snapshot.roomId).toBe(welcome.snapshot.roomId);
-    send(a, { v: 1, type: "start" });
+    send(a, { v: 2, type: "start" });
     await new Promise((r) => setTimeout(r, 20));
     const started = next(b, (m) => m.type === "snapshot");
     server.step(Date.now() + 3100);
@@ -87,7 +87,7 @@ it("real sockets share rooms, authoritative snapshots and reconnect slots; HTTP 
         m.snapshot.participants.some((p) => p.id === welcome.id && p.ack === 1),
     );
     send(a, {
-      v: 1,
+      v: 2,
       type: "input",
       command: { seq: 1, x: 0, z: -1, jump: true, yaw: 0 },
     });
@@ -103,7 +103,7 @@ it("real sockets share rooms, authoritative snapshots and reconnect slots; HTTP 
     await new Promise((r) => setTimeout(r, 20));
     const resumed = await open(server.port),
       back = next(resumed, (m) => m.type === "welcome");
-    send(resumed, { v: 1, type: "resume", token: welcome.token });
+    send(resumed, { v: 2, type: "resume", token: welcome.token });
     const wr = await back;
     if (wr.type !== "welcome") throw Error("welcome");
     expect(wr.id).toBe(welcome.id);
@@ -122,7 +122,7 @@ it("binary, authority injection, message floods and oversized frames cannot muta
   try {
     const ws = await open(server.port),
       error = next(ws, (m) => m.type === "error");
-    send(ws, { v: 1, type: "position", x: 0, z: -400, won: true });
+    send(ws, { v: 2, type: "position", x: 0, z: -400, won: true });
     expect(await error).toMatchObject({ code: "bad_message" });
     expect(server.service.rooms.size).toBe(0);
     const large = await open(server.port);
@@ -138,7 +138,7 @@ it("binary, authority injection, message floods and oversized frames cannot muta
         (m) => m.type === "error" && m.code === "rate_limited",
       );
     for (let i = 0; i < 15; i++)
-      send(flood, { v: 1, type: "ping", sent: Date.now() });
+      send(flood, { v: 2, type: "ping", sent: Date.now() });
     expect(await rate).toMatchObject({ code: "rate_limited" });
   } finally {
     await server.close();
@@ -162,7 +162,7 @@ it("eight real network humans and server bots complete each full arena with ordi
         const accepted = next(ws, (m) => m.type === "welcome");
         const room = [...server.service.rooms.values()][0];
         send(ws, {
-          v: 1,
+          v: 2,
           type: "join",
           mode: i === 0 ? "create" : "private",
           name: `Human ${i}`,
@@ -187,7 +187,7 @@ it("eight real network humans and server bots complete each full arena with ordi
       mixed.start(Date.now());
       server.service.rooms.set(mixed.id, mixed);
       const room = [...server.service.rooms.values()][0];
-      send(sockets[0], { v: 1, type: "start" });
+      send(sockets[0], { v: 2, type: "start" });
       await new Promise((r) => setTimeout(r, 5));
       const base = Date.now() + 3100;
       simulatedNow = base;
@@ -211,7 +211,7 @@ it("eight real network humans and server bots complete each full arena with ordi
               controls[i] = botInput(p.state, room.arena, p.world, "normal");
             else controls[i] = { ...controls[i], jump: false };
             send(sockets[i], {
-              v: 1,
+              v: 2,
               type: "input",
               command: { seq: tick + 1, ...controls[i], yaw: 0 },
             });

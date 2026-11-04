@@ -13,6 +13,7 @@ export function botInput(
   world: ArenaRuntime,
   skill: Skill,
 ): Input {
+  if (state.action === "slide" || state.action === "recover") return { x: 0, z: 0, jump: false, dive: false };
   const distance = -state.z,
     surfaces = world.surfaces(
       state.elapsed,
@@ -119,5 +120,13 @@ export function botInput(
     !jump
   )
     z = 0;
-  return { x, z, jump };
+  // Only descend into a long, clear landing deck; never shorten a gap jump's apex.
+  const safeLanding = surfaces.some(s =>
+    surfaceContains(s, state.x + x * 0.4, state.z - 5) &&
+    surfaceContains(s, state.x, state.z - 1) &&
+    state.y - s.y > 0.25 && state.y - s.y < 0.8);
+  const clearAhead = !arena.mechanisms.some(o => Math.abs(o.z - state.z) < 7);
+  const dive = skill === "hard" && state.action === "normal" && !state.grounded &&
+    state.vy < -1 && !state.diveUsed && state.diveCooldown === 0 && safeLanding && clearAhead && z < 0;
+  return { x, z, jump: state.action === "normal" && jump, dive };
 }

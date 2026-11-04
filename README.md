@@ -13,7 +13,7 @@ npm run dev:telegram
 npm run dev:minima
 ```
 
-Open the address printed by Vite. Choose Cosmic Sprint, read the briefing and launch through 3–2–1–GO. WASD/arrows move; Space jumps; Q/E or ↶/↷ orbit the camera. An eight-way touch pad supports diagonal movement and jump together. Secure the sector checkpoints and finish to save your best time and unlock Orbit Chaos, then Gravity Mayhem. Full rounds take approximately 60–90 seconds; the original short tracks remain under Training with separate records. New mechanisms carry, launch, knock back or remove support; read the warning signals. Blur pauses the race; Resume counts down again. Restart resets the current run. Progress is local with a safe session-only fallback. Desktop browsers need WebGL 2 and hardware acceleration.
+Open the address printed by Vite. Choose Cosmic Sprint, read the briefing and launch through 3–2–1–GO. WASD/arrows move; Space jumps; Shift dives; Q/E or ↶/↷ orbit the camera. A 360° analog touch stick controls direction and intensity alongside independent Jump/Dive buttons. Secure the sector checkpoints and finish to save your best time and unlock Orbit Chaos, then Gravity Mayhem. Full rounds take approximately 60–90 seconds; the original short tracks remain under Training with separate records. New mechanisms carry, launch, knock back or remove support; read the warning signals. Blur pauses the race; Resume counts down again. Restart resets the current run. Progress is local with a safe session-only fallback. Desktop browsers need WebGL 2 and hardware acceleration.
 
 ```sh
 npm run typecheck
@@ -62,4 +62,6 @@ Character skin-regression tests require `python -m pip install -r tools/blender/
 
 ## Character optimization study
 
-PR #8 prepares an isolated 125,928-triangle candidate while production keeps the original 160,000-triangle model. See the [owner approval policy](docs/character-optimization-policy.md), [study and rollback boundary](docs/character-optimization-study.md), and [actual comparisons / 1–8 actor measurements](docs/evidence/character-optimization/README.md). No world quality or rendering resolution is reduced, and candidate activation requires explicit owner approval.
+PR #8 prepared a 125,928-triangle candidate. The owner approved its production activation for PR #9; the original 160,000-triangle model remains intact for rollback. See the [owner approval policy](docs/character-optimization-policy.md), [study and rollback boundary](docs/character-optimization-study.md), and [actual comparisons / 1–8 actor measurements](docs/evidence/character-optimization/README.md). No world quality or rendering resolution is reduced, and the exact candidate is now selected by the production configuration.
+
+See [movement, analog controls, multiplayer compatibility and rollback](docs/character-movement.md) for PR #9.

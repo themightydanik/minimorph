@@ -1,5 +1,5 @@
 import type { PlayerState, Input } from "@minimorph/game-simulation";
-export const PROTOCOL_VERSION = 1;
+export const PROTOCOL_VERSION = 2;
 export const SERVER_HZ = 30,
   SNAPSHOT_HZ = 10,
   CAPACITY = 8,
@@ -11,6 +11,7 @@ export interface InputCommand {
   x: number;
   z: number;
   jump: boolean;
+  dive?: boolean;
   yaw: number;
 }
 export interface ParticipantSnapshot {
@@ -54,23 +55,23 @@ export interface RoomSnapshot {
 }
 export type ClientMessage =
   | {
-      v: 1;
+      v: 2;
       type: "join";
       mode: "quick" | "create" | "private";
       name: string;
       arenaId: string;
       code?: string;
     }
-  | { v: 1; type: "resume"; token: string }
-  | { v: 1; type: "input"; command: InputCommand }
-  | { v: 1; type: "start" }
-  | { v: 1; type: "leave" }
-  | { v: 1; type: "ping"; sent: number };
+  | { v: 2; type: "resume"; token: string }
+  | { v: 2; type: "input"; command: InputCommand }
+  | { v: 2; type: "start" }
+  | { v: 2; type: "leave" }
+  | { v: 2; type: "ping"; sent: number };
 export type ServerMessage =
-  | { v: 1; type: "welcome"; id: string; token: string; snapshot: RoomSnapshot }
-  | { v: 1; type: "snapshot"; snapshot: RoomSnapshot }
-  | { v: 1; type: "pong"; sent: number; serverTime: number }
-  | { v: 1; type: "error"; code: string; message: string };
+  | { v: 2; type: "welcome"; id: string; token: string; snapshot: RoomSnapshot }
+  | { v: 2; type: "snapshot"; snapshot: RoomSnapshot }
+  | { v: 2; type: "pong"; sent: number; serverTime: number }
+  | { v: 2; type: "error"; code: string; message: string };
 const record = (v: unknown): v is Record<string, unknown> =>
   !!v && typeof v === "object" && !Array.isArray(v);
 const finite = (v: unknown): v is number =>
@@ -86,7 +87,7 @@ export function parseClientMessage(text: string): ClientMessage | null {
   } catch {
     return null;
   }
-  if (!record(m) || m.v !== 1 || typeof m.type !== "string") return null;
+  if (!record(m) || m.v !== 2 || typeof m.type !== "string") return null;
   if (
     m.type === "join" &&
     keys(m, ["v", "type", "mode", "name", "arenaId", "code"]) &&
@@ -116,7 +117,7 @@ export function parseClientMessage(text: string): ClientMessage | null {
   ) {
     const c = m.command;
     if (
-      keys(c, ["seq", "x", "z", "jump", "yaw"]) &&
+      keys(c, ["seq", "x", "z", "jump", "dive", "yaw"]) &&
       Number.isSafeInteger(c.seq) &&
       Number(c.seq) > 0 &&
       finite(c.x) &&
@@ -124,6 +125,7 @@ export function parseClientMessage(text: string): ClientMessage | null {
       finite(c.z) &&
       Math.abs(c.z) <= 1 &&
       typeof c.jump === "boolean" &&
+      (c.dive === undefined || typeof c.dive === "boolean") &&
       finite(c.yaw) &&
       Math.abs(c.yaw) <= Math.PI
     )
@@ -144,5 +146,6 @@ export const commandInput = (c: InputCommand): Input => ({
   x: c.x,
   z: c.z,
   jump: c.jump,
+  dive: c.dive ?? false,
   cameraYaw: c.yaw,
 });

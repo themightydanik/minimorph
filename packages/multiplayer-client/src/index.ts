@@ -48,7 +48,7 @@ export class Prediction {
     for (let i = 0; i < 4; i++)
       stepArenaPlayer(
         this.local,
-        { x: c.x, z: c.z, jump: c.jump && i === 0, cameraYaw: c.yaw },
+        { x: c.x, z: c.z, jump: c.jump && i === 0, dive: !!c.dive && i === 0, cameraYaw: c.yaw },
         FIXED_STEP,
         getArena(this.arenaId),
       );
@@ -59,6 +59,7 @@ export class Prediction {
       x: input.x,
       z: input.z,
       jump: input.jump,
+      dive: !!input.dive,
       yaw,
     };
     this.pending.push(c);
@@ -168,7 +169,7 @@ export class MultiplayerClient implements OnlineDriver {
       if (generation !== this.generation) return;
       this.lastMessage = Date.now();
       this.send(
-        this.token ? { v: 1, type: "resume", token: this.token } : join!,
+        this.token ? { v: 2, type: "resume", token: this.token } : join!,
       );
     };
     ws.onmessage = (event) => {
@@ -184,7 +185,7 @@ export class MultiplayerClient implements OnlineDriver {
       } catch {
         return;
       }
-      if (m.v !== 1) return;
+      if (m.v !== 2) { this.fail("Server/client movement versions differ. Update both and rejoin."); return; }
       this.lastMessage = Date.now();
       if (m.type === "error") {
         if (
@@ -305,7 +306,7 @@ export class MultiplayerClient implements OnlineDriver {
     if (!this.connected) return;
     if (now - this.lastPing > 3000) {
       this.lastPing = now;
-      this.send({ v: 1, type: "ping", sent: now });
+      this.send({ v: 2, type: "ping", sent: now });
     }
     const input = this.input();
     this.yaw = wrapAngle(this.yaw + ((input.cameraTurn ?? 0) / 30) * 1.5);
@@ -317,7 +318,7 @@ export class MultiplayerClient implements OnlineDriver {
     const me = this.snapshot.participants.find((p) => p.id === this.id);
     if (me?.status !== "racing") return;
     this.send({
-      v: 1,
+      v: 2,
       type: "input",
       command: this.prediction.command(input, this.yaw),
     });
@@ -354,7 +355,7 @@ export class MultiplayerClient implements OnlineDriver {
     };
   }
   startMatch() {
-    this.send({ v: 1, type: "start" });
+    this.send({ v: 2, type: "start" });
   }
   private fail(message: string) {
     this.callbacks.onState("unavailable", message);
@@ -364,7 +365,7 @@ export class MultiplayerClient implements OnlineDriver {
     this.stopped = true;
     this.connected = false;
     this.generation++;
-    if (leave) this.send({ v: 1, type: "leave" });
+    if (leave) this.send({ v: 2, type: "leave" });
     this.ws?.close();
     if (this.interval) clearInterval(this.interval);
     if (this.retry) clearTimeout(this.retry);

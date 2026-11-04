@@ -88,7 +88,7 @@ const source: CharacterSource = {
     canvas.dataset.variant = compare ? "comparison" : variant;
     canvas.dataset.clip = clip;
     status.textContent =
-      "UNAPPROVED STUDY · full unchanged Cosmic Sprint scene · identical viewport and drawing buffer across variants · original renderer/DPR cap · " +
+      "PR #8 COMPARISON · candidate approved in PR #9 · full unchanged Cosmic Sprint scene · identical viewport and drawing buffer across variants · original renderer/DPR cap · " +
       (paused ? `${clip} at ${time.toFixed(2)}s` : `${clip} playing`);
     return {
       root,
@@ -121,7 +121,7 @@ document.querySelector("#left")!.textContent = compare
   ? "ORIGINAL · 160,000 triangles"
   : `${variant.toUpperCase()} · ${count} visible character(s)`;
 document.querySelector("#right")!.textContent = compare
-  ? "CANDIDATE · 125,928 triangles · NOT APPROVED"
+  ? "CANDIDATE · 125,928 triangles · PRODUCTION APPROVED · PR #9"
   : "Render-only study · no production asset replacement";
 const wait = setInterval(() => {
   if (!application || visuals.length !== count) return;

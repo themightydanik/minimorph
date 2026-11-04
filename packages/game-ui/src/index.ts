@@ -1,3 +1,4 @@
+import { mountJoystick } from "./joystick";
 import { mountMultiplayer } from './multiplayer-ui';
 import type { RaceMode } from "@minimorph/game-content";
 import { createResultsUI } from "./results";
@@ -23,14 +24,14 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
       <div class="selection-heading"><span class="eyebrow">THE ORBIT CIRCUIT</span><h2>Small paws.<br> Giant competition.</h2><p>Three arenas. One determined cadet. Choose your next launch.</p></div>
       <div class="mode-tabs" aria-label="Race mode"><button data-mode="race" aria-pressed="true">Racing rounds</button><button data-mode="training" aria-pressed="false">Training tracks</button></div><div class="level-grid"></div><p class="storage-status"></p>
     </section>
-    <section class="screen prepare" aria-label="Race preparation" hidden><div class="panel"><span class="eyebrow">MISSION BRIEFING</span><h2 data-prepare-title></h2><p data-prepare-description></p><div class="route-list"></div><p class="brief-controls">WASD / arrows to move · Space to jump<br>8-way pad + Jump on mobile · Q / E to orbit camera</p><button class="primary" data-start>Start race</button><button data-back>Choose arena</button></div></section>
+    <section class="screen prepare" aria-label="Race preparation" hidden><div class="panel"><span class="eyebrow">MISSION BRIEFING</span><h2 data-prepare-title></h2><p data-prepare-description></p><div class="route-list"></div><p class="brief-controls">WASD / arrows to move · Space to jump · Shift to dive<br>Analog stick + Jump / Dive on mobile · Q / E to orbit camera</p><button class="primary" data-start>Start race</button><button data-back>Choose arena</button></div></section>
     <div class="countdown" aria-live="polite" hidden><strong>3</strong><span>READY TO LAUNCH</span></div>
     <section class="screen results" aria-label="Race results" hidden><div class="panel"><span class="eyebrow">ORBIT COMPLETE</span><h2>Nice landing,<br> cadet.</h2><p class="result-badge"></p><div class="result-stats"><span>YOUR TIME<strong data-result-time></strong></span><span>BEST TIME<strong data-best-time></strong></span><span>RECOVERIES<strong data-result-falls></strong></span></div><div class="result-splits" aria-label="Checkpoint splits"></div><button class="primary" data-next>Next arena</button><button data-replay>Race again</button><button data-back>Choose arena</button><p class="storage-status"></p></div></section>
     <section class="screen pause" aria-label="Race paused" hidden><div class="panel"><span class="eyebrow">TAKE A BREATHER</span><h2>Flight paused.</h2><p>Your timer is stopped. Resume when you are ready.</p><button class="primary" data-resume>Resume race</button><button data-back>Choose arena</button></div></section>
     <section class="screen fatal" role="alert" hidden><div class="panel"><h2>Graphics connection lost.</h2><p>Reload this page to resume. Your saved progress is safe.</p></div></section>
-    <footer><span class="host-status"></span><span class="keyboard-help">WASD / ARROWS · MOVE &nbsp; SPACE · JUMP &nbsp; Q / E · CAMERA</span><button class="arena-menu" type="button">Arenas</button><button class="restart" type="button">↻ Restart</button></footer>
+    <footer><span class="host-status"></span><span class="keyboard-help">WASD / ARROWS · MOVE &nbsp; SPACE · JUMP &nbsp; SHIFT · DIVE &nbsp; Q / E · CAMERA</span><button class="arena-menu" type="button">Arenas</button><button class="restart" type="button">↻ Restart</button></footer>
     <div class="camera-controls" aria-label="Camera controls"><button data-key="KeyQ" aria-label="Rotate camera left">↶</button><button data-key="KeyE" aria-label="Rotate camera right">↷</button></div>
-    <nav class="touch-controls" aria-label="Touch controls"><div class="dpad"><button data-key="ArrowUp+ArrowLeft" aria-label="Move forward left"><span class="direction-arrow" style="--turn:-45deg" aria-hidden="true">▲</span></button><button data-key="ArrowUp" aria-label="Move forward"><span class="direction-arrow" style="--turn:0deg" aria-hidden="true">▲</span></button><button data-key="ArrowUp+ArrowRight" aria-label="Move forward right"><span class="direction-arrow" style="--turn:45deg" aria-hidden="true">▲</span></button><button data-key="ArrowLeft" aria-label="Move left"><span class="direction-arrow" style="--turn:-90deg" aria-hidden="true">▲</span></button><button data-key="ArrowRight" aria-label="Move right"><span class="direction-arrow" style="--turn:90deg" aria-hidden="true">▲</span></button><button data-key="ArrowDown+ArrowLeft" aria-label="Move backward left"><span class="direction-arrow" style="--turn:-135deg" aria-hidden="true">▲</span></button><button data-key="ArrowDown" aria-label="Move backward"><span class="direction-arrow" style="--turn:180deg" aria-hidden="true">▲</span></button><button data-key="ArrowDown+ArrowRight" aria-label="Move backward right"><span class="direction-arrow" style="--turn:135deg" aria-hidden="true">▲</span></button><span class="dpad-label" aria-hidden="true">MOVE</span></div><button class="jump" data-key="Space" aria-label="Jump">JUMP</button></nav>
+    <nav class="touch-controls" aria-label="Touch controls"><div class="joystick" role="group" aria-label="Movement joystick"><span class="joystick-knob" aria-hidden="true"></span><span class="joystick-label" aria-hidden="true">MOVE</span></div><div class="touch-actions"><button class="dive" data-key="ShiftLeft" aria-label="Dive">DIVE</button><button class="jump" data-key="Space" aria-label="Jump">JUMP</button></div></nav>
   </main>`;
   const progressions = { race: localProgression("race"), training: localProgression("training") };
   let mode: RaceMode = "race", progression = progressions.race;
@@ -54,7 +55,9 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     options = { signal: controller.signal };
   const keys = new Set<string>(),
     pointers = new Map<number, { key: string; codes: string[] }>();
+  const joystick = mountJoystick(root.querySelector<HTMLElement>(".joystick")!, controller.signal);
   let jumpQueued = false,
+    diveQueued = false,
     won = false,
     checkpoint = 0,
     recoveries = 0,
@@ -73,11 +76,15 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     "ArrowLeft",
     "ArrowRight",
     "Space",
+    "ShiftLeft",
+    "ShiftRight",
   ]);
   const clearInput = () => {
     keys.clear();
     pointers.clear();
     jumpQueued = false;
+    diveQueued = false;
+    joystick.reset();
     root
       .querySelectorAll(".pressed")
       .forEach((e) => e.classList.remove("pressed"));
@@ -178,6 +185,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
         return;
       e.preventDefault();
       if (e.code === "Space" && !e.repeat) jumpQueued = true;
+      if ((e.code === "ShiftLeft" || e.code === "ShiftRight") && !e.repeat) diveQueued = true;
       keys.add(e.code);
     },
     options,
@@ -200,6 +208,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
         pointers.set(e.pointerId, { key: button.dataset.key!, codes: button.dataset.key!.split("+") });
         button.classList.add("pressed");
         if (button.dataset.key === "Space") jumpQueued = true;
+        if (button.dataset.key === "ShiftLeft") diveQueued = true;
       },
       options,
     );
@@ -237,19 +246,18 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     options,
   );
   const readControls = () => {
-        const jump = jumpQueued;
-        jumpQueued = false;
-        return {
-          x:
-            Number(pressed("KeyD") || pressed("ArrowRight")) -
-            Number(pressed("KeyA") || pressed("ArrowLeft")),
-          z:
-            Number(pressed("KeyS") || pressed("ArrowDown")) -
-            Number(pressed("KeyW") || pressed("ArrowUp")),
-          jump,
-          cameraTurn: Number(pressed("KeyE")) - Number(pressed("KeyQ")),
-        };
-      };
+    const jump = jumpQueued, dive = diveQueued;
+    jumpQueued = diveQueued = false;
+    const stick = joystick.read();
+    const keyboardX = Number(pressed("KeyD") || pressed("ArrowRight")) - Number(pressed("KeyA") || pressed("ArrowLeft"));
+    const keyboardZ = Number(pressed("KeyS") || pressed("ArrowDown")) - Number(pressed("KeyW") || pressed("ArrowUp"));
+    return {
+      x: keyboardX || stick.x,
+      z: keyboardZ || stick.z,
+      jump, dive,
+      cameraTurn: Number(pressed("KeyE")) - Number(pressed("KeyQ")),
+    };
+  };
   const multiplayer = mountMultiplayer(root,()=>game,readControls,clearInput);
   try {
     game = createGame(

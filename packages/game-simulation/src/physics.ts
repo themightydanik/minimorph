@@ -7,7 +7,14 @@ import type { ArenaConfig, CourseDefinition, MovingObstacle } from "@minimorph/g
 import { advanceCheckpoints, respawnPoint } from "./checkpoints";
 import type { CollisionSurface } from "./obstacles";
 import { ArenaRuntime, surfaceContains, mechanismContact, sampleMechanism } from "./obstacles";
+export type MovementAction = "normal" | "dive" | "slide" | "recover";
 export interface PlayerState {
+  action: MovementAction;
+  actionTime: number;
+  diveCooldown: number;
+  diveUsed: boolean;
+  jumpHeld: boolean;
+  diveHeld: boolean;
   collapseTimes: Record<string,number>;
   splits: number[];
   supportId: string | null;
@@ -44,10 +51,15 @@ export interface Input {
   x: number;
   z: number;
   jump: boolean;
+  dive?: boolean;
   cameraYaw?: number;
   cameraTurn?: number;
 }
 export const SPEED = 6;
+export const DIVE_SPEED = 8.4;
+export const DIVE_COOLDOWN = 1.1;
+export const SLIDE_TIME = 0.42;
+export const ACTION_RECOVERY_TIME = 0.22;
 export const ACCELERATION = 34;
 export const DECELERATION = 42;
 export const GRAVITY = 18;
@@ -61,6 +73,7 @@ export const idleInput: Input = { x: 0, z: 0, jump: false };
 export function createPlayer(course: CourseDefinition = legacyCourse): PlayerState {
   return {
     ...course.spawn,
+    action: "normal", actionTime: 0, diveCooldown: 0, diveUsed: false, jumpHeld: false, diveHeld: false,
     collapseTimes: {}, splits: [],
     supportId: null, lastHazard: null, knockTime: 0, knockX: 0, knockZ: 0, eventSerial: 0, lastEvent: null,
     vx: 0,
@@ -114,6 +127,7 @@ export function beginRecovery(
 ): void {
   if (state.recovery || state.won) return;
   state.recovery = reason;
+  state.action = "normal"; state.actionTime = 0; state.diveUsed = false;
   state.respawnTimer = RESPAWN_DELAY;
   state.falls++;
   if (reason === "obstacle") state.obstacleHits++;
@@ -124,6 +138,7 @@ export function beginRecovery(
 function restoreCheckpoint(state: PlayerState, course: CourseDefinition): void {
   const point = respawnPoint(state, course);
   Object.assign(state, {
+    action: "normal", actionTime: 0, diveUsed: false,
     supportId: null, knockTime: 0, knockX: 0, knockZ: 0,
     x: point.x,
     y: point.y,
@@ -171,6 +186,10 @@ export function stepPlayer(
   evaluateCourse = true,
 ): void {
   if (state.won) return;
+  const jumpPressed = input.jump && !state.jumpHeld;
+  const divePressed = !!input.dive && !state.diveHeld;
+  state.jumpHeld = input.jump; state.diveHeld = !!input.dive;
+  state.diveCooldown = Math.max(0, state.diveCooldown - dt);
   state.elapsed += dt;
   state.checkpointFlash = Math.max(0, state.checkpointFlash - dt);
   state.landingTime = Math.max(0, state.landingTime - dt);
@@ -181,12 +200,43 @@ export function stepPlayer(
     return;
   }
   state.coyote = state.grounded ? COYOTE_TIME : Math.max(0, state.coyote - dt);
-  state.jumpBuffer = input.jump
+  state.jumpBuffer = jumpPressed
     ? JUMP_BUFFER_TIME
     : Math.max(0, state.jumpBuffer - dt);
   const movement = cameraRelativeMovement(input.x, input.z, input.cameraYaw);
-  approachVelocity(state, movement.x * SPEED, movement.z * SPEED, dt, course.airControl ?? 1);
-  if (state.jumpBuffer > 0 && state.coyote > 0) {
+  // Action timers and physics live here so prediction and the authoritative server agree.
+  if (state.action === "slide" || state.action === "recover") {
+    state.actionTime = Math.max(0, state.actionTime - dt);
+    if (state.actionTime <= 0) {
+      state.action = state.action === "slide" ? "recover" : "normal";
+      state.actionTime = state.action === "recover" ? ACTION_RECOVERY_TIME : 0;
+    }
+  }
+  if (divePressed && state.action === "normal" && state.diveCooldown === 0 &&
+      !state.diveUsed && state.knockTime === 0) {
+    const magnitude = Math.hypot(movement.x, movement.z);
+    const dx = magnitude > 0.1 ? movement.x / magnitude : -Math.sin(state.heading);
+    const dz = magnitude > 0.1 ? movement.z / magnitude : -Math.cos(state.heading);
+    // Fixed capped forward impulse, never an upward impulse or an additive speed boost.
+    state.vx = dx * DIVE_SPEED; state.vz = dz * DIVE_SPEED;
+    state.vy = Math.min(state.vy, -1);
+    state.action = state.grounded ? "slide" : "dive";
+    state.actionTime = state.grounded ? SLIDE_TIME : 0;
+    state.diveUsed = true; state.diveCooldown = DIVE_COOLDOWN;
+    state.jumpBuffer = state.coyote = 0;
+  }
+  if (state.action === "normal") {
+    approachVelocity(state, movement.x * SPEED, movement.z * SPEED, dt, course.airControl ?? 1);
+  } else if (state.action === "dive") {
+    // Limited steering; no extra thrust after the initial dive.
+    approachVelocity(state, movement.x * SPEED, movement.z * SPEED, dt, 0.18);
+    state.jumpBuffer = state.coyote = 0;
+  } else {
+    const friction = state.action === "slide" ? 2.4 : 8;
+    state.vx *= Math.exp(-friction * dt); state.vz *= Math.exp(-friction * dt);
+    state.jumpBuffer = state.coyote = 0;
+  }
+  if (state.action === "normal" && state.jumpBuffer > 0 && state.coyote > 0) {
     state.vy = JUMP_SPEED;
     state.lastEvent = "jump"; state.eventSerial++;
     state.grounded = false;
@@ -229,6 +279,8 @@ export function stepPlayer(
     state.y = landing.y;
     state.vy = 0;
     state.grounded = true;
+    if (state.action === "dive") { state.action = "slide"; state.actionTime = SLIDE_TIME; }
+    if (state.action === "normal") state.diveUsed = false;
   }
   // Sample hazards from simulation time, not wall-clock/render frames.
   if (state.protection === 0)
@@ -273,7 +325,7 @@ export function stepArenaPlayer(state:PlayerState,input:Input,dt:number,arena:Ar
   const o=e.o;if(Math.abs(o.z-state.z)>18)continue;
   if(o.kind==='collapse-platform'&&state.grounded&&state.supportId===o.id){const t=state.collapseTimes[o.id];if(t===undefined||state.elapsed-t>=o.delay+o.resetAfter)state.collapseTimes[o.id]=state.elapsed;}
   if((o.kind==='jump-pad'&&state.grounded&&Math.abs(state.y-o.y)<.05&&Math.abs(state.x-o.x)<o.width/2&&Math.abs(state.z-o.z)<o.depth/2)||(o.kind==='bounce-platform'&&state.grounded&&state.supportId===o.id)){
-   state.vy=o.boost;state.grounded=false;state.coyote=state.jumpBuffer=0;state.supportId=null;state.lastEvent='pad';state.eventSerial++;
+   state.action='normal';state.actionTime=0;state.vy=o.boost;state.grounded=false;state.coyote=state.jumpBuffer=0;state.supportId=null;state.lastEvent='pad';state.eventSerial++;
   }
   const p=sampleMechanism(o,state.elapsed,e.now,state.collapseTimes[o.id]);
   if(!mechanismContact(o,state.elapsed,state,PLAYER_RADIUS,p))continue;
@@ -287,7 +339,7 @@ export function stepArenaPlayer(state:PlayerState,input:Input,dt:number,arena:Ar
   if(Math.hypot(dx,dz)<.05){dx=Math.cos(p.angle+Math.PI/2);dz=Math.sin(p.angle+Math.PI/2);}
   const l=Math.hypot(dx,dz);state.lastHazard=o.id;state.knockX=dx/l*8;state.knockZ=dz/l*8;
   state.vy=Math.max(state.vy,barrier?2.5:4.8);state.grounded=false;state.supportId=null;
-  state.knockTime=.55;state.protection=.8;state.obstacleHits++;state.coyote=state.jumpBuffer=0;state.lastEvent='hit';state.eventSerial++;
+  state.action='normal';state.actionTime=0;state.knockTime=.55;state.protection=.8;state.obstacleHits++;state.coyote=state.jumpBuffer=0;state.lastEvent='hit';state.eventSerial++;
   break;
  }
  advanceCheckpoints(state,arena);

@@ -5,12 +5,12 @@ const circuit = [ ['cosmic-sprint','Cosmic Sprint'], ['orbit-chaos','Orbit Chaos
 test('whole circuit: countdown, all arenas, physical routes, records, unlocks and reload', async ({ page }, info) => {
  test.setTimeout(600000);
  const errors:string[]=[]; let modelLoads=0;
- page.on('pageerror',e=>errors.push(e.message)); page.on('request',r=>{if(r.url().includes('minimorph_animated_v1')&&r.url().endsWith('.glb'))modelLoads++;});
+ page.on('pageerror',e=>errors.push(e.message)); page.on('request',r=>{if(r.url().includes('minimorph_candidate_v1')&&r.url().endsWith('.glb'))modelLoads++;});
  await page.clock.install({time:new Date('2026-01-01T00:00:00Z')});
  await page.route('https://telegram.org/**',r=>r.abort());
  await page.goto('http://127.0.0.1:5173');
  const canvas=page.locator('canvas');
- await expect(canvas).toHaveAttribute('data-character','minimorph-animated-v1-temporary',{timeout:30000});
+ await expect(canvas).toHaveAttribute('data-character','minimorph-optimized-v1',{timeout:30000});
  await page.getByRole('button',{name:'Training tracks',exact:true}).click();
  await expect(page.getByRole('button',{name:'Locked Orbit Chaos',exact:true})).toBeDisabled();
  await page.screenshot({path:`test-results/pr5-selection-${info.project.name}.png`});
@@ -61,7 +61,7 @@ for(const port of [5173,5174]) test(`arena switching and safe focus recovery on 
  await page.clock.install({time:new Date('2026-01-01T00:00:00Z')});
  await page.goto(`http://127.0.0.1:${port}`);
  const canvas=page.locator('canvas');
- await expect(canvas).toHaveAttribute('data-character','minimorph-animated-v1-temporary',{timeout:30000});
+ await expect(canvas).toHaveAttribute('data-character','minimorph-optimized-v1',{timeout:30000});
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  for(const [id,name] of circuit) {
   await chooseAndStart(page,name,true); await expect(canvas).toHaveAttribute('data-arena',id);
@@ -96,7 +96,7 @@ test('authored rotor physically knocks the animated character and shows hit feed
  await page.clock.install({time:new Date('2026-01-01T00:00:00Z')});
  await page.goto('http://127.0.0.1:5173');
  const canvas=page.locator('canvas');
- await expect(canvas).toHaveAttribute('data-character','minimorph-animated-v1-temporary',{timeout:30000});
+ await expect(canvas).toHaveAttribute('data-character','minimorph-optimized-v1',{timeout:30000});
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await chooseAndStart(page,'Cosmic Sprint',true);
  await page.keyboard.down('KeyW'); await page.keyboard.down('KeyD'); await page.clock.runFor(440);
