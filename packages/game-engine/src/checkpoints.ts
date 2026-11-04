@@ -8,6 +8,7 @@ export function advanceCheckpoints(state: PlayerState, course: CourseDefinition)
   const checkpoint = course.checkpoints[state.checkpoint];
   if (checkpoint && Math.abs(state.y - checkpoint.y) < 0.01 && Math.hypot(state.x - checkpoint.x, state.z - checkpoint.z) < checkpoint.radius) {
     state.checkpoint++;
+    state.splits.push(state.elapsed);
     state.checkpointFlash = 1.2;
   }
   const finish = course.finish;

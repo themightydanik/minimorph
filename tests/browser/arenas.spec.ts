@@ -11,6 +11,7 @@ test('whole circuit: countdown, all arenas, physical routes, records, unlocks an
  await page.goto('http://127.0.0.1:5173');
  const canvas=page.locator('canvas');
  await expect(canvas).toHaveAttribute('data-character','minimorph-animated-v1-temporary',{timeout:30000});
+ await page.getByRole('button',{name:'Training tracks',exact:true}).click();
  await expect(page.getByRole('button',{name:'Locked Orbit Chaos',exact:true})).toBeDisabled();
  await page.screenshot({path:`test-results/pr5-selection-${info.project.name}.png`});
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
@@ -49,6 +50,7 @@ test('whole circuit: countdown, all arenas, physical routes, records, unlocks an
  expect(modelLoads).toBe(1); // One loaded character survives all three arena switches.
  await page.reload();
  await expect(page.getByRole('region',{name:'Arena selection',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Training tracks',exact:true}).click();
  for(const [,name] of circuit) await expect(page.getByRole('button',{name:`Play ${name}`,exact:true})).toBeEnabled();
  await expect(page.locator('.level-record').first()).toContainText('BEST');
  expect(errors).toEqual([]);

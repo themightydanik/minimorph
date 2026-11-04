@@ -2,7 +2,10 @@ import { platforms, obstacles, spawn, finish, checkpoints } from './legacy';
 import type { Platform, MovingObstacle } from './legacy';
 export interface Point { x: number; y: number; z: number }
 export interface Marker extends Point { radius: number }
+export type RaceMode = "race" | "training";
+export interface ArenaSection { id: string; name: string; start: number; end: number; hint: string; cameraDistance?: number; cameraLift?: number }
 export interface CourseDefinition {
+  airControl?: number;
   spawn: Point;
   finish: Marker;
   checkpoints: readonly Marker[];
@@ -15,8 +18,17 @@ export type ArenaObstacle =
   | (Mechanism & { kind: 'disappearing-platform'; width: number; depth: number; onFor: number; warning: number })
   | (Mechanism & { kind: 'jump-pad'; width: number; depth: number; boost: number })
   | (Mechanism & { kind: 'laser'; width: number; depth: number; height: number; warning: number; activeFor: number })
-  | (Mechanism & { kind: 'rotating-disc'; radius: number });
+  | (Mechanism & { kind: 'rotating-disc'; radius: number })
+  | (Mechanism & { kind: 'pendulum'; radius: number; length: number; swing: number })
+  | (Mechanism & { kind: 'moving-wall'; width: number; depth: number; height: number; gap: number; amplitude: number })
+  | (Mechanism & { kind: 'conveyor'; width: number; depth: number; velocityX: number; velocityZ: number })
+  | (Mechanism & { kind: 'bounce-platform'; width: number; depth: number; amplitude: number; boost: number })
+  | (Mechanism & { kind: 'timed-gate'; width: number; depth: number; height: number; warning: number; activeFor: number })
+  | (Mechanism & { kind: 'pusher'; width: number; depth: number; height: number; side: -1 | 1; reach: number; warning: number; activeFor: number })
+  | (Mechanism & { kind: 'collapse-platform'; width: number; depth: number; delay: number; warning: number; resetAfter: number });
 export interface ArenaConfig extends CourseDefinition {
+  sections?: readonly ArenaSection[];
+  expectedSeconds?: readonly [number, number];
   id: string;
   name: string;
   subtitle: string;
@@ -30,7 +42,7 @@ export interface ArenaConfig extends CourseDefinition {
 }
 /** Original PR #2–4 course remains available to regression tests and API clients. */
 export const legacyCourse: CourseDefinition = { spawn, finish, checkpoints };
-export const arenas: readonly ArenaConfig[] = [
+export const trainingArenas: readonly ArenaConfig[] = [
   {
     id: 'cosmic-sprint', name: 'Cosmic Sprint', subtitle: '01 / LIFT OFF', difficulty: 'CADET',
     description: 'Find your rhythm. Leap between orbital islands and jump the moving sweeper.',
@@ -89,8 +101,8 @@ export const arenas: readonly ArenaConfig[] = [
     routes: [{ name: 'Pulse route', points: [{ x: 0, y: 0.2, z: -8 }, { x: 0, y: 0.4, z: -16 }, { x: 0, y: 0.4, z: -24 }, { x: 0, y: 0.4, z: -32 }, { x: 0, y: 0.4, z: -41 }] }],
   },
 ];
-export function getArena(id: string): ArenaConfig {
-  const arena = arenas.find(a => a.id === id);
+export function getTrainingArena(id: string): ArenaConfig {
+  const arena = trainingArenas.find(a => a.id === id);
   if (!arena) throw new Error(`Unknown arena: ${id}`);
   return arena;
 }

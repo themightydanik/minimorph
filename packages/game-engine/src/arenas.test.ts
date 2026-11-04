@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { arenas, getArena } from '@minimorph/game-content';
+import { trainingArenas as arenas, getTrainingArena as getArena } from '@minimorph/game-content';
 import { createPlayer, stepArenaPlayer, FIXED_STEP } from './physics';
 import { arenaRuns, orbitShuttleRun } from '../../../tests/helpers/arena-runs';
 describe('Arena routes with ordinary digital controls', () => {

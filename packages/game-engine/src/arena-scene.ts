@@ -3,6 +3,7 @@ import type { ArenaConfig, ArenaObstacle } from '@minimorph/game-content';
 import type { ShapeFactory } from './character';
 import type { PlayerState } from './physics';
 import { obstaclePosition } from './physics';
+import type { MechanismPhase } from './obstacles';
 import { sampleMechanism } from './obstacles';
 type MaterialFactory = (hex: string, glow?: boolean) => pc.StandardMaterial;
 export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape: ShapeFactory, material: MaterialFactory) {
@@ -19,7 +20,7 @@ export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape:
       shape('Thruster housing', 'cylinder', parent, [side * width * 0.3, -0.65, 0], [0.6, 0.7, 0.6], dark);
       shape('Thruster light', 'cylinder', parent, [side * width * 0.3, -1.02, 0], [0.4, 0.04, 0.4], accent);
     }
-    for (let z = -depth / 2 + 1; z < depth / 2; z += 1.6) {
+    for (let z = -depth / 2 + 1; z < depth / 2; z += arena.sections ? 3.2 : 1.6) {
       for (const side of [-1, 1]) {
         const arrow = shape('Direction chevron', 'box', parent, [side * 0.19, 0.025, z], [0.12, 0.025, 0.52], white);
         arrow.setLocalEulerAngles(0, side * 40, 0);
@@ -50,11 +51,13 @@ export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape:
   const legacy = arena.obstacles.map(o => shape('Moving sweeper', 'box', dynamic, [o.x, o.y + o.height / 2, o.z], [o.width, o.height, o.depth], hazard));
   const mechanisms = arena.mechanisms.map(o => {
     const entity = new pc.Entity(o.id); dynamic.addChild(entity);
-    let deckEntity: pc.Entity | undefined, beam: pc.Entity | undefined, strip: pc.Entity | undefined;
+    let deckEntity: pc.Entity | undefined, beam: pc.Entity | undefined, strip: pc.Entity | undefined, rod: pc.Entity | undefined, arm: pc.Entity | undefined;
+    const treads: pc.Entity[] = [], wallPanels: pc.Entity[] = [];
     const indicators: pc.Entity[] = [];
-    if (o.kind === 'moving-platform' || o.kind === 'disappearing-platform') {
+    if (o.kind === 'moving-platform' || o.kind === 'disappearing-platform' || o.kind === 'bounce-platform' || o.kind === 'collapse-platform') {
       deckEntity = new pc.Entity('Mechanism deck'); entity.addChild(deckEntity); deckShape(deckEntity, o.width, o.depth, alternate);
-      if (o.kind === 'disappearing-platform') for (const side of [-1, 1]) shape('Vanishing deck outline', 'box', entity, [side * o.width / 2, -0.04, 0], [0.06, 0.06, o.depth], hazard);
+      if (o.kind === 'bounce-platform') for (const side of [-1,1]) shape('Spring', 'cylinder', entity, [side*o.width*.3,-1,0],[.28,1.4,.28],accent);
+      if (o.kind === 'disappearing-platform' || o.kind === 'collapse-platform') for (const side of [-1, 1]) shape('Vanishing deck outline', 'box', entity, [side * o.width / 2, -0.04, 0], [0.06, 0.06, o.depth], hazard);
     }
     if (o.kind === 'rotating-disc') {
       shape('Rotating disc', 'cylinder', entity, [0, -0.3, 0], [o.radius * 2, 0.6, o.radius * 2], alternate);
@@ -78,15 +81,40 @@ export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape:
       shape('Jump pad base', 'box', entity, [0, 0.06, 0], [o.width, 0.12, o.depth], hazard);
       for (const side of [-1, 1]) { const arrow = shape('Launch arrow', 'box', entity, [side * 0.17, 0.13, 0], [0.12, 0.035, 0.55], white); arrow.setLocalEulerAngles(0, side * 40, 0); }
     }
-    if (o.kind === 'laser') {
+    if (o.kind === 'laser' || o.kind === 'timed-gate') {
       for (const side of [-1, 1]) {
         shape('Laser emitter', 'box', entity, [side * (o.width / 2 + 0.1), o.height / 2, 0], [0.22, o.height, 0.4], dark);
         indicators.push(shape('Laser signal', 'sphere', entity, [side * (o.width / 2 + 0.1), o.height + 0.15, 0], [0.28, 0.28, 0.28], accent));
       }
       strip = shape('Laser warning strip', 'box', entity, [0, 0.02, 0], [o.width, 0.03, 0.45], dark);
-      beam = shape('Laser field', 'box', entity, [0, o.height / 2, 0], [o.width, o.height, o.depth], ghost);
+      beam = shape(o.kind === 'laser' ? 'Laser field' : 'Timed solid gate', 'box', entity, [0, o.height / 2, 0], [o.width, o.height, o.depth], ghost);
     }
-    return { o, entity, deckEntity, beam, strip, indicators };
+    if (o.kind === 'pendulum') {
+      shape('Pendulum bob', 'sphere', entity, [0,0,0], [o.radius*2,o.radius*2,o.radius*2], hazard);
+      rod = shape('Pendulum arm','cylinder',entity,[0,o.length/2,0],[.09,o.length,.09],white);
+      shape('Swing crossing warning','box',fixed,[o.x,o.y+.02,o.z],[o.length*1.7,.03,.3],warning);
+    }
+    if (o.kind === 'moving-wall') {
+      const half=(o.width-o.gap)/2;
+      for(const side of [-1,1]) {
+        wallPanels.push(shape('Moving wall panel','box',entity,[side*(o.gap/2+half/2),o.height/2,0],[half,o.height,o.depth],alternate));
+        shape('Safe opening marker','box',entity,[side*(o.gap/2+.06),o.height/2,o.depth/2+.03],[.12,o.height,.08],accent);
+      }
+      shape('Opening guide','box',entity,[0,.03,1],[o.gap,.04,.18],accent);
+    }
+    if (o.kind === 'conveyor') {
+      shape('Conveyor bed','box',entity,[0,.015,0],[o.width,.025,o.depth],dark);
+      for(let i=0;i<6;i++)treads.push(shape('Moving belt tread','box',entity,[0,.04,0],o.velocityX!==0?[.16,.035,o.depth]:[o.width,.035,.16],accent));
+    }
+    if (o.kind === 'pusher') {
+      shape('Pusher head','box',entity,[0,o.height/2,0],[o.width,o.height,o.depth],hazard);
+      arm=shape('Piston shaft','box',entity,[0,o.height/2,0],[.01,.18,.22],white);
+      shape('Pusher housing','box',fixed,[o.x,o.y+o.height/2,o.z],[1.2,o.height+.3,o.depth+.3],dark);
+      indicators.push(shape('Pusher signal','sphere',entity,[0,o.height+.2,0],[.25,.25,.25],accent));
+      shape('Pusher warning lane','box',fixed,[0,o.y+.02,o.z],[Math.abs(o.x)*2,.03,.18],warning);
+    }
+    const deckMeshes = deckEntity ? (deckEntity.findComponents('render') as pc.RenderComponent[]).flatMap(r=>r.meshInstances.map(mesh=>({mesh, original:mesh.material}))) : [];
+    return { o, entity, deckEntity, beam, strip, indicators, rod, arm, treads, wallPanels, deckMeshes, lastPhase:'', pose:{x:0,y:0,z:0,angle:0,phase:'safe' as MechanismPhase} };
   });
   // Original geometry only: low-poly stars, orbital ring and planets, all shared/batched.
   const planet = material(p.planet);
@@ -97,7 +125,11 @@ export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape:
     ring.setLocalEulerAngles(0, -a * 180 / Math.PI - 90, 0);
   }
   shape('Moon', 'sphere', fixed, [17, -1, -34], [6, 6, 6], alternate);
-  for (let i = 0; i < 90; i++) shape('Star', 'box', fixed, [Math.sin(i * 127.1) * 65, -16 + ((i * 17) % 28), -80 + ((i * 29) % 120)], [0.14, 0.14, 0.14], white);
+  for (let i = 0; i < (arena.sections ? 180 : 90); i++) shape('Star', 'box', fixed, [Math.sin(i * 127.1) * 65, -16 + ((i * 17) % 28), arena.sections ? -((i*29)%100)/100*(-arena.finish.z) : -80 + ((i * 29) % 120)], [0.14, 0.14, 0.14], white);
+  if (arena.sections) {
+    for(const section of arena.sections)for(const side of [-1,1])shape('Sector entry marker','box',fixed,[side*4.6,1.2,-section.start-2],[.16,2.4,.16],accent);
+    for(const factor of [.5,.9])shape('Distant sector planet','sphere',fixed,[factor===.5?20:-22,-3,arena.finish.z*factor],[14,14,14],planet);
+  }
   for (const route of arena.routes) for (const point of route.points) {
     shape(`Route beacon ${route.name}`, 'box', fixed, [point.x + 1.1, point.y + 0.15, point.z], [0.08, 0.3, 0.08], accent);
   }
@@ -107,25 +139,41 @@ export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape:
     root,
     update(state: Readonly<PlayerState>) {
       legacy.forEach((entity, i) => { const o = arena.obstacles[i], at = obstaclePosition(o, state.elapsed); entity.setLocalPosition(at.x, at.y + o.height / 2, at.z); });
-      mechanisms.forEach(({ o, entity, deckEntity, beam, strip, indicators }) => {
-        const at = sampleMechanism(o, state.elapsed);
-        entity.setLocalPosition(at.x, at.y, at.z); entity.setLocalEulerAngles(0, -at.angle * 180 / Math.PI, 0);
-        if (deckEntity) deckEntity.enabled = at.phase !== 'hidden';
-        if (deckEntity && o.kind === 'disappearing-platform') {
-          for (const render of deckEntity.findComponents('render') as pc.RenderComponent[]) for (const mesh of render.meshInstances) mesh.material = at.phase === 'warning' ? warning : alternate;
+      mechanisms.forEach(entry => {
+        const {o,entity,deckEntity,beam,strip,indicators,rod,arm,treads,wallPanels,deckMeshes,pose}=entry;
+        entity.enabled=Math.abs(o.z-state.z)<80;
+        if(!entity.enabled)return;
+        const at=sampleMechanism(o,state.elapsed,pose,state.collapseTimes[o.id]);
+        entity.setLocalPosition(at.x,at.y,at.z);
+        entity.setLocalEulerAngles(0,o.kind==='pendulum'?0:-at.angle*180/Math.PI,0);
+        const behind=o.z-state.z>0&&o.z-state.z<4;
+        for(const panel of wallPanels){const mesh=panel.render!.meshInstances[0],mat=behind?ghost:alternate;if(mesh.material!==mat)mesh.material=mat;}
+        if(rod&&o.kind==='pendulum'){rod.setLocalPosition(-Math.sin(at.angle)*o.length/2,Math.cos(at.angle)*o.length/2,0);rod.setLocalEulerAngles(0,0,at.angle*180/Math.PI);}
+        if(deckEntity){
+          const falling=o.kind==='collapse-platform'&&at.phase==='hidden'&&state.elapsed-(state.collapseTimes[o.id]??0)<o.delay+1.2;
+          deckEntity.enabled=at.phase!=='hidden'||falling;
+          if(entry.lastPhase!==at.phase)for(const {mesh,original} of deckMeshes)mesh.material=at.phase==='warning'?warning:original;
         }
-        if (beam && o.kind === 'laser') {
-          beam.enabled = at.phase !== 'safe';
-          beam.render!.meshInstances[0].material = at.phase === 'warning' ? warning : ghost;
-          strip!.render!.meshInstances[0].material = at.phase === 'safe' ? dark : at.phase === 'warning' ? warning : hazard;
-          indicators.forEach(signal => {
-            signal.render!.meshInstances[0].material = at.phase === 'safe' ? accent : at.phase === 'warning' ? warning : hazard;
-            const size = at.phase === 'warning' ? 0.3 + Math.sin(state.elapsed * 18) * 0.09 : 0.28;
-            signal.setLocalScale(size, size, size);
-          });
-          beam.setLocalScale(o.width, at.phase === 'active' ? o.height : 0.04, o.depth);
-          beam.setLocalPosition(0, at.phase === 'active' ? o.height / 2 : 0.04, 0);
+        if(o.kind==='conveyor')for(const [i,tread] of treads.entries()){
+          const span=o.velocityX!==0?o.width:o.depth, velocity=o.velocityX!==0?o.velocityX:o.velocityZ;
+          const offset=((i/6*span+state.elapsed*velocity)%span+span)%span-span/2;
+          tread.setLocalPosition(o.velocityX!==0?offset:0,.04,o.velocityX!==0?0:offset);
         }
+        if(arm&&o.kind==='pusher'){
+          arm.setLocalPosition((o.x-at.x)/2,o.height/2,0);arm.setLocalScale(Math.max(.01,Math.abs(o.x-at.x)),.18,.22);
+        }
+        if(indicators.length)for(const signal of indicators){
+          signal.render!.meshInstances[0].material=at.phase==='safe'?accent:at.phase==='warning'?warning:hazard;
+          const size=at.phase==='warning'?.3+Math.sin(state.elapsed*18)*.09:.28;signal.setLocalScale(size,size,size);
+        }
+        if(beam&&(o.kind==='laser'||o.kind==='timed-gate')){
+          beam.enabled=o.kind==='timed-gate'||at.phase!=='safe';
+          beam.render!.meshInstances[0].material=o.kind==='timed-gate'?(at.phase==='active'?(behind?ghost:alternate):accent):at.phase==='warning'?warning:ghost;
+          strip!.render!.meshInstances[0].material=at.phase==='safe'?dark:at.phase==='warning'?warning:hazard;
+          beam.setLocalScale(o.width,at.phase==='active'?o.height:.08,o.depth);
+          beam.setLocalPosition(0,at.phase==='active'?o.height/2:o.kind==='timed-gate'?4.1:.04,0);
+        }
+        entry.lastPhase=at.phase;
       });
       checkpointPads.forEach((pad, i) => {
         pad.render!.meshInstances[0].material = state.checkpoint > i ? accent : hazard;

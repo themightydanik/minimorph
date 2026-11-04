@@ -44,3 +44,8 @@ it("keeps the initial zero-duration render finite", () => {
   updateCamera(pose, createPlayer(), 0, 1, FIXED_STEP);
   expect(Object.values(pose).every(Number.isFinite)).toBe(true);
 });
+it('long recovery immediately reframes the avatar while retaining camera yaw',async()=>{
+ const {reframeRecovery}=await import('./camera');const pose=createCameraPose(),player=createPlayer();
+ player.z=-320;pose.z=-400;reframeRecovery(pose,player,Math.PI/2,.5);
+ expect(pose.lookZ).toBe(-321);expect(pose.x).toBeCloseTo(player.x+11.5);expect(pose.z).toBeCloseTo(-321);expect(pose.y).toBe(player.y+8);
+});

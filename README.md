@@ -1,6 +1,6 @@
 # Minimorph
 
-A cosmic 3D obstacle racer with three compact arenas, starring a space-cat biorobot. Two browser shells share the same PlayCanvas engine: a free-to-play Telegram Mini App and a read-only Minima MiniDapp. This foundation has no accounts, rewards, transactions, leaderboards or multiplayer.
+A cosmic 3D obstacle racer with three full-length racing arenas, starring a space-cat biorobot. Two browser shells share the same PlayCanvas engine: a free-to-play Telegram Mini App and a read-only Minima MiniDapp. This foundation has no accounts, rewards, transactions, leaderboards or multiplayer.
 
 ## Develop
 
@@ -13,7 +13,7 @@ npm run dev:telegram
 npm run dev:minima
 ```
 
-Open the address printed by Vite. Choose Cosmic Sprint, read the briefing and launch through 3–2–1–GO. WASD/arrows move; Space jumps; Q/E or ↶/↷ orbit the camera. Touch controls support movement and jump together. Secure both checkpoints and finish to save your best time and unlock Orbit Chaos, then Gravity Mayhem. New mechanisms carry, launch, knock back or remove support; read the warning signals. Blur pauses the race; Resume counts down again. Restart resets the current run. Progress is local with a safe session-only fallback. Desktop browsers need WebGL 2 and hardware acceleration.
+Open the address printed by Vite. Choose Cosmic Sprint, read the briefing and launch through 3–2–1–GO. WASD/arrows move; Space jumps; Q/E or ↶/↷ orbit the camera. An eight-way touch pad supports diagonal movement and jump together. Secure the sector checkpoints and finish to save your best time and unlock Orbit Chaos, then Gravity Mayhem. Full rounds take approximately 60–90 seconds; the original short tracks remain under Training with separate records. New mechanisms carry, launch, knock back or remove support; read the warning signals. Blur pauses the race; Resume counts down again. Restart resets the current run. Progress is local with a safe session-only fallback. Desktop browsers need WebGL 2 and hardware acceleration.
 
 ```sh
 npm run typecheck
@@ -49,5 +49,5 @@ No secrets or environment variables are required for this prototype. Never commi
 
 The approved official Meshy-derived 160k character and six in-game clips from PR #4 are enabled in both hosts, with a procedural fallback on loading failure. The static model, embedded maps and packed Blender workbench remain unchanged. [Temporary character report and replacement config](docs/temporary-playable-character.md) document accepted deformation defects; artist replacement does not require rewriting gameplay.
 
-See [Orbit Circuit architecture, all seven mechanisms, limitations and level-authoring guide](docs/arena-system.md).
+See [full-length rounds, mechanics and verification](docs/full-length-rounds.md) and the [original training-track authoring guide](docs/arena-system.md).
 Character skin-regression tests require `python -m pip install -r tools/blender/requirements-test.txt`. `npm run check:rig-quality` is the separate strict deformation gate and currently fails on remaining local strain; technical CI success does not approve art.

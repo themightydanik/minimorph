@@ -3,11 +3,13 @@ import {
   legacyCourse,
   obstacles,
 } from "@minimorph/game-content";
-import type { ArenaConfig, CourseDefinition, Platform, MovingObstacle } from "@minimorph/game-content";
+import type { ArenaConfig, CourseDefinition, MovingObstacle } from "@minimorph/game-content";
 import { advanceCheckpoints, respawnPoint } from "./checkpoints";
 import type { CollisionSurface } from "./obstacles";
-import { arenaSurfaces, surfaceContains, supportDisplacement, mechanismContact, sampleMechanism } from "./obstacles";
+import { ArenaRuntime, surfaceContains, mechanismContact, sampleMechanism } from "./obstacles";
 export interface PlayerState {
+  collapseTimes: Record<string,number>;
+  splits: number[];
   supportId: string | null;
   lastHazard: string | null;
   knockTime: number;
@@ -59,6 +61,7 @@ export const idleInput: Input = { x: 0, z: 0, jump: false };
 export function createPlayer(course: CourseDefinition = legacyCourse): PlayerState {
   return {
     ...course.spawn,
+    collapseTimes: {}, splits: [],
     supportId: null, lastHazard: null, knockTime: 0, knockX: 0, knockZ: 0, eventSerial: 0, lastEvent: null,
     vx: 0,
     vy: 0,
@@ -144,11 +147,12 @@ function approachVelocity(
   x: number,
   z: number,
   dt: number,
+  airControl = 1,
 ): void {
   const dx = x - state.vx,
     dz = z - state.vz,
     distance = Math.hypot(dx, dz);
-  const amount = (Math.hypot(x, z) > 0 ? ACCELERATION : DECELERATION) * dt;
+  const amount = (Math.hypot(x, z) > 0 ? ACCELERATION : DECELERATION) * dt * (state.grounded ? 1 : airControl);
   if (distance <= amount) {
     state.vx = x;
     state.vz = z;
@@ -181,7 +185,7 @@ export function stepPlayer(
     ? JUMP_BUFFER_TIME
     : Math.max(0, state.jumpBuffer - dt);
   const movement = cameraRelativeMovement(input.x, input.z, input.cameraYaw);
-  approachVelocity(state, movement.x * SPEED, movement.z * SPEED, dt);
+  approachVelocity(state, movement.x * SPEED, movement.z * SPEED, dt, course.airControl ?? 1);
   if (state.jumpBuffer > 0 && state.coyote > 0) {
     state.vy = JUMP_SPEED;
     state.lastEvent = "jump"; state.eventSerial++;
@@ -204,14 +208,14 @@ export function stepPlayer(
   state.vy -= GRAVITY * dt;
   state.y += state.vy * dt;
   state.grounded = false;
-  let landing: Platform | undefined;
+  let landing: CollisionSurface | undefined;
   for (const p of surfaces) {
     if (
       surfaceContains(p, state.x, state.z) &&
       oldY >= (p.previousY ?? p.y) - 0.001 &&
       state.y <= p.y &&
       state.vy <= (dt > 0 ? (p.y - (p.previousY ?? p.y)) / dt : 0) &&
-      (!landing || p.y > landing.y)
+      (!landing || p.y > landing.y || p.y === landing.y && (p.priority ?? 0) > (landing.priority ?? 0))
     )
       landing = p;
   }
@@ -253,41 +257,38 @@ export function stepPlayer(
   if (evaluateCourse) advanceCheckpoints(state, course);
 }
 
-/** Extends the original controller; rendering uses the exact same mechanism sampler. */
-export function stepArenaPlayer(state: PlayerState, input: Input, dt: number, arena: ArenaConfig): void {
-  if (state.won) return;
-  if (state.grounded && !state.supportId && !state.recovery) {
-    state.supportId = arenaSurfaces(arena, state.elapsed).find(p => surfaceContains(p, state.x, state.z) && Math.abs(p.y - state.y) < 0.01)?.id ?? null;
+const runtimes = new WeakMap<PlayerState,ArenaRuntime>();
+/** Extends the original controller; each run owns reusable collision/sampling buffers. */
+export function stepArenaPlayer(state:PlayerState,input:Input,dt:number,arena:ArenaConfig,runtime?:ArenaRuntime):void {
+ if(state.won)return;
+ let world=runtime??runtimes.get(state);if(!world||world.arena!==arena){world=new ArenaRuntime(arena);runtimes.set(state,world);}
+ if(state.grounded&&!state.supportId&&!state.recovery)state.supportId=world.surfaces(state.elapsed,state.elapsed,state.collapseTimes,state.z).find(p=>surfaceContains(p,state.x,state.z)&&Math.abs(p.y-state.y)<.01)?.id??null;
+ if(state.grounded&&state.supportId&&!state.recovery){const d=world.displacement(state.supportId,state.elapsed,dt,state.x,state.z);state.x+=d.x;state.y+=d.y;state.z+=d.z;}
+ const surfaces=world.surfaces(state.elapsed+dt,state.elapsed,state.collapseTimes,state.z);
+ if(state.grounded)for(const s of surfaces)if(s.id===state.supportId)s.previousY=s.y;
+ const oldZ=state.z;
+ stepPlayer(state,input,dt,surfaces,arena.obstacles,arena,false);
+ if(state.recovery||state.won)return;
+ for(const e of world.entries){
+  const o=e.o;if(Math.abs(o.z-state.z)>18)continue;
+  if(o.kind==='collapse-platform'&&state.grounded&&state.supportId===o.id){const t=state.collapseTimes[o.id];if(t===undefined||state.elapsed-t>=o.delay+o.resetAfter)state.collapseTimes[o.id]=state.elapsed;}
+  if((o.kind==='jump-pad'&&state.grounded&&Math.abs(state.y-o.y)<.05&&Math.abs(state.x-o.x)<o.width/2&&Math.abs(state.z-o.z)<o.depth/2)||(o.kind==='bounce-platform'&&state.grounded&&state.supportId===o.id)){
+   state.vy=o.boost;state.grounded=false;state.coyote=state.jumpBuffer=0;state.supportId=null;state.lastEvent='pad';state.eventSerial++;
   }
-  if (state.grounded && state.supportId && !state.recovery) {
-    const support = arena.mechanisms.find(o => o.id === state.supportId);
-    if (support) {
-      const delta = supportDisplacement(support, state.elapsed, dt, state.x, state.z);
-      state.x += delta.x; state.y += delta.y; state.z += delta.z;
-    }
-  }
-  const surfaces = arenaSurfaces(arena, state.elapsed + dt, state.elapsed);
-  // A carried foot is already in the support's new frame; airborne contacts use swept Y.
-  if (state.grounded) for (const surface of surfaces) if (surface.id === state.supportId) surface.previousY = surface.y;
-  stepPlayer(state, input, dt, surfaces, arena.obstacles, arena, false);
-  if (state.recovery || state.won) return;
-  for (const o of arena.mechanisms) {
-    if (o.kind === "jump-pad" && state.grounded && Math.abs(state.y - o.y) < 0.05 && Math.abs(state.x - o.x) < o.width / 2 && Math.abs(state.z - o.z) < o.depth / 2) {
-      state.vy = o.boost; state.grounded = false; state.coyote = state.jumpBuffer = 0;
-      state.supportId = null; state.lastEvent = "pad"; state.eventSerial++;
-    }
-    if (state.protection <= 0 && mechanismContact(o, state.elapsed, state)) {
-      const p = sampleMechanism(o, state.elapsed);
-      let dx = state.x - p.x, dz = state.z - p.z;
-      if (Math.hypot(dx, dz) < 0.05) { dx = Math.cos(p.angle + Math.PI / 2); dz = Math.sin(p.angle + Math.PI / 2); }
-      const length = Math.hypot(dx, dz);
-      state.lastHazard = o.id;
-      state.knockX = dx / length * 8; state.knockZ = dz / length * 8;
-      state.vy = Math.max(state.vy, 4.8); state.grounded = false; state.supportId = null;
-      state.knockTime = 0.55; state.protection = 0.8; state.obstacleHits++;
-      state.coyote = state.jumpBuffer = 0; state.lastEvent = "hit"; state.eventSerial++;
-      break;
-    }
-  }
-  advanceCheckpoints(state, arena);
+  const p=sampleMechanism(o,state.elapsed,e.now,state.collapseTimes[o.id]);
+  if(!mechanismContact(o,state.elapsed,state,PLAYER_RADIUS,p))continue;
+  // Solid barriers never become permeable during knockback/recovery grace.
+  const barrier=o.kind==='moving-wall'||o.kind==='timed-gate';
+  if(barrier){const side=oldZ>=p.z?1:-1;state.z=p.z+side*(o.depth/2+PLAYER_RADIUS+.01);if(state.vz*side<0)state.vz=0;}
+  if(state.protection>0)continue;
+  let dx=state.x-p.x,dz=state.z-p.z;
+  if(o.kind==='pusher'){dx=-o.side;dz=0;}
+  if(barrier){dx=0;dz=oldZ>=p.z?1:-1;}
+  if(Math.hypot(dx,dz)<.05){dx=Math.cos(p.angle+Math.PI/2);dz=Math.sin(p.angle+Math.PI/2);}
+  const l=Math.hypot(dx,dz);state.lastHazard=o.id;state.knockX=dx/l*8;state.knockZ=dz/l*8;
+  state.vy=Math.max(state.vy,barrier?2.5:4.8);state.grounded=false;state.supportId=null;
+  state.knockTime=.55;state.protection=.8;state.obstacleHits++;state.coyote=state.jumpBuffer=0;state.lastEvent='hit';state.eventSerial++;
+  break;
+ }
+ advanceCheckpoints(state,arena);
 }
