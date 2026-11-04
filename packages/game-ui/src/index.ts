@@ -1,3 +1,4 @@
+import { mountMultiplayer } from './multiplayer-ui';
 import type { RaceMode } from "@minimorph/game-content";
 import { createResultsUI } from "./results";
 import { arenas, getArena, trainingArenas } from "@minimorph/game-content";
@@ -109,6 +110,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     canvas.focus();
   }
   function handleSession(snapshot: RaceSnapshot & { progress: number; mode: RaceMode; section: string; hint: string }) {
+    if (multiplayer?.active) return;
     const arena = getArena(snapshot.arenaId, snapshot.mode);
     if (lastArena !== `${snapshot.mode}:${snapshot.arenaId}`) {
       root.style.setProperty("--arena-accent", arena.palette.accent);
@@ -158,7 +160,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
   root.querySelector("[data-start]")!.addEventListener("click", () => { clearInput(); game?.start(); canvas.focus(); }, options);
   root.querySelector("[data-resume]")!.addEventListener("click", () => { clearInput(); game?.resume(); canvas.focus(); }, options);
   root.querySelector("[data-replay]")!.addEventListener("click", () => restart(), options);
-  root.querySelectorAll("[data-back], .arena-menu, .brand").forEach(button => button.addEventListener("click", event => { event.preventDefault(); clearInput(); game?.chooseLevel(); }, options));
+  root.querySelectorAll("[data-back], .arena-menu, .brand").forEach(button => button.addEventListener("click", event => { event.preventDefault(); clearInput(); if(multiplayer.active)multiplayer.leave();else game?.chooseLevel(); }, options));
   root.querySelector("[data-next]")!.addEventListener("click", () => {
     const current = arenas.findIndex(a => a.id === canvas.dataset.arena);
     const next = arenas[current + 1]; if (next) selectArena(next.id);
@@ -169,6 +171,8 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
       if (
         !allowed.has(e.code) ||
         e.target instanceof HTMLButtonElement ||
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLSelectElement ||
         e.target instanceof HTMLAnchorElement
       )
         return;
@@ -214,6 +218,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     checkpoint = 0;
     recoveries = obstacleHits = respawns = 0;
     message.textContent = "Reach the finish beacon";
+    if(multiplayer.active)return;
     game?.restart();
     canvas.focus();
   };
@@ -223,6 +228,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     (e) => {
       e.preventDefault();
       clearInput();
+      multiplayer.destroy();
       game?.destroy();
       game = undefined;
       root.querySelector<HTMLElement>(".fatal")!.hidden = false;
@@ -230,10 +236,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     },
     options,
   );
-  try {
-    game = createGame(
-      canvas,
-      () => {
+  const readControls = () => {
         const jump = jumpQueued;
         jumpQueued = false;
         return {
@@ -246,10 +249,15 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
           jump,
           cameraTurn: Number(pressed("KeyE")) - Number(pressed("KeyQ")),
         };
-      },
+      };
+  const multiplayer = mountMultiplayer(root,()=>game,readControls,clearInput);
+  try {
+    game = createGame(
+      canvas,
+      readControls,
       (state) => {
         lastPlayer = state;
-        const arena = getArena(canvas.dataset.arena ?? arenas[0].id, mode);
+        const arena = getArena(canvas.dataset.arena ?? arenas[0].id, canvas.dataset.mode as RaceMode ?? mode);
         time.textContent = formatTime(state.elapsed);
         falls.textContent = String(state.falls);
         checkpointCounter.textContent = `${state.checkpoint} / ${arena.checkpoints.length}`;
@@ -298,6 +306,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
         raceFlow: true,
         onSession: handleSession,
         character: animatedCharacterSource(characterConfig),
+        remoteCharacter: animatedCharacterSource({...characterConfig,reportOnCanvas:false}),
         onCharacterError: () => { canvas.dataset.character = "procedural-fallback"; },
       },
     );
@@ -315,6 +324,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     destroy() {
       clearInput();
       controller.abort();
+      multiplayer.destroy();
       game?.destroy();
       root.replaceChildren();
     },

@@ -133,68 +133,29 @@ export function createProceduralCat(
     },
   };
 }
-/** Generic static GLB/GLTF source; the animated source adds gameplay clip control. */
-export function gltfCharacterSource(url: string, scale = 1): CharacterSource {
-  return {
-    load(app, signal) {
-      return new Promise((resolve, reject) => {
-        const asset = new pc.Asset("Character model", "container", { url });
-        let completed = false;
-        const cleanup = () => {
-          app.assets.remove(asset);
-          asset.unload();
-        };
-        const abort = () => {
-          if (!completed) {
-            completed = true;
-            cleanup();
-            reject(new DOMException("Character load cancelled", "AbortError"));
-          }
-        };
-        if (signal.aborted) {
-          abort();
-          return;
-        }
-        signal.addEventListener("abort", abort, { once: true });
-        asset.once("error", (error: string) => {
-          signal.removeEventListener("abort", abort);
-          if (!completed) {
-            completed = true;
-            cleanup();
-            reject(new Error(error));
-          }
-        });
-        asset.once("load", () => {
-          signal.removeEventListener("abort", abort);
-          if (completed || signal.aborted) {
-            cleanup();
-            return;
-          }
-          try {
-            const root = (
-              asset.resource as pc.ContainerResource
-            ).instantiateRenderEntity();
-            root.setLocalScale(scale, scale, scale);
-            completed = true;
-            resolve({
-              root,
-              update() {},
-              destroy() {
-                root.destroy();
-                cleanup();
-              },
-            });
-          } catch (error) {
-            completed = true;
-            cleanup();
-            reject(error);
-          }
-        });
-        app.assets.add(asset);
-        app.assets.load(asset);
-      });
-    },
-  };
+interface SharedCharacterAsset { asset:pc.Asset; ready:Promise<void>; refs:number }
+const sharedAssets=new WeakMap<pc.Application,Map<string,SharedCharacterAsset>>();
+/** One download/mesh/texture resource per app and URL; each participant gets its own skin/animation instance. */
+export function gltfCharacterSource(url:string,scale=1):CharacterSource {
+ return {load(app,signal){
+  let cache=sharedAssets.get(app);if(!cache){cache=new Map();sharedAssets.set(app,cache);}
+  let entry=cache.get(url);
+  if(!entry){
+   const asset=new pc.Asset('Character model','container',{url});
+   const ready=new Promise<void>((resolve,reject)=>{asset.once('load',()=>resolve());asset.once('error',(e:string)=>reject(new Error(e)));});
+   entry={asset,ready,refs:0};cache.set(url,entry);app.assets.add(asset);app.assets.load(asset);
+  }
+  const owned=entry;owned.refs++;let released=false;
+  const release=()=>{if(released)return;released=true;if(--owned.refs===0){cache!.delete(url);app.assets.remove(owned.asset);owned.asset.unload();}};
+  return new Promise<CharacterVisual>((resolve,reject)=>{
+   const abort=()=>{release();reject(new DOMException('Character load cancelled','AbortError'));};
+   if(signal.aborted){abort();return;}signal.addEventListener('abort',abort,{once:true});
+   void owned.ready.then(()=>{
+    signal.removeEventListener('abort',abort);if(signal.aborted){if(!owned.refs)owned.asset.unload();return;}
+    try{const root=(owned.asset.resource as pc.ContainerResource).instantiateRenderEntity();root.setLocalScale(scale,scale,scale);resolve({root,update(){},destroy(){root.destroy();release();}});}catch(e){release();reject(e);}
+   },error=>{signal.removeEventListener('abort',abort);release();reject(error);});
+  });
+ }};
 }
 /** Swaps visuals only; late/cancelled loads can never resurrect a destroyed scene. */
 export function loadCharacterVisual(
@@ -253,6 +214,7 @@ export interface AnimatedCharacterConfig {
   scale?: number;
   yaw?: number;
   loadTimeoutMs?: number;
+  reportOnCanvas?: boolean;
 }
 export function animatedCharacterSource(config: AnimatedCharacterConfig): CharacterSource {
   return {
@@ -283,7 +245,7 @@ export function animatedCharacterSource(config: AnimatedCharacterConfig): Charac
         for (const name of CHARACTER_CLIPS) root.anim!.assignAnimation(name, tracks.get(name)!, undefined, 1, ["Idle", "Run", "Fall"].includes(name));
         let current: CharacterClip | undefined;
         const canvas = app.graphicsDevice.canvas as HTMLCanvasElement;
-        canvas.dataset.character = config.version;
+        if (config.reportOnCanvas !== false) canvas.dataset.character = config.version;
         return {
           root,
           update(state, dt) {
@@ -293,9 +255,11 @@ export function animatedCharacterSource(config: AnimatedCharacterConfig): Charac
               root.anim!.baseLayer!.transition(next, current ? 0.08 : 0, 0);
               current = next;
             }
+            if (config.reportOnCanvas !== false) {
             canvas.dataset.characterClip = next;
             canvas.dataset.characterActive = root.anim!.baseLayer!.activeState;
             canvas.dataset.characterTime = String(root.anim!.baseLayer!.activeStateCurrentTime);
+            }
           },
           destroy() { visual.destroy(); },
         };
