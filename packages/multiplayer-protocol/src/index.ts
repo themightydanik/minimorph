@@ -97,8 +97,9 @@ export function parseClientMessage(text: string): ClientMessage | null {
     /^[\p{L}\p{N} _.-]+$/u.test(m.name) &&
     typeof m.arenaId === "string" &&
     m.arenaId.length < 40 &&
-    (m.code === undefined ||
-      (typeof m.code === "string" && /^[A-Z2-9]{6}$/.test(m.code)))
+    (m.mode === "private"
+      ? typeof m.code === "string" && /^[A-Z2-9]{6}$/.test(m.code)
+      : m.code === undefined)
   )
     return m as ClientMessage;
   if (

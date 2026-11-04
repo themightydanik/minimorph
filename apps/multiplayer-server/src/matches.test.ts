@@ -67,6 +67,9 @@ it("private codes, owner start, capacity, expiry and one-human seven-bot races",
     a = peer(),
     b = peer("b");
   s.handle(a, join("create"), 0);
+  const missing = peer("missing-code");
+  s.handle(missing, join("private"), 1);
+  expect(missing.messages.at(-1)).toMatchObject({ code: "invalid_code" });
   const code = a.room!.code!;
   expect(code).toMatch(/^[A-Z2-9]{6}$/);
   s.handle(b, join("private", code), 1);

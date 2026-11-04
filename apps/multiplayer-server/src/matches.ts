@@ -299,6 +299,10 @@ export class MatchService {
       }
       let room: Room | undefined;
       if (m.mode === "private") {
+        if (!m.code) {
+          this.error(peer, "invalid_code", "Enter a valid invitation code.");
+          return;
+        }
         room = [...this.rooms.values()].find((r) => r.code === m.code);
         if (!room) {
           this.error(peer, "invalid_code", "Room code is invalid or expired.");

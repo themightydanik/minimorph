@@ -29,3 +29,10 @@ it("accepts only versioned typed inputs and refuses client authority and malform
   expect(parseClientMessage("{")).toBeNull();
   expect(parseClientMessage("x".repeat(2049))).toBeNull();
 });
+it('private joins require a valid code and public matchmaking cannot carry one', () => {
+  const join={v:1,type:'join',mode:'private',name:'Cadet',arenaId:'cosmic-sprint'};
+  expect(parseClientMessage(JSON.stringify(join))).toBeNull();
+  expect(parseClientMessage(JSON.stringify({...join,code:'ABC234'}))).not.toBeNull();
+  expect(parseClientMessage(JSON.stringify({...join,mode:'quick',code:'ABC234'}))).toBeNull();
+  expect(parseClientMessage(JSON.stringify({...join,mode:'quick'}))).not.toBeNull();
+});
