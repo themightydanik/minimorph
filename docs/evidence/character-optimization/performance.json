@@ -1,0 +1,825 @@
+{
+  "method": "Isolated render-only probe in unchanged createGame/Cosmic Sprint scene, original ambient/directional light, materials, effects pool and DPR cap. Fixed normal gameplay camera, arena phase 1.2s, Run playing, 1280x720 viewport and drawing buffer at DPR1 for every case. No HUD/networking; not full multiplayer FPS. Forced Chromium SwiftShader software rendering, not Redmi Note 8 or hardware-GPU performance. Paired AB/BA trials, no concurrent regression browsers/builds.",
+  "samples": [
+    {
+      "trial": 0,
+      "frames": 63,
+      "durationMs": 15414.89999999851,
+      "softwareFps": 4.086954829418685,
+      "medianFrameMs": 233.29999999999927,
+      "p95FrameMs": 483.39999999999964,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 1,
+      "variant": "original",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 52,
+      "activeMeshInstances": 1,
+      "trianglesPerCharacter": 160000,
+      "triangleCounts": [
+        160000
+      ],
+      "animationTimes": [
+        7.516499999999988
+      ],
+      "positions": [
+        {
+          "x": 640,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 0,
+      "frames": 74,
+      "durationMs": 15184.3,
+      "softwareFps": 4.8734548184638085,
+      "medianFrameMs": 200,
+      "p95FrameMs": 366.7000000000007,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 1,
+      "variant": "candidate",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 52,
+      "activeMeshInstances": 1,
+      "trianglesPerCharacter": 125928,
+      "triangleCounts": [
+        125928
+      ],
+      "animationTimes": [
+        8.950099999999985
+      ],
+      "positions": [
+        {
+          "x": 640,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "frames": 74,
+      "durationMs": 15184.80000000149,
+      "softwareFps": 4.873294346978079,
+      "medianFrameMs": 200,
+      "p95FrameMs": 383.2999999999993,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 1,
+      "variant": "candidate",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 52,
+      "activeMeshInstances": 1,
+      "trianglesPerCharacter": 125928,
+      "triangleCounts": [
+        125928
+      ],
+      "animationTimes": [
+        9.133099999999986
+      ],
+      "positions": [
+        {
+          "x": 640,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "frames": 70,
+      "durationMs": 15046,
+      "softwareFps": 4.652399308786388,
+      "medianFrameMs": 200.10000000000036,
+      "p95FrameMs": 450,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 1,
+      "variant": "original",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 52,
+      "activeMeshInstances": 1,
+      "trianglesPerCharacter": 160000,
+      "triangleCounts": [
+        160000
+      ],
+      "animationTimes": [
+        8.783099999999987
+      ],
+      "positions": [
+        {
+          "x": 640,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 0,
+      "frames": 46,
+      "durationMs": 15814.80000000149,
+      "softwareFps": 2.9086678301335245,
+      "medianFrameMs": 333.2999999999993,
+      "p95FrameMs": 716.6000000000022,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 2,
+      "variant": "original",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 53,
+      "activeMeshInstances": 2,
+      "trianglesPerCharacter": 160000,
+      "triangleCounts": [
+        160000,
+        160000
+      ],
+      "animationTimes": [
+        5.55,
+        5.55
+      ],
+      "positions": [
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 0,
+      "frames": 53,
+      "durationMs": 15047.10000000149,
+      "softwareFps": 3.522273394873082,
+      "medianFrameMs": 283.2999999999993,
+      "p95FrameMs": 566.7000000000007,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 2,
+      "variant": "candidate",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 53,
+      "activeMeshInstances": 2,
+      "trianglesPerCharacter": 125928,
+      "triangleCounts": [
+        125928,
+        125928
+      ],
+      "animationTimes": [
+        6.616499999999994,
+        6.616499999999994
+      ],
+      "positions": [
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "frames": 53,
+      "durationMs": 15053.39999999851,
+      "softwareFps": 3.52079928786887,
+      "medianFrameMs": 283.3000000000029,
+      "p95FrameMs": 533.2999999999993,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 2,
+      "variant": "candidate",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 53,
+      "activeMeshInstances": 2,
+      "trianglesPerCharacter": 125928,
+      "triangleCounts": [
+        125928,
+        125928
+      ],
+      "animationTimes": [
+        6.4665999999999935,
+        6.4665999999999935
+      ],
+      "positions": [
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "frames": 49,
+      "durationMs": 15446.70000000596,
+      "softwareFps": 3.172198592578421,
+      "medianFrameMs": 316.59999999999854,
+      "p95FrameMs": 550,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 2,
+      "variant": "original",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 53,
+      "activeMeshInstances": 2,
+      "trianglesPerCharacter": 160000,
+      "triangleCounts": [
+        160000,
+        160000
+      ],
+      "animationTimes": [
+        6.382999999999995,
+        6.382999999999995
+      ],
+      "positions": [
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 0,
+      "frames": 28,
+      "durationMs": 15994.2,
+      "softwareFps": 1.7506346050443284,
+      "medianFrameMs": 516.6000000000004,
+      "p95FrameMs": 1649.9000000000015,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 4,
+      "variant": "original",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 55,
+      "activeMeshInstances": 4,
+      "trianglesPerCharacter": 160000,
+      "triangleCounts": [
+        160000,
+        160000,
+        160000,
+        160000
+      ],
+      "animationTimes": [
+        3.233500000000002,
+        3.233500000000002,
+        3.233500000000002,
+        3.233500000000002
+      ],
+      "positions": [
+        {
+          "x": 485.67793725900003,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 794.322062741,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 0,
+      "frames": 34,
+      "durationMs": 15359.700000004472,
+      "softwareFps": 2.213584900746115,
+      "medianFrameMs": 466.59999999999854,
+      "p95FrameMs": 933.3000000000011,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 4,
+      "variant": "candidate",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 55,
+      "activeMeshInstances": 4,
+      "trianglesPerCharacter": 125928,
+      "triangleCounts": [
+        125928,
+        125928,
+        125928,
+        125928
+      ],
+      "animationTimes": [
+        3.833300000000006,
+        3.833300000000006,
+        3.833300000000006,
+        3.833300000000006
+      ],
+      "positions": [
+        {
+          "x": 485.67793725900003,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 794.322062741,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "frames": 31,
+      "durationMs": 15374.49999999702,
+      "softwareFps": 2.0163257341706076,
+      "medianFrameMs": 499.89999999999964,
+      "p95FrameMs": 900,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 4,
+      "variant": "candidate",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 55,
+      "activeMeshInstances": 4,
+      "trianglesPerCharacter": 125928,
+      "triangleCounts": [
+        125928,
+        125928,
+        125928,
+        125928
+      ],
+      "animationTimes": [
+        4.033300000000001,
+        4.033300000000001,
+        4.033300000000001,
+        4.033300000000001
+      ],
+      "positions": [
+        {
+          "x": 485.67793725900003,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 794.322062741,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "frames": 29,
+      "durationMs": 15088.500000001492,
+      "softwareFps": 1.9219935712626923,
+      "medianFrameMs": 533.1999999999989,
+      "p95FrameMs": 983.2999999999993,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 4,
+      "variant": "original",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 55,
+      "activeMeshInstances": 4,
+      "trianglesPerCharacter": 160000,
+      "triangleCounts": [
+        160000,
+        160000,
+        160000,
+        160000
+      ],
+      "animationTimes": [
+        3.5333000000000006,
+        3.5333000000000006,
+        3.5333000000000006,
+        3.5333000000000006
+      ],
+      "positions": [
+        {
+          "x": 485.67793725900003,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 794.322062741,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        }
+      ]
+    },
+    {
+      "trial": 0,
+      "frames": 20,
+      "durationMs": 18670.39999999851,
+      "softwareFps": 1.0712143285629445,
+      "medianFrameMs": 983.3999999999996,
+      "p95FrameMs": 1899.8999999999978,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 8,
+      "variant": "original",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 59,
+      "activeMeshInstances": 8,
+      "trianglesPerCharacter": 160000,
+      "triangleCounts": [
+        160000,
+        160000,
+        160000,
+        160000,
+        160000,
+        160000,
+        160000,
+        160000
+      ],
+      "animationTimes": [
+        2.450000000000003,
+        2.450000000000003,
+        2.450000000000003,
+        2.450000000000003,
+        2.450000000000003,
+        2.450000000000003,
+        2.450000000000003,
+        2.450000000000003
+      ],
+      "positions": [
+        {
+          "x": 485.67793725900003,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 794.322062741,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 511.1881973553776,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 597.062731233097,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 682.937268766903,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 768.8118026446225,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        }
+      ]
+    },
+    {
+      "trial": 0,
+      "frames": 20,
+      "durationMs": 17006.40000000149,
+      "softwareFps": 1.1760278483393458,
+      "medianFrameMs": 883.4000000000015,
+      "p95FrameMs": 1666.6000000000004,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 8,
+      "variant": "candidate",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 59,
+      "activeMeshInstances": 8,
+      "trianglesPerCharacter": 125928,
+      "triangleCounts": [
+        125928,
+        125928,
+        125928,
+        125928,
+        125928,
+        125928,
+        125928,
+        125928
+      ],
+      "animationTimes": [
+        2.4499000000000004,
+        2.4499000000000004,
+        2.4499000000000004,
+        2.4499000000000004,
+        2.4499000000000004,
+        2.4499000000000004,
+        2.4499000000000004,
+        2.4499000000000004
+      ],
+      "positions": [
+        {
+          "x": 485.67793725900003,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 794.322062741,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 511.1881973553776,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 597.062731233097,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 682.937268766903,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 768.8118026446225,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "frames": 20,
+      "durationMs": 16835.30000000298,
+      "softwareFps": 1.1879800181758842,
+      "medianFrameMs": 866.6000000000004,
+      "p95FrameMs": 1250,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 8,
+      "variant": "candidate",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 59,
+      "activeMeshInstances": 8,
+      "trianglesPerCharacter": 125928,
+      "triangleCounts": [
+        125928,
+        125928,
+        125928,
+        125928,
+        125928,
+        125928,
+        125928,
+        125928
+      ],
+      "animationTimes": [
+        2.633499999999998,
+        2.633499999999998,
+        2.633499999999998,
+        2.633499999999998,
+        2.633499999999998,
+        2.633499999999998,
+        2.633499999999998,
+        2.633499999999998
+      ],
+      "positions": [
+        {
+          "x": 485.67793725900003,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 794.322062741,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 511.1881973553776,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 597.062731233097,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 682.937268766903,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 768.8118026446225,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        }
+      ]
+    },
+    {
+      "trial": 1,
+      "frames": 20,
+      "durationMs": 18635.60000000298,
+      "softwareFps": 1.0732147073341776,
+      "medianFrameMs": 916.6000000000022,
+      "p95FrameMs": 1983.199999999999,
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "count": 8,
+      "variant": "original",
+      "clip": "Run",
+      "paused": false,
+      "bufferWidth": 1280,
+      "bufferHeight": 720,
+      "pixelRatio": 1,
+      "drawCalls": 59,
+      "activeMeshInstances": 8,
+      "trianglesPerCharacter": 160000,
+      "triangleCounts": [
+        160000,
+        160000,
+        160000,
+        160000,
+        160000,
+        160000,
+        160000,
+        160000
+      ],
+      "animationTimes": [
+        2.533300000000002,
+        2.533300000000002,
+        2.533300000000002,
+        2.533300000000002,
+        2.533300000000002,
+        2.533300000000002,
+        2.533300000000002,
+        2.533300000000002
+      ],
+      "positions": [
+        {
+          "x": 485.67793725900003,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 588.5593109596172,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 691.440689040383,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 794.322062741,
+          "y": 395.55974830606306,
+          "z": 8.64746505022049
+        },
+        {
+          "x": 511.1881973553776,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 597.062731233097,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 682.937268766903,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        },
+        {
+          "x": 768.8118026446225,
+          "y": 330.3184758644463,
+          "z": 10.399664580821991
+        }
+      ]
+    }
+  ]
+}

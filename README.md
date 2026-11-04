@@ -59,3 +59,7 @@ The approved official Meshy-derived 160k character and six in-game clips from PR
 
 See [full-length rounds, mechanics and verification](docs/full-length-rounds.md) and the [original training-track authoring guide](docs/arena-system.md).
 Character skin-regression tests require `python -m pip install -r tools/blender/requirements-test.txt`. `npm run check:rig-quality` is the separate strict deformation gate and currently fails on remaining local strain; technical CI success does not approve art.
+
+## Character optimization study
+
+PR #8 prepares an isolated 125,928-triangle candidate while production keeps the original 160,000-triangle model. See the [owner approval policy](docs/character-optimization-policy.md), [study and rollback boundary](docs/character-optimization-study.md), and [actual comparisons / 1–8 actor measurements](docs/evidence/character-optimization/README.md). No world quality or rendering resolution is reduced, and candidate activation requires explicit owner approval.

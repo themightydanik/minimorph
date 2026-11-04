@@ -1,0 +1,700 @@
+[
+  {
+    "name": "compare-idle-gameplay",
+    "clip": "Idle",
+    "time": 0.5,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 53,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0.5,
+      0.5
+    ],
+    "positions": [
+      {
+        "x": 551.8159566391738,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      },
+      {
+        "x": 728.1840433608262,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "compare-idle-close",
+    "clip": "Idle",
+    "time": 0.5,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 50,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0.5,
+      0.5
+    ],
+    "positions": [
+      {
+        "x": 410.8789100639322,
+        "y": 360.00000394271973,
+        "z": 3.205141145735979
+      },
+      {
+        "x": 869.1210899360678,
+        "y": 360.00000394271973,
+        "z": 3.205141145735979
+      }
+    ]
+  },
+  {
+    "name": "original-idle-matched",
+    "clip": "Idle",
+    "time": 0.5,
+    "count": 1,
+    "variant": "original",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 160000,
+    "triangleCounts": [
+      160000
+    ],
+    "animationTimes": [
+      0.5
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "candidate-idle-matched",
+    "clip": "Idle",
+    "time": 0.5,
+    "count": 1,
+    "variant": "candidate",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 125928,
+    "triangleCounts": [
+      125928
+    ],
+    "animationTimes": [
+      0.5
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "compare-run-gameplay",
+    "clip": "Run",
+    "time": 0.15,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 53,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0.15,
+      0.15
+    ],
+    "positions": [
+      {
+        "x": 551.8159566391738,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      },
+      {
+        "x": 728.1840433608262,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "compare-run-back",
+    "clip": "Run",
+    "time": 0.15,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 53,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0.15,
+      0.15
+    ],
+    "positions": [
+      {
+        "x": 551.8159566391738,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      },
+      {
+        "x": 728.1840433608262,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "compare-run-close",
+    "clip": "Run",
+    "time": 0.15,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 50,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0.15,
+      0.15
+    ],
+    "positions": [
+      {
+        "x": 410.8789100639322,
+        "y": 360.00000394271973,
+        "z": 3.205141145735979
+      },
+      {
+        "x": 869.1210899360678,
+        "y": 360.00000394271973,
+        "z": 3.205141145735979
+      }
+    ]
+  },
+  {
+    "name": "original-run-matched",
+    "clip": "Run",
+    "time": 0.15,
+    "count": 1,
+    "variant": "original",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 160000,
+    "triangleCounts": [
+      160000
+    ],
+    "animationTimes": [
+      0.15
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "candidate-run-matched",
+    "clip": "Run",
+    "time": 0.15,
+    "count": 1,
+    "variant": "candidate",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 125928,
+    "triangleCounts": [
+      125928
+    ],
+    "animationTimes": [
+      0.15
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "compare-jump-gameplay",
+    "clip": "Jump",
+    "time": 0.2,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 53,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0.2,
+      0.2
+    ],
+    "positions": [
+      {
+        "x": 551.8159566391738,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      },
+      {
+        "x": 728.1840433608262,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "original-jump-matched",
+    "clip": "Jump",
+    "time": 0.2,
+    "count": 1,
+    "variant": "original",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 160000,
+    "triangleCounts": [
+      160000
+    ],
+    "animationTimes": [
+      0.2
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "candidate-jump-matched",
+    "clip": "Jump",
+    "time": 0.2,
+    "count": 1,
+    "variant": "candidate",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 125928,
+    "triangleCounts": [
+      125928
+    ],
+    "animationTimes": [
+      0.2
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "compare-fall-gameplay",
+    "clip": "Fall",
+    "time": 0,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 53,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0,
+      0
+    ],
+    "positions": [
+      {
+        "x": 551.8159566391738,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      },
+      {
+        "x": 728.1840433608262,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "original-fall-matched",
+    "clip": "Fall",
+    "time": 0,
+    "count": 1,
+    "variant": "original",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 160000,
+    "triangleCounts": [
+      160000
+    ],
+    "animationTimes": [
+      0
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "candidate-fall-matched",
+    "clip": "Fall",
+    "time": 0,
+    "count": 1,
+    "variant": "candidate",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 125928,
+    "triangleCounts": [
+      125928
+    ],
+    "animationTimes": [
+      0
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "compare-land-gameplay",
+    "clip": "Land",
+    "time": 0.2,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 53,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0.2,
+      0.2
+    ],
+    "positions": [
+      {
+        "x": 551.8159566391738,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      },
+      {
+        "x": 728.1840433608262,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "original-land-matched",
+    "clip": "Land",
+    "time": 0.2,
+    "count": 1,
+    "variant": "original",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 160000,
+    "triangleCounts": [
+      160000
+    ],
+    "animationTimes": [
+      0.2
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "candidate-land-matched",
+    "clip": "Land",
+    "time": 0.2,
+    "count": 1,
+    "variant": "candidate",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 125928,
+    "triangleCounts": [
+      125928
+    ],
+    "animationTimes": [
+      0.2
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "compare-victory-gameplay",
+    "clip": "Victory",
+    "time": 0.5,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 53,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0.5,
+      0.5
+    ],
+    "positions": [
+      {
+        "x": 551.8159566391738,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      },
+      {
+        "x": 728.1840433608262,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "compare-victory-back",
+    "clip": "Victory",
+    "time": 0.5,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 53,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0.5,
+      0.5
+    ],
+    "positions": [
+      {
+        "x": 551.8159566391738,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      },
+      {
+        "x": 728.1840433608262,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "compare-victory-close",
+    "clip": "Victory",
+    "time": 0.5,
+    "count": 2,
+    "variant": "comparison",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 50,
+    "activeMeshInstances": 2,
+    "trianglesPerCharacter": null,
+    "triangleCounts": [
+      160000,
+      125928
+    ],
+    "animationTimes": [
+      0.5,
+      0.5
+    ],
+    "positions": [
+      {
+        "x": 410.8789100639322,
+        "y": 360.00000394271973,
+        "z": 3.205141145735979
+      },
+      {
+        "x": 869.1210899360678,
+        "y": 360.00000394271973,
+        "z": 3.205141145735979
+      }
+    ]
+  },
+  {
+    "name": "original-victory-matched",
+    "clip": "Victory",
+    "time": 0.5,
+    "count": 1,
+    "variant": "original",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 160000,
+    "triangleCounts": [
+      160000
+    ],
+    "animationTimes": [
+      0.5
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  },
+  {
+    "name": "candidate-victory-matched",
+    "clip": "Victory",
+    "time": 0.5,
+    "count": 1,
+    "variant": "candidate",
+    "paused": true,
+    "bufferWidth": 1280,
+    "bufferHeight": 720,
+    "pixelRatio": 1,
+    "drawCalls": 52,
+    "activeMeshInstances": 1,
+    "trianglesPerCharacter": 125928,
+    "triangleCounts": [
+      125928
+    ],
+    "animationTimes": [
+      0.5
+    ],
+    "positions": [
+      {
+        "x": 640,
+        "y": 395.55974830606306,
+        "z": 8.64746505022049
+      }
+    ]
+  }
+]

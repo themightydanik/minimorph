@@ -1,0 +1,77 @@
+{
+  "method": "Same camera, pose, full arena and drawing buffer. Fixed character ROI; rasterized edge and texture interpolation changes are included. Not a perceptual-quality gate.",
+  "samples": [
+    {
+      "clip": "idle",
+      "roi": [
+        550,
+        300,
+        730,
+        510
+      ],
+      "meanAbsoluteChannelError0to255": 0.48498236331569666,
+      "fractionPixelsAnyChannelOver10": 0.014100529100529101,
+      "maxChannelDifference": 161
+    },
+    {
+      "clip": "run",
+      "roi": [
+        550,
+        300,
+        730,
+        510
+      ],
+      "meanAbsoluteChannelError0to255": 0.41447971781305115,
+      "fractionPixelsAnyChannelOver10": 0.012222222222222223,
+      "maxChannelDifference": 160
+    },
+    {
+      "clip": "jump",
+      "roi": [
+        550,
+        300,
+        730,
+        510
+      ],
+      "meanAbsoluteChannelError0to255": 0.4398236331569665,
+      "fractionPixelsAnyChannelOver10": 0.012804232804232804,
+      "maxChannelDifference": 201
+    },
+    {
+      "clip": "fall",
+      "roi": [
+        550,
+        300,
+        730,
+        510
+      ],
+      "meanAbsoluteChannelError0to255": 0.4617724867724868,
+      "fractionPixelsAnyChannelOver10": 0.014047619047619048,
+      "maxChannelDifference": 188
+    },
+    {
+      "clip": "land",
+      "roi": [
+        550,
+        300,
+        730,
+        510
+      ],
+      "meanAbsoluteChannelError0to255": 0.43198412698412697,
+      "fractionPixelsAnyChannelOver10": 0.013148148148148148,
+      "maxChannelDifference": 144
+    },
+    {
+      "clip": "victory",
+      "roi": [
+        550,
+        300,
+        730,
+        510
+      ],
+      "meanAbsoluteChannelError0to255": 0.522636684303351,
+      "fractionPixelsAnyChannelOver10": 0.015476190476190477,
+      "maxChannelDifference": 204
+    }
+  ]
+}

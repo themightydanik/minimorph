@@ -1,5 +1,7 @@
 # Temporary playable Minimorph
 
+Owner-approved PR #8 addendum: [moderate character optimization may be explored and prepared separately](character-optimization-policy.md). Production replacement still requires explicit owner approval; the study does not change this retained asset or relax the deformation diagnostic.
+
 The product decision in PR #4 accepts the retained rig's visible deformation defects so game development can continue. The existing 160,000-triangle, 20-bone GLB is enabled in the actual Telegram and Minima game, not only the animation viewer. No new weight optimization was attempted: the previous bounded correction already regressed Run and was rejected. Reusing the best retained functional asset is the bounded delivery choice.
 
 ## Runtime and replacement

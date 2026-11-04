@@ -1,0 +1,20 @@
+{
+  "source": "assets/characters/minimorph/animation/minimorph_animated_v1.glb",
+  "out": "assets/characters/minimorph/optimization/minimorph_candidate_v1.glb",
+  "originalVertices": 145409,
+  "candidateVertices": 117157,
+  "originalTriangles": 160000,
+  "candidateTriangles": 125928,
+  "lockedVertices": 105497,
+  "relativeError": 0.0014949345495551825,
+  "estimatedObjectErrorMetres": 0.002690882117915294,
+  "sourceSha256": "1bcecf7f25e35f1cfb7e4afce6542098a29c44bd9e86cd4ac281da3c3a818f76",
+  "candidateSha256": "cd566c9024676775e3efe8d751de3605a035eca3ca4bc3c00082d7b5d283d6b6",
+  "originalBytes": 28567788,
+  "candidateBytes": 26238044,
+  "materials": 1,
+  "primitives": 1,
+  "bones": 20,
+  "maxInfluences": 4,
+  "productionApproved": false
+}

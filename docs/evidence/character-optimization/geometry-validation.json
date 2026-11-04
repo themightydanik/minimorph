@@ -1,0 +1,209 @@
+{
+  "productionApproved": false,
+  "originalTriangles": 160000,
+  "candidateTriangles": 125928,
+  "originalVertices": 145409,
+  "candidateVertices": 117157,
+  "protectedVerticesRetained": 105497,
+  "retainedAttributeRowsExact": true,
+  "originalAnimationAndSkinAccessorsExact": true,
+  "originalTextureBytesExact": true,
+  "imageSha256": [
+    "f10035de6e468b40361e66af222d93436a1a79fdfc7727b5481a9c066b637df7",
+    "6d39e7c86827c92ebab5d4749112bc96dcde6192d45415037dd28b5f24b65373",
+    "26be96bdbbdcb28a19f6304685fe32d551f7066fc78073134fd468fe798ed56b"
+  ],
+  "bones": 20,
+  "clips": [
+    "Idle",
+    "Run",
+    "Jump",
+    "Fall",
+    "Land",
+    "Victory"
+  ],
+  "maxRetainedVertexPoseDifferenceMetres": 0,
+  "poseSamples": [
+    {
+      "clip": "Idle",
+      "fraction": 0,
+      "removedVertexP99Metres": 0.0032088746923345794,
+      "removedVertexMaxMetres": 0.007825013891550147
+    },
+    {
+      "clip": "Idle",
+      "fraction": 0.25,
+      "removedVertexP99Metres": 0.003208874692334572,
+      "removedVertexMaxMetres": 0.00782501389155016
+    },
+    {
+      "clip": "Idle",
+      "fraction": 0.5,
+      "removedVertexP99Metres": 0.0032088746923345794,
+      "removedVertexMaxMetres": 0.007825013891550147
+    },
+    {
+      "clip": "Idle",
+      "fraction": 0.75,
+      "removedVertexP99Metres": 0.0032125284439407406,
+      "removedVertexMaxMetres": 0.007825013891550143
+    },
+    {
+      "clip": "Idle",
+      "fraction": 1,
+      "removedVertexP99Metres": 0.0032088746923345794,
+      "removedVertexMaxMetres": 0.007825013891550147
+    },
+    {
+      "clip": "Run",
+      "fraction": 0,
+      "removedVertexP99Metres": 0.003409518294932299,
+      "removedVertexMaxMetres": 0.00782501389155016
+    },
+    {
+      "clip": "Run",
+      "fraction": 0.25,
+      "removedVertexP99Metres": 0.0034618129701123428,
+      "removedVertexMaxMetres": 0.01520827741446436
+    },
+    {
+      "clip": "Run",
+      "fraction": 0.5,
+      "removedVertexP99Metres": 0.003334891374583228,
+      "removedVertexMaxMetres": 0.007961154271084198
+    },
+    {
+      "clip": "Run",
+      "fraction": 0.75,
+      "removedVertexP99Metres": 0.0034805332771045477,
+      "removedVertexMaxMetres": 0.015088172991273853
+    },
+    {
+      "clip": "Run",
+      "fraction": 1,
+      "removedVertexP99Metres": 0.003409518294932299,
+      "removedVertexMaxMetres": 0.00782501389155016
+    },
+    {
+      "clip": "Jump",
+      "fraction": 0,
+      "removedVertexP99Metres": 0.0033830841959576635,
+      "removedVertexMaxMetres": 0.012411999952151316
+    },
+    {
+      "clip": "Jump",
+      "fraction": 0.25,
+      "removedVertexP99Metres": 0.0034095183995978074,
+      "removedVertexMaxMetres": 0.01348094993574195
+    },
+    {
+      "clip": "Jump",
+      "fraction": 0.5,
+      "removedVertexP99Metres": 0.00341093591282459,
+      "removedVertexMaxMetres": 0.012737139707309308
+    },
+    {
+      "clip": "Jump",
+      "fraction": 0.75,
+      "removedVertexP99Metres": 0.003429194921680413,
+      "removedVertexMaxMetres": 0.012122109244340446
+    },
+    {
+      "clip": "Jump",
+      "fraction": 1,
+      "removedVertexP99Metres": 0.0034290809794190837,
+      "removedVertexMaxMetres": 0.011237219359825776
+    },
+    {
+      "clip": "Fall",
+      "fraction": 0,
+      "removedVertexP99Metres": 0.003442018953043754,
+      "removedVertexMaxMetres": 0.014319959021783155
+    },
+    {
+      "clip": "Fall",
+      "fraction": 0.25,
+      "removedVertexP99Metres": 0.003436934122383474,
+      "removedVertexMaxMetres": 0.014319959021783155
+    },
+    {
+      "clip": "Fall",
+      "fraction": 0.5,
+      "removedVertexP99Metres": 0.003442018953043754,
+      "removedVertexMaxMetres": 0.014319959021783155
+    },
+    {
+      "clip": "Fall",
+      "fraction": 0.75,
+      "removedVertexP99Metres": 0.003446849616058647,
+      "removedVertexMaxMetres": 0.014319959021783155
+    },
+    {
+      "clip": "Fall",
+      "fraction": 1,
+      "removedVertexP99Metres": 0.003442018953043754,
+      "removedVertexMaxMetres": 0.014319959021783155
+    },
+    {
+      "clip": "Land",
+      "fraction": 0,
+      "removedVertexP99Metres": 0.0032088746923345794,
+      "removedVertexMaxMetres": 0.007825013891550147
+    },
+    {
+      "clip": "Land",
+      "fraction": 0.25,
+      "removedVertexP99Metres": 0.0034149309152855206,
+      "removedVertexMaxMetres": 0.01346880643836285
+    },
+    {
+      "clip": "Land",
+      "fraction": 0.5,
+      "removedVertexP99Metres": 0.0034387805801560384,
+      "removedVertexMaxMetres": 0.01378697531618559
+    },
+    {
+      "clip": "Land",
+      "fraction": 0.75,
+      "removedVertexP99Metres": 0.0033145428103254436,
+      "removedVertexMaxMetres": 0.00809516674570385
+    },
+    {
+      "clip": "Land",
+      "fraction": 1,
+      "removedVertexP99Metres": 0.0032088746923345794,
+      "removedVertexMaxMetres": 0.007825013891550147
+    },
+    {
+      "clip": "Victory",
+      "fraction": 0,
+      "removedVertexP99Metres": 0.0032088746923345794,
+      "removedVertexMaxMetres": 0.007825013891550147
+    },
+    {
+      "clip": "Victory",
+      "fraction": 0.25,
+      "removedVertexP99Metres": 0.0032964997442019926,
+      "removedVertexMaxMetres": 0.009502580190744013
+    },
+    {
+      "clip": "Victory",
+      "fraction": 0.5,
+      "removedVertexP99Metres": 0.0033777691880272896,
+      "removedVertexMaxMetres": 0.012507996321827588
+    },
+    {
+      "clip": "Victory",
+      "fraction": 0.75,
+      "removedVertexP99Metres": 0.0032964997442019926,
+      "removedVertexMaxMetres": 0.009502580190744013
+    },
+    {
+      "clip": "Victory",
+      "fraction": 1,
+      "removedVertexP99Metres": 0.0032088746923345794,
+      "removedVertexMaxMetres": 0.007825013891550147
+    }
+  ],
+  "limitations": "Removed-vertex distances use a centroid shortlist and 30 sampled poses, not continuous surface equivalence. Existing original rig defects remain; triangle interpolation and sleeve/body shading can differ. Owner visual approval required."
+}
