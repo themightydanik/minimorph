@@ -149,10 +149,10 @@ export async function startServer(options: ServerOptions) {
       return;
     }
     r.last = now;
-    r.connections++;
     wss.handleUpgrade(req, socket, head, (ws) => {
-      wss.emit("connection", ws, req);
+      r!.connections++;
       ws.once("close", () => r!.connections--);
+      wss.emit("connection", ws, req);
     });
   });
   wss.on("connection", (ws, req) => {

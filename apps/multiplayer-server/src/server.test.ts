@@ -269,3 +269,46 @@ it("configured results adapter writes completed matches as JSONL and flushes on 
     await rm(dir, { recursive: true, force: true });
   }
 });
+it("malformed upgrades cannot exhaust the active IP connection count", async () => {
+  const { request } = await import("node:http");
+  let now = Date.now();
+  const server = await startServer({
+    origins: ["http://127.0.0.1:5173"],
+    manual: true,
+    now: () => now,
+  });
+  try {
+    for (let i = 0; i < 24; i++) {
+      now += 1100;
+      const status = await new Promise<number>((resolve, reject) => {
+        const req = request(
+          {
+            hostname: "127.0.0.1",
+            port: server.port,
+            path: "/ws",
+            headers: {
+              Connection: "Upgrade",
+              Upgrade: "websocket",
+              Origin: "http://127.0.0.1:5173",
+              "Sec-WebSocket-Version": "13",
+              "Sec-WebSocket-Key": "invalid",
+            },
+          },
+          (res) => {
+            res.resume();
+            res.once("end", () => resolve(res.statusCode!));
+          },
+        );
+        req.once("error", reject);
+        req.end();
+      });
+      expect(status).toBe(400);
+    }
+    now += 1100;
+    const ws = await open(server.port);
+    expect(ws.readyState).toBe(WebSocket.OPEN);
+    expect(server.metrics().connections).toBe(1);
+  } finally {
+    await server.close();
+  }
+});
