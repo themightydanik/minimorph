@@ -1,0 +1,16 @@
+[
+  {
+    "host": "telegram",
+    "productionGlb": "minimorph_animated_v1-BjM1tQuR.glb",
+    "sha256": "1bcecf7f25e35f1cfb7e4afce6542098a29c44bd9e86cd4ac281da3c3a818f76",
+    "bytes": 28567788,
+    "candidateBundled": false
+  },
+  {
+    "host": "minima",
+    "productionGlb": "minimorph_animated_v1-BjM1tQuR.glb",
+    "sha256": "1bcecf7f25e35f1cfb7e4afce6542098a29c44bd9e86cd4ac281da3c3a818f76",
+    "bytes": 28567788,
+    "candidateBundled": false
+  }
+]

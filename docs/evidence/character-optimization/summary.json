@@ -1,0 +1,26 @@
+[
+  {
+    "count": 1,
+    "originalPooledSoftwareFps": 4.366253131063314,
+    "candidatePooledSoftwareFps": 4.873374581399934,
+    "relativeChangePercent": 11.614568260569902
+  },
+  {
+    "count": 2,
+    "originalPooledSoftwareFps": 3.03888169153679,
+    "candidatePooledSoftwareFps": 3.5215361871065265,
+    "relativeChangePercent": 15.882635277112534
+  },
+  {
+    "count": 4,
+    "originalPooledSoftwareFps": 1.833817525504453,
+    "candidatePooledSoftwareFps": 2.1149078225558773,
+    "relativeChangePercent": 15.328149782738109
+  },
+  {
+    "count": 8,
+    "originalPooledSoftwareFps": 1.0722135849460785,
+    "candidatePooledSoftwareFps": 1.181973718814206,
+    "relativeChangePercent": 10.23677888521133
+  }
+]
