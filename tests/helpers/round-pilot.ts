@@ -3,13 +3,16 @@ import type { ArenaConfig } from '@minimorph/game-content';
 import { createPlayer, stepArenaPlayer, FIXED_STEP } from '../../packages/game-engine/src/physics';
 import { ArenaRuntime, sampleMechanism, surfaceContains } from '../../packages/game-engine/src/obstacles';
 import type { RunSegment } from './arena-runs';
-export function recordRound(arena:ArenaConfig, strategy:'main'|'boost'|'outer'='main') {
+export function recordRound(arena:ArenaConfig, strategy:'main'|'boost'|'outer'|'safe'='main') {
  const state=createPlayer(arena), world=new ArenaRuntime(arena), segments:RunSegment[]=[], events=new Set<string>();
- let lastSupport:string|null=null;
+ let lastSupport:string|null=null, maxY=state.y;
+ const supports=new Set<string>(), branches=new Set<string>();
  for(let block=0;block<1500&&!state.won;block++) {
   const distance=-state.z, surfaces=world.surfaces(state.elapsed,state.elapsed,state.collapseTimes,state.z);
   const support=surfaces.find(s=>s.id===state.supportId)??surfaces.find(s=>surfaceContains(s,state.x,state.z)&&Math.abs(s.y-state.y)<.02);
-  if(support)lastSupport=support.id??null;
+  if(support){lastSupport=support.id??null;if(support.id)supports.add(support.id);}
+  maxY=Math.max(maxY,state.y);
+  for(const b of arena.branches??[])if(distance>b.start&&distance<b.end&&Math.abs(state.x-b.x)<.7&&state.grounded)branches.add(b.id);
   let target=0,z=-1;
   const rotor=arena.mechanisms.find(o=>o.kind==='sweeper'&&-o.z-distance>-3&&-o.z-distance<8);
   if(rotor)target=-1.8;
@@ -18,6 +21,8 @@ export function recordRound(arena:ArenaConfig, strategy:'main'|'boost'|'outer'='
   const section=arena.sections?.find(s=>distance>=s.start&&distance<s.end);
   if(strategy==='boost'&&section?.hint.includes('outer boost')&&distance-section.start>2&&distance-section.start<section.end-section.start-8)target=arena.id==='gravity-mayhem'?1.9:arena.id==='orbit-chaos'?2.9:3.9;
   if(strategy==='outer'&&section?.hint.includes('central shuttles')&&distance-section.start>2&&distance-section.start<33)target=7;
+  const safe=arena.branches?.find(b=>b.skill==='easy'&&distance>b.start&&distance<b.end);
+  if(strategy==='safe'&&safe)target=safe.x;
   const belt=arena.mechanisms.find(o=>o.id===state.supportId&&o.kind==='conveyor');
   const flow=belt?.kind==='conveyor'?belt.velocityX:0;
   const error=target-state.x-state.vx*.12-flow*.2;
@@ -46,7 +51,7 @@ export function recordRound(arena:ArenaConfig, strategy:'main'|'boost'|'outer'='
   else segments.push({seconds:.1,keys,jump});
   for(let tick=0;tick<12;tick++)stepArenaPlayer(state,{x,z,jump:jump&&tick===0},FIXED_STEP,arena,world);
   if(state.lastEvent)events.add(state.lastEvent);
-  if(state.falls>0)return {segments,state,events:[...events],lastSupport};
+  if(state.falls>0)return {segments,state,events:[...events],lastSupport,maxY,supports:[...supports],branches:[...branches]};
  }
- return {segments,state,events:[...events],lastSupport};
+ return {segments,state,events:[...events],lastSupport,maxY,supports:[...supports],branches:[...branches]};
 }

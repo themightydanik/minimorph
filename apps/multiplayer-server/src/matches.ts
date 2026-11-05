@@ -9,6 +9,7 @@ import {
 } from "@minimorph/game-simulation";
 import type { Input, PlayerState } from "@minimorph/game-simulation";
 import {
+  WORLD_REVISION,
   commandInput,
   CAPACITY,
   RECONNECT_MS,
@@ -118,6 +119,7 @@ export class Room {
   }
   snapshot(now: number): RoomSnapshot {
     return {
+      worldRevision: WORLD_REVISION,
       roomId: this.id,
       code: this.code,
       ownerId: this.ownerId,
@@ -268,6 +270,10 @@ export class MatchService {
   }
   handle(peer: Peer, m: ClientMessage, now: number) {
     peer.lastSeen = now;
+    if ((m.type === 'join' || m.type === 'resume') && m.worldRevision !== WORLD_REVISION) {
+      this.error(peer, 'world_version', 'Game levels have changed. Reload the game and use a matching server.');
+      return;
+    }
     if (m.type === "ping") {
       peer.send({ v: 2, type: "pong", sent: m.sent, serverTime: now });
       return;

@@ -1,3 +1,4 @@
+import { WORLD_REVISION } from '@minimorph/multiplayer-protocol';
 import { mkdir, writeFile } from "node:fs/promises";
 import { performance } from "node:perf_hooks";
 import { WebSocket } from "ws";
@@ -21,7 +22,7 @@ try {
     let seq = 0,
       phase = "waiting";
     const send = (m: object) => {
-      const data = JSON.stringify(m);
+      const data = JSON.stringify('type' in m && (m.type === 'join' || m.type === 'resume') ? {...m,worldRevision:WORLD_REVISION} : m);
       if (ws.readyState === WebSocket.OPEN) {
         sent += Buffer.byteLength(data);
         ws.send(data);

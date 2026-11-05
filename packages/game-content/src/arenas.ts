@@ -3,7 +3,7 @@ import type { Platform, MovingObstacle } from './legacy';
 export interface Point { x: number; y: number; z: number }
 export interface Marker extends Point { radius: number }
 export type RaceMode = "race" | "training";
-export interface ArenaSection { id: string; name: string; start: number; end: number; hint: string; cameraDistance?: number; cameraLift?: number }
+export interface ArenaSection { id: string; name: string; start: number; end: number; hint: string; cameraDistance?: number; cameraLift?: number; elevation?: number }
 export interface CourseDefinition {
   airControl?: number;
   spawn: Point;
@@ -26,7 +26,18 @@ export type ArenaObstacle =
   | (Mechanism & { kind: 'timed-gate'; width: number; depth: number; height: number; warning: number; activeFor: number })
   | (Mechanism & { kind: 'pusher'; width: number; depth: number; height: number; side: -1 | 1; reach: number; warning: number; activeFor: number })
   | (Mechanism & { kind: 'collapse-platform'; width: number; depth: number; delay: number; warning: number; resetAfter: number });
+export interface RouteChoice {
+  id: string;
+  name: string;
+  tradeoff: string;
+  start: number;
+  end: number;
+  x: number;
+  skill: 'easy' | 'hard';
+}
 export interface ArenaConfig extends CourseDefinition {
+  /** Optional branch target over a shared, ordered checkpoint interval. */
+  branches?: readonly RouteChoice[];
   sections?: readonly ArenaSection[];
   expectedSeconds?: readonly [number, number];
   id: string;

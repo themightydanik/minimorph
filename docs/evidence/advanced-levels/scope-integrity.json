@@ -1,0 +1,36 @@
+{
+  "baseline": "615b14ac5383f9a0b066a82d8f48739f90376309",
+  "protectedSourceDiff": [],
+  "approvedCharacterSha256": "cd566c9024676775e3efe8d751de3605a035eca3ca4bc3c00082d7b5d283d6b6",
+  "sourceSha256": {
+    "packages/game-content/src/arenas.ts": "25201712de8ed966dec5d15f8aadb3bd5495da015214600e2a910a6d387ab6f8",
+    "packages/game-content/src/rounds.ts": "1d801179a7f097fe4f3d4b24deedabf13d3d6a207f666ac4dd8474944fbd89e7",
+    "packages/game-engine/src/arena-scene.ts": "ce1faf72957c15ebf7a727b2642ab4f22e746d8c89adc87d78525eac9eee39c8",
+    "packages/game-simulation/src/obstacles.ts": "fb830de884439a2ab2c7c7aebca61bc9ab011b7254b2363c5979b998f60d0015",
+    "apps/multiplayer-server/src/bots.ts": "fa1e3926438244372c34b9612803bc4767a2e58db78e6ced7374f72e9119e90f",
+    "packages/multiplayer-protocol/src/index.ts": "10febd7ccb98d45edc350b6f75021c7833b95c5a4597634977cac8f851577f38",
+    "packages/multiplayer-client/src/index.ts": "47dc8ed50f29b9482cf547882dedc54b7cd4587dceeabb323b14fb50546f9456",
+    "apps/multiplayer-server/src/matches.ts": "3ac16471b130c69d9beb21e5b6486fdd352fbc546ffa24cc855bf5f7b6ffd80d",
+    "apps/multiplayer-server/src/server.ts": "4392404fad360ad18adaa62b6ad4547f8990f36760d5d540a153be9dfeb42133"
+  },
+  "compatibilityOnlyChanges": [
+    "packages/multiplayer-protocol/src/index.ts",
+    "packages/multiplayer-client/src/index.ts",
+    "apps/multiplayer-server/src/matches.ts",
+    "apps/multiplayer-server/src/server.ts"
+  ],
+  "note": "Protocol v2 and prediction physics preserved; expected bounded revision handshake checks are documented separately from protected artistic/movement assets.",
+  "protectedPaths": [
+    "assets/characters",
+    "assets/audio",
+    "packages/game-ui/src/character-config.ts",
+    "packages/game-ui/src/joystick.ts",
+    "packages/game-ui/src/audio.ts",
+    "packages/game-engine/src/character.ts",
+    "packages/game-engine/src/action-pose.ts",
+    "packages/game-engine/src/polish-lighting.ts",
+    "packages/game-engine/src/polish-effects.ts",
+    "packages/game-simulation/src/physics.ts",
+    ".github/workflows/ci.yml"
+  ]
+}

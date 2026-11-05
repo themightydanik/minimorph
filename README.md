@@ -69,3 +69,7 @@ See [movement, analog controls, multiplayer compatibility and rollback](docs/cha
 ## Visual and audio polish review
 
 PR #10 prepares shared arena lighting/material polish, pooled local/remote feedback, original CC0 music/SFX and persistent audio settings. See the [implementation and limitations](docs/visual-audio-polish.md), [before/after evidence](docs/evidence/visual-audio-polish/README.md) and [external action-animation specification](docs/action-animation-asset-spec.md). Procedural action poses remain provisional; dedicated high-quality clips are not claimed complete. Owner visual/listening approval is required before merge.
+
+## Advanced racing geometry review
+
+PR #11 upgrades full-round routes, moving supports, alternating crossings and Gravity Mayhem's vertical summit. See [level design and validation](docs/advanced-levels.md) and [actual before/after comparisons](docs/evidence/advanced-levels/README.md). Training tracks and PR #10 presentation remain preserved; owner level-design approval is required before merge.

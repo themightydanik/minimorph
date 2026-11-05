@@ -44,3 +44,11 @@ it('accepts analog dive intent but refuses forged action state or nonboolean div
   expect(parseClientMessage(wire({ ...command, action: 'slide' }))).toBeNull();
   expect(parseClientMessage(wire({ ...command, vx: 90 }))).toBeNull();
 });
+it('bounds the optional v2 course-revision handshake without accepting authority claims',()=>{
+ const join={v:2,type:'join',mode:'quick',name:'Cadet',arenaId:'cosmic-sprint',worldRevision:'advanced-races-v1'};
+ expect(parseClientMessage(JSON.stringify(join))).toEqual(join);
+ for(const revision of [false,12,'','x'.repeat(65),'../escape'])expect(parseClientMessage(JSON.stringify({...join,worldRevision:revision}))).toBeNull();
+ const resume={v:2,type:'resume',token:'a'.repeat(43),worldRevision:'advanced-races-v1'};
+ expect(parseClientMessage(JSON.stringify(resume))).toEqual(resume);
+ expect(parseClientMessage(JSON.stringify({...join,position:{x:0}}))).toBeNull();
+});

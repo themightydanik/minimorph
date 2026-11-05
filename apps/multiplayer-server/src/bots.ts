@@ -52,6 +52,8 @@ export function botInput(
       distance < -o.z + o.depth / 2 - 6,
   );
   if (skill === "hard" && fast) target = fast.x;
+  const branch = arena.branches?.find(b => b.skill === skill && distance > b.start && distance < b.end);
+  if (branch) target = branch.x;
   // Hard players aim precisely, easy players use a wider deadband and occasionally hesitate on safe ground.
   const belt = arena.mechanisms.find(
       (o) => o.id === state.supportId && o.kind === "conveyor",

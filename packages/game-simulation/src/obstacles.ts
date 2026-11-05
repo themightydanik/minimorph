@@ -2,7 +2,12 @@ import type { ArenaConfig, ArenaObstacle, Platform } from '@minimorph/game-conte
 export interface CollisionSurface extends Platform { previousY?: number; priority?: number }
 export type MechanismPhase = 'safe' | 'warning' | 'active' | 'hidden';
 export interface MechanismPose { x:number; y:number; z:number; angle:number; phase:MechanismPhase }
-export function cycle(o:ArenaObstacle,time:number):number { return ((time+(o.phase??0))%o.period+o.period)%o.period; }
+export function cycle(o:ArenaObstacle,time:number):number {
+ const t=((time+(o.phase??0))%o.period+o.period)%o.period;
+ // Decimal periods can wrap to period-epsilon at an exact cycle boundary.
+ // Canonicalize only sub-nanosecond roundoff, equally on server and renderer.
+ return t<1e-10||o.period-t<1e-10?0:t;
+}
 /** A caller-supplied output keeps the fixed-step and renderer paths allocation-free. */
 export function sampleMechanism(o:ArenaObstacle,time:number,out:MechanismPose={x:0,y:0,z:0,angle:0,phase:'safe'},triggerTime?:number):MechanismPose {
  const p=out;p.x=o.x;p.y=o.y;p.z=o.z;p.angle=0;p.phase='safe';

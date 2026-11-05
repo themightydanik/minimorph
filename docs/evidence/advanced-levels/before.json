@@ -1,0 +1,46 @@
+{
+  "phase": "before",
+  "source": "615b14a (merged PR #10)",
+  "viewport": [
+    1280,
+    720
+  ],
+  "dpr": 1,
+  "simulationTime": 1.2,
+  "camera": [
+    18,
+    23,
+    "18-section.start"
+  ],
+  "lookAt": [
+    0,
+    1.8,
+    "-section.start-24"
+  ],
+  "scenes": [
+    [
+      "cosmic-sprint",
+      0
+    ],
+    [
+      "cosmic-sprint",
+      4
+    ],
+    [
+      "orbit-chaos",
+      0
+    ],
+    [
+      "orbit-chaos",
+      2
+    ],
+    [
+      "gravity-mayhem",
+      2
+    ],
+    [
+      "gravity-mayhem",
+      7
+    ]
+  ]
+}

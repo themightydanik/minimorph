@@ -1,3 +1,4 @@
+import { WORLD_REVISION } from '@minimorph/multiplayer-protocol';
 import { it, expect } from "vitest";
 import {
   createPlayer,
@@ -104,6 +105,7 @@ it("a silent half-open socket starts recovery without waiting for its close hand
         id: "human",
         token: "a".repeat(43),
         snapshot: {
+          worldRevision: WORLD_REVISION,
           roomId: "room",
           ownerId: "human",
           arenaId: arenas[0].id,
@@ -159,4 +161,23 @@ it('dive prediction and replay exactly match authoritative substeps through slid
     if (n % 4 === 0) prediction.receive(server, command.seq, arenas[0].id, true);
   }
   expect([...actions]).toEqual(expect.arrayContaining(['normal', 'dive', 'slide', 'recover']));
+});
+it.each([undefined,'old-world'])('client refuses server world revision %s before prediction or welcome callbacks',async worldRevision=>{
+ const {vi}=await import('vitest'),{MultiplayerClient}=await import('./index');
+ class Socket {
+  static OPEN=1;static instance:Socket;readyState=1;bufferedAmount=0;sent:string[]=[];
+  onopen?:()=>void;onmessage?:(e:{data:string})=>void;onclose?:()=>void;onerror?:()=>void;
+  constructor(){Socket.instance=this;}send(s:string){this.sent.push(s);}close(){this.readyState=2;}
+ }
+ vi.useFakeTimers();vi.stubGlobal('WebSocket',Socket);
+ const welcome=vi.fn(),snapshot=vi.fn(),states:string[]=[];
+ const client=new MultiplayerClient('ws://test.local/ws',()=>({x:0,z:0,jump:false}),{onState:s=>states.push(s),onWelcome:welcome,onSnapshot:snapshot});
+ try{
+  client.connect({v:2,type:'join',mode:'quick',name:'Tester',arenaId:arenas[0].id});
+  const socket=Socket.instance;socket.onopen?.();
+  expect(JSON.parse(socket.sent[0])).toMatchObject({v:2,type:'join',worldRevision:WORLD_REVISION});
+  socket.onmessage?.({data:JSON.stringify({v:2,type:'welcome',id:'human',token:'a'.repeat(43),snapshot:{worldRevision,participants:[]}})});
+  expect(states.at(-1)).toBe('unavailable');expect(welcome).not.toHaveBeenCalled();expect(snapshot).not.toHaveBeenCalled();
+  expect(client.prediction.local).toBeUndefined();expect(socket.readyState).toBe(2);
+ }finally{client.stop();vi.unstubAllGlobals();vi.useRealTimers();}
 });
