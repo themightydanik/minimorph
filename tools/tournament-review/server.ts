@@ -2,14 +2,18 @@
 import { createServer } from "node:http";
 import { startServer } from "../../apps/multiplayer-server/src/server";
 let now = Date.now();
+let wallAt = performance.now();
+// Freeze physics between review commands, but keep network time running so
+// ordinary 30 Hz inputs and heartbeats replenish the unchanged server limiters.
+const clock = () => now + performance.now() - wallAt;
 const game = await startServer({
   host: "127.0.0.1",
   port: 3012,
   origins: ["http://127.0.0.1:5173", "http://127.0.0.1:5174"],
   manual: true,
-  now: () => now,
+  now: clock,
 });
-const snapshots = setInterval(() => game.broadcast(now), 100);
+const snapshots = setInterval(() => game.broadcast(clock()), 100);
 const controls = createServer(async (req, res) => {
   if (req.url === "/readyz") {
     res.writeHead(200, { "content-type": "application/json" });
@@ -38,6 +42,8 @@ const controls = createServer(async (req, res) => {
       round?: number;
       seconds?: number;
     };
+    now = clock();
+    wallAt = performance.now();
     if (command.action === "reset") {
       for (const room of game.service.rooms.values()) game.service.remove(room);
     } else if (command.action === "advance") {

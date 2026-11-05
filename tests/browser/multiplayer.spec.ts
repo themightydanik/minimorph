@@ -91,6 +91,10 @@ test("two actual browsers share eight authoritative participants, movement, anim
   second.on("pageerror", (e) => errors.push(e.message));
   try {
     await menu(page, "Alice");
+    // Import both real models before the lobby starts rendering eight racers.
+    // This keeps the second page's unchanged asset deadline independent of
+    // software-rendering contention from the first page on CI.
+    await menu(second, "Bob");
     await page
       .getByRole("button", { name: "Create Room", exact: true })
       .click();
@@ -100,7 +104,6 @@ test("two actual browsers share eight authoritative participants, movement, anim
     );
     const code = a.snapshot!.code!;
     expect(code).toMatch(/^[A-Z2-9]{6}$/);
-    await menu(second, "Bob");
     await second
       .getByRole("button", { name: "Private Room", exact: true })
       .click();

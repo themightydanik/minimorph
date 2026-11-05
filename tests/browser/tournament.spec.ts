@@ -99,6 +99,10 @@ test("authoritative tournament lobby, 8 → 6 → 4 transitions, spectator, reco
     timeout: 60000,
   });
   await shot("round-1");
+  // Deliberately hold the review phase beyond the 90-command burst allowance.
+  // Network time must keep running while physics is frozen for screenshots.
+  await page.waitForTimeout(4000);
+  await expect(root).toHaveAttribute("data-online-state", "racing");
   const result = await control({
     action: "advance",
     roomId,

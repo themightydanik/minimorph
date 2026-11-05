@@ -29,7 +29,7 @@
     "packages/game-ui/src/multiplayer-ui.ts": "b89190d784a76470923e343102662a7147368a89b47d288f8c11822e1eafdf8e",
     "packages/game-ui/src/tournament-feedback.ts": "f986d08278bb2fdd96a0c972321f2d510f728f1a2b736ad444748d351d6e8f94",
     "packages/game-ui/src/style.css": "2dda7de2997d70e07c7c0bdf7eff96f29806bb306ac8f0d633ae6f12b2ff0bf3",
-    "tools/tournament-review/server.ts": "47e98efb0191f18aad791884e36ad22416fa55eee62e479fb68ead2cec9f95c7"
+    "tools/tournament-review/server.ts": "235499305e4b41a74f528cb90389e1656c7b74b778e217b1947960505c8788c0"
   },
   "note": "Tournament state/presentation changes only. Character, rig/skin/textures, PR #11 geometry, shared physics, original audio, rendering DPR policy and existing strict-rig diagnostic are preserved.",
   "renderingDprPolicyUnchanged": true,
