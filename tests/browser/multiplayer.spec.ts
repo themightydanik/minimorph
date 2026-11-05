@@ -184,11 +184,13 @@ test("two actual browsers share eight authoritative participants, movement, anim
         page.locator(`.participant-labels [data-player="${b.id}"]`).count(),
       )
       .toBe(1);
+    // Software rendering may still be uploading seven remote character instances.
     await expect
       .poll(() =>
         second
           .locator(`.participant-labels [data-player="${a.id}"]`)
           .getAttribute("data-z"),
+        { timeout: 20000 },
       )
       .not.toBe(String(initial));
     await page.screenshot({

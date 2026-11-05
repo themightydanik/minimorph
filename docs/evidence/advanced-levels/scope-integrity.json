@@ -19,5 +19,18 @@
     "apps/multiplayer-server/src/matches.ts",
     "apps/multiplayer-server/src/server.ts"
   ],
-  "note": "Protocol v2 and prediction physics preserved; expected bounded revision handshake checks are documented separately from protected artistic/movement assets."
+  "note": "Protocol v2 and prediction physics preserved; expected bounded revision handshake checks are documented separately from protected artistic/movement assets.",
+  "protectedPaths": [
+    "assets/characters",
+    "assets/audio",
+    "packages/game-ui/src/character-config.ts",
+    "packages/game-ui/src/joystick.ts",
+    "packages/game-ui/src/audio.ts",
+    "packages/game-engine/src/character.ts",
+    "packages/game-engine/src/action-pose.ts",
+    "packages/game-engine/src/polish-lighting.ts",
+    "packages/game-engine/src/polish-effects.ts",
+    "packages/game-simulation/src/physics.ts",
+    ".github/workflows/ci.yml"
+  ]
 }
