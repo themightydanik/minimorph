@@ -1,0 +1,106 @@
+{
+  "profile": "mobile",
+  "method": "Actual PlayCanvas and real WebSocket server; accelerated authoritative clock, ordinary bot inputs; no position/result injection",
+  "workingTreeModified": true,
+  "performanceBenchmark": false,
+  "captured": [
+    {
+      "name": "lobby",
+      "viewport": [
+        412,
+        839
+      ],
+      "devicePixelRatio": 2.625,
+      "buffer": [
+        618,
+        1258
+      ],
+      "arena": "cosmic-sprint",
+      "phase": "waiting"
+    },
+    {
+      "name": "round-1",
+      "viewport": [
+        412,
+        839
+      ],
+      "devicePixelRatio": 2.625,
+      "buffer": [
+        618,
+        1258
+      ],
+      "arena": "cosmic-sprint",
+      "phase": "racing"
+    },
+    {
+      "name": "qualification",
+      "viewport": [
+        412,
+        839
+      ],
+      "devicePixelRatio": 2.625,
+      "buffer": [
+        618,
+        1258
+      ],
+      "arena": "cosmic-sprint",
+      "phase": "round-results"
+    },
+    {
+      "name": "spectator",
+      "viewport": [
+        412,
+        839
+      ],
+      "devicePixelRatio": 2.625,
+      "buffer": [
+        618,
+        1258
+      ],
+      "arena": "orbit-chaos",
+      "phase": "racing"
+    },
+    {
+      "name": "round-2",
+      "viewport": [
+        412,
+        839
+      ],
+      "devicePixelRatio": 2.625,
+      "buffer": [
+        618,
+        1258
+      ],
+      "arena": "orbit-chaos",
+      "phase": "racing"
+    },
+    {
+      "name": "final",
+      "viewport": [
+        412,
+        839
+      ],
+      "devicePixelRatio": 2.625,
+      "buffer": [
+        618,
+        1258
+      ],
+      "arena": "gravity-mayhem",
+      "phase": "racing"
+    },
+    {
+      "name": "champion",
+      "viewport": [
+        412,
+        839
+      ],
+      "devicePixelRatio": 2.625,
+      "buffer": [
+        618,
+        1258
+      ],
+      "arena": "gravity-mayhem",
+      "phase": "tournament-results"
+    }
+  ]
+}

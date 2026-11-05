@@ -39,7 +39,7 @@ export interface GameOptions {
   onCharacterError?: (error: unknown) => void;
 }
 export interface Game {
-  setOnline(driver: OnlineDriver | undefined, arenaId?: string): void;
+  setOnline(driver: OnlineDriver | undefined, arenaId?: string, epoch?:string): void;
   selectLevel(id: string, mode?: RaceMode): void;
   start(): void;
   chooseLevel(): void;
@@ -141,6 +141,7 @@ export function createGame(
   );
   const remotes=createRemotePlayers(app,canvas,options.remoteCharacter,()=>createProceduralCat(shape,{silver,navy,cyan}),shape);
   let online:OnlineDriver|undefined;
+  let onlineEpoch="",lastViewingId="";
   let player = createPlayer(levels.current),
     previous = { ...player },
     accumulator = 0,
@@ -196,7 +197,8 @@ export function createGame(
     lastWallTime = now;
     if (wasRacing && session.phase === "racing") accumulator += dt; else accumulator = 0;
     const network=online?.frame(Date.now());
-    if(network){previous={...player};player=network.local;cameraYaw=network.yaw;session.phase=network.phase==="waiting"?"prepare":network.phase;accumulator=0;}
+    if(network){previous={...player};player=network.local;cameraYaw=network.yaw;session.phase=network.phase==="racing"?"racing":network.phase==="countdown"?"countdown":network.phase==="finished"||network.phase==="tournament-results"||network.phase==="completed"?"finished":network.phase==="round-results"||network.phase==="intermission"?"paused":"prepare";accumulator=0;}
+    if(network?.viewingId&&network.viewingId!==lastViewingId){lastViewingId=network.viewingId;events.reset();effects.reset();reframeRecovery(pose,player,cameraYaw,canvas.clientWidth/Math.max(1,canvas.clientHeight));}
     const input = online ? {x:0,z:0,jump:false} : readInput();
     pendingJump ||= wasRacing && input.jump;
     pendingDive ||= wasRacing && !!input.dive;
@@ -296,10 +298,10 @@ export function createGame(
     if (reframe) { cameraYaw = 0; Object.assign(pose, { x: player.x, y: player.y + 5, z: player.z + 9, lookX: player.x, lookY: player.y + 1, lookZ: player.z - 1 }); }
   }
   return {
-    setOnline(driver,arenaId){
+    setOnline(driver,arenaId,epoch=""){
       // Reconnect uses the same driver/arena; retain visual high-water marks, not old cue playback.
-      if (driver && driver === online && (!arenaId || arenaId === levels.current.id)) return;
-      online=undefined;
+      if (driver && driver === online && (!arenaId || arenaId === levels.current.id)&&epoch===onlineEpoch) return;
+      online=undefined;onlineEpoch=epoch;lastViewingId="";
       if(arenaId)this.selectLevel(arenaId,"race");
       online=driver;accumulator=0;pendingJump=false;pendingDive=false;
       if(!driver){session.choose();notify();}

@@ -22,7 +22,7 @@ try {
     let seq = 0,
       phase = "waiting";
     const send = (m: object) => {
-      const data = JSON.stringify('type' in m && (m.type === 'join' || m.type === 'resume') ? {...m,worldRevision:WORLD_REVISION} : m);
+      const data = JSON.stringify('type' in m && (m.type === 'join' || m.type === 'resume') ? {...m,...(m.type==='join'?{experience:'race'}:{}),worldRevision:WORLD_REVISION} : m);
       if (ws.readyState === WebSocket.OPEN) {
         sent += Buffer.byteLength(data);
         ws.send(data);

@@ -578,3 +578,30 @@ footer button, .panel button { min-height: 48px; }
 .audio-panel button { font-size:11px; }
 .audio-panel small { line-height:1.5;color:#b4cadb;font-size:10px; }
 @media(max-width:700px) { footer { gap:6px; }.host-status{max-width:27%}.audio-settings summary{padding:10px 8px;font-size:10px}.audio-panel{width:240px} }
+
+/* Tournament panels reuse the arcade palette; only the roster scrolls, never the actions. */
+.tournament-rail {display:grid;gap:4px;margin:0;font-size:10px;line-height:1.5;flex-shrink:0;}
+.tournament-rail span {padding:5px 8px;border:1px solid #7596b544;border-radius:8px;color:#b5cddd;}
+.tournament-rail .current {color:#79f7e6;border-color:#79f7e6;background:#48f5dc12;}
+.tournament-own {font-size:13px;font-weight:800;line-height:1.6;color:#79f7e6;}
+.qualified-result {color:#79f7e6;}
+.eliminated-result {color:#ffadbb;}
+.champion-reveal {padding:20px 10px;text-align:center;font-size:24px;font-weight:900;line-height:1.4;color:#ffe68b;background:#ffe68b12;border:1px solid #ffe68b66;border-radius:14px;flex-shrink:0;}
+.tournament-summary,[data-tournament-next] {font-size:11px;line-height:1.6;color:#b5cddd;}
+.multiplayer-panel .panel {width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;gap:10px;overflow:hidden;}
+.multiplayer-panel .panel>h2 {font-size:clamp(26px,3vw,38px);line-height:1.1;margin:3px 0;flex-shrink:0;}
+.multiplayer-panel .panel>p {margin:0;flex-shrink:0;}
+.multiplayer-panel .panel>p:empty {display:none;}
+.multiplayer-panel ul {min-height:44px;max-height:25vh;flex:1 1 150px;margin:0;overflow-y:auto;}
+.tournament-actions {display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;padding-top:10px;border-top:1px solid #84afc026;}
+.multiplayer-panel .tournament-actions button {margin:0;min-height:44px;}
+.live-standings {text-align:left;margin:8px 0;max-height:150px;overflow:auto;}
+.live-standings summary {cursor:pointer;min-height:32px;display:flex;align-items:center;}
+.live-standings ol {padding-left:18px;font-size:10px;line-height:1.8;}
+.spectator-controls {border-top:1px solid #79f7e655;margin-top:8px;padding-top:8px;}
+.spectator-controls button {min-width:48px;min-height:44px;font-size:18px;margin:3px;}
+[data-spectating=true] .touch-controls,[data-spectating=true] .camera-controls {visibility:hidden;pointer-events:none;}
+[data-spectating=true] [data-mp-rank] {display:none;}
+[data-tournament-live] {color:#79f7e6;}
+@media(max-width:700px){.multiplayer-panel{padding:82px 12px 72px}.multiplayer-panel .panel{padding:18px}.multiplayer-live:has([data-tournament-live]:not([hidden])){bottom:auto;top:90px;right:10px;max-width:185px}.tournament-rail{font-size:9px}.champion-reveal{font-size:21px}.online-entry label{flex-wrap:wrap}.multiplayer-live button{min-height:40px}.live-standings{max-height:120px}}
+@media(max-height:500px){.multiplayer-panel{padding:58px 14px}.multiplayer-panel .panel{gap:5px;padding:14px}.multiplayer-panel .panel>h2{font-size:24px}.tournament-rail{display:flex;flex-wrap:wrap}.tournament-rail span{font-size:8px;padding:3px 5px}.tournament-actions{padding-top:5px}.multiplayer-live:has([data-tournament-live]:not([hidden])){top:12px;right:12px;max-width:185px}.multiplayer-panel ul{max-height:22vh}}

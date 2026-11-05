@@ -29,7 +29,7 @@ async function open(port: number, origin = "http://127.0.0.1:5173") {
   return ws;
 }
 const send = (ws: WebSocket, m: object) => ws.send(JSON.stringify(
-  'type' in m && (m.type === 'join' || m.type === 'resume') ? { ...m, worldRevision: WORLD_REVISION } : m,
+  'type' in m && (m.type === 'join' || m.type === 'resume') ? { ...m, ...(m.type==='join'?{experience:'race'}:{}), worldRevision: WORLD_REVISION } : m,
 ));
 it("real sockets share rooms, authoritative snapshots and reconnect slots; HTTP health and origins are enforced", async () => {
   const server = await startServer({

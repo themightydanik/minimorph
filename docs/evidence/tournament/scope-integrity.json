@@ -1,0 +1,37 @@
+{
+  "baseline": "7b9ff6a9ce41447201b558101f2bcf2fa34ac642",
+  "worldRevision": "tournament-v1-advanced-races-v1",
+  "wireVersion": 2,
+  "protectedPaths": [
+    "assets/characters",
+    "assets/audio",
+    "packages/game-content",
+    "packages/game-simulation",
+    "packages/game-engine/src/character.ts",
+    "packages/game-engine/src/action-pose.ts",
+    "packages/game-engine/src/polish-lighting.ts",
+    "packages/game-engine/src/polish-effects.ts",
+    "packages/game-ui/src/audio.ts",
+    "packages/game-ui/src/joystick.ts",
+    "packages/game-ui/src/character-config.ts",
+    ".github/workflows/ci.yml"
+  ],
+  "protectedSourceDiff": [],
+  "approvedCharacterSha256": "cd566c9024676775e3efe8d751de3605a035eca3ca4bc3c00082d7b5d283d6b6",
+  "sourceSha256": {
+    "apps/multiplayer-server/src/rooms.ts": "97288d6f4864cc8942a22195d91c7845394fe365a2daa7a0ac3d0e48a1a24132",
+    "apps/multiplayer-server/src/matches.ts": "6249a10b2963ff1e8dd9af8728d965ba173a6e8f4a2c32f7d7ddf05fbd354a4f",
+    "apps/multiplayer-server/src/tournament.ts": "c1d85a1e9fc153db1ed11e5d4606f77d91532d3f1bfa6967e6a1121d5676f890",
+    "packages/multiplayer-protocol/src/index.ts": "10dc81dbec75d5b8fbe21a5d0532f4182e43944ab1d580bfd76b7eb84c19fc6c",
+    "packages/multiplayer-client/src/index.ts": "688d10501c43e264313afc8ef2a5c5b00ede59b680d9e3a0f4b8c98ca6c33744",
+    "packages/game-engine/src/index.ts": "5c38ec710be3ddc4e4fbdf6169f55a11f1e3a1af843c579cb0631ef5fe2b1741",
+    "packages/game-ui/src/index.ts": "f6bdf8f61465275595c32d96a18476ea873092044510d67534532094afe36a63",
+    "packages/game-ui/src/multiplayer-ui.ts": "b89190d784a76470923e343102662a7147368a89b47d288f8c11822e1eafdf8e",
+    "packages/game-ui/src/tournament-feedback.ts": "f986d08278bb2fdd96a0c972321f2d510f728f1a2b736ad444748d351d6e8f94",
+    "packages/game-ui/src/style.css": "2dda7de2997d70e07c7c0bdf7eff96f29806bb306ac8f0d633ae6f12b2ff0bf3",
+    "tools/tournament-review/server.ts": "47e98efb0191f18aad791884e36ad22416fa55eee62e479fb68ead2cec9f95c7"
+  },
+  "note": "Tournament state/presentation changes only. Character, rig/skin/textures, PR #11 geometry, shared physics, original audio, rendering DPR policy and existing strict-rig diagnostic are preserved.",
+  "renderingDprPolicyUnchanged": true,
+  "testClockControllerExcludedFromProductionBundles": true
+}
