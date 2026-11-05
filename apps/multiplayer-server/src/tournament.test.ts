@@ -596,3 +596,55 @@ it("duplicate owner start and consumed replay requests are idempotent, not disco
   expect(room.edition).toBe(edition);
   expect(owner.messages).toHaveLength(messages);
 });
+it("eight human slots complete the bracket using only ordinary round-bound input commands", async () => {
+  const { botInput } = await import("./bots");
+  const service = new MatchService(),
+    humans = Array.from({ length: 8 }, (_, i) => peer(`pilot-${i}`));
+  service.handle(humans[0], join(), 0);
+  const room = humans[0].room as TournamentRoom;
+  for (const human of humans.slice(1))
+    service.handle(human, join("private", room.code), 1);
+  expect(room.participants.every((p) => !p.bot)).toBe(true);
+  service.handle(humans[0], { v: 2, type: "start" }, 2);
+  const seq = new Map(humans.map((p) => [p.id, 0]));
+  // A test autopilot emits the same legal controls a human can send; it never writes state or results.
+  for (let tick = 0; tick < 30 * 700 && room.phase !== "completed"; tick++) {
+    const now = 3002 + (tick * 1000) / 30;
+    if (room.phase === "racing" && room.tick % 3 === 0)
+      for (const human of humans) {
+        const p = human.participant!;
+        if (p.status !== "racing" || !room.activeIds.includes(p.id)) continue;
+        const input = botInput(p.state, room.arena, p.world, "normal"),
+          sequence = seq.get(human.id)! + 1;
+        seq.set(human.id, sequence);
+        service.handle(
+          human,
+          {
+            v: 2,
+            type: "input",
+            command: {
+              seq: sequence,
+              x: input.x,
+              z: input.z,
+              jump: input.jump,
+              dive: input.dive,
+              yaw: 0,
+              round: room.round,
+              tournament: room.edition,
+            },
+          },
+          now,
+        );
+      }
+    service.tick(now);
+  }
+  expect(room.phase).toBe("completed");
+  expect(room.history.map((r) => r.rows.length)).toEqual([8, 6, 4]);
+  for (const r of room.history)
+    for (const id of r.qualifiedIds)
+      expect(r.rows.find((p) => p.id === id)!.status).toBe("finished");
+  expect(room.history[2].rows[0].status).toBe("finished");
+  expect(room.placements.every((p) => !p.bot)).toBe(true);
+  expect(room.championId).toBe(room.placements[0].id);
+  expect(humans.every((p) => p.participant?.id)).toBe(true);
+});

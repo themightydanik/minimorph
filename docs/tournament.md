@@ -75,7 +75,7 @@ Lobby, round HUD, qualification/intermission, spectator and champion panels reus
 
 ## Validation, evidence and limits
 
-[Actual desktop/mobile in-engine evidence](evidence/tournament/README.md). Server tests cover real full-course bot tournaments, one-human-plus-bots, all-human departure, ties, timeouts/no finishers, role/epoch rejection, state reset, result persistence, reconnect in every phase, eliminated/disconnected entrants, ownership, private/quick rooms and replay. Client/protocol tests cover snapshot coherence, stale snapshots, prediction epochs, no spectator movement and deduplicated feedback. Browser tests exercise the real lobby → qualification → next arenas → spectator/reconnect → champion → rematch path and standalone race selection/results.
+[Actual desktop/mobile in-engine evidence](evidence/tournament/README.md). Server tests cover real full-course bot tournaments, eight human-role entrants driven only by legal round-bound test inputs (without state writes), one-human-plus-bots, all-human departure, ties, timeouts/no finishers, role/epoch rejection, state reset, result persistence, reconnect in every phase, eliminated/disconnected entrants, ownership, private/quick rooms and replay. Client/protocol tests cover snapshot coherence, stale snapshots, prediction epochs, no spectator movement and deduplicated feedback. Browser tests exercise the real lobby → qualification → next arenas → spectator/reconnect → champion → rematch path and standalone race selection/results.
 
 Run `npm run check` and `npm run test:browser`. To capture the tournament review again:
 
