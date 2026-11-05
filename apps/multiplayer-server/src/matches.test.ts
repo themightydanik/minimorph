@@ -276,3 +276,23 @@ it.each(['held', 'rapid'] as const)('%s Dive remains deterministic through actio
     expect(participant.state.action).toBe('normal');
   } else expect(starts).toBeGreaterThan(1);
 });
+it.each(['cosmic-sprint','orbit-chaos','gravity-mayhem'])('prediction matches an authoritative eight-slot room on %s moving supports, including delayed snapshots', async arenaId => {
+ const { Prediction }=await import('@minimorph/multiplayer-client');
+ const { sampleMechanism }=await import('@minimorph/game-simulation');
+ const service=new MatchService(),human=peer();
+ service.handle(human,{v:2,type:'join',mode:'create',name:'Human',arenaId},0);
+ service.handle(human,{v:2,type:'start'},0);service.tick(3000);
+ const room=human.room!, participant=human.participant!, mechanism=room.arena.mechanisms.find(o=>o.kind==='moving-platform')!;
+ // Boundary fixture starts on an authored support; all subsequent movement is ordinary protocol input.
+ Object.assign(participant.state,sampleMechanism(mechanism,.73),{elapsed:.73,grounded:true,supportId:mechanism.id});
+ const prediction=new Prediction();prediction.receive(participant.state,participant.ack,arenaId,true);
+ const history:{seq:number;state:typeof participant.state}[]=[];
+ expect(room.participants).toHaveLength(8);
+ for(let i=0;i<65;i++){
+  const command=prediction.command({x:.08,z:-.15,jump:i===20,dive:i===35},0);
+  service.handle(human,{v:2,type:'input',command},3001+i*34);room.simulate();
+  expect(prediction.local).toEqual(participant.state);
+  history.push({seq:command.seq,state:structuredClone(participant.state)});
+  if(i>=2&&i%5===0){const older=history[i-2];prediction.receive(older.state,older.seq,arenaId,true);expect(prediction.local).toEqual(participant.state);}
+ }
+});

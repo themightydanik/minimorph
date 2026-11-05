@@ -127,7 +127,7 @@ export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape:
   shape('Moon', 'sphere', fixed, [17, -1, -34], [6, 6, 6], alternate);
   for (let i = 0; i < (arena.sections ? 180 : 90); i++) shape('Star', 'box', fixed, [Math.sin(i * 127.1) * 65, -16 + ((i * 17) % 28), arena.sections ? -((i*29)%100)/100*(-arena.finish.z) : -80 + ((i * 29) % 120)], [0.14, 0.14, 0.14], white);
   if (arena.sections) {
-    for(const section of arena.sections)for(const side of [-1,1])shape('Sector entry marker','box',fixed,[side*4.6,1.2,-section.start-2],[.16,2.4,.16],accent);
+    for(const section of arena.sections)for(const side of [-1,1])shape('Sector entry marker','box',fixed,[side*4.6,(section.elevation??0)+1.2,-section.start-2],[.16,2.4,.16],accent);
     for(const factor of [.5,.9])shape('Distant sector planet','sphere',fixed,[factor===.5?20:-22,-3,arena.finish.z*factor],[14,14,14],planet);
   }
   for (const route of arena.routes) for (const point of route.points) {
