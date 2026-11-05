@@ -1,5 +1,7 @@
 import type { PlayerState, Input } from "@minimorph/game-simulation";
 export const PROTOCOL_VERSION = 2;
+/** Bump when collision-relevant course/sampling data changes, independently of wire v2. */
+export const WORLD_REVISION = 'advanced-races-v1';
 export const SERVER_HZ = 30,
   SNAPSHOT_HZ = 10,
   CAPACITY = 8,
@@ -40,6 +42,7 @@ export interface MatchResult {
   }[];
 }
 export interface RoomSnapshot {
+  worldRevision?: string;
   roomId: string;
   code?: string;
   ownerId: string;
@@ -60,9 +63,10 @@ export type ClientMessage =
       mode: "quick" | "create" | "private";
       name: string;
       arenaId: string;
+      worldRevision?: string;
       code?: string;
     }
-  | { v: 2; type: "resume"; token: string }
+  | { v: 2; type: "resume"; token: string; worldRevision?: string }
   | { v: 2; type: "input"; command: InputCommand }
   | { v: 2; type: "start" }
   | { v: 2; type: "leave" }
@@ -74,6 +78,7 @@ export type ServerMessage =
   | { v: 2; type: "error"; code: string; message: string };
 const record = (v: unknown): v is Record<string, unknown> =>
   !!v && typeof v === "object" && !Array.isArray(v);
+const revision = (v: unknown) => v === undefined || typeof v === 'string' && /^[a-zA-Z0-9._-]{1,64}$/.test(v);
 const finite = (v: unknown): v is number =>
   typeof v === "number" && Number.isFinite(v);
 const keys = (v: Record<string, unknown>, allowed: string[]) =>
@@ -90,7 +95,7 @@ export function parseClientMessage(text: string): ClientMessage | null {
   if (!record(m) || m.v !== 2 || typeof m.type !== "string") return null;
   if (
     m.type === "join" &&
-    keys(m, ["v", "type", "mode", "name", "arenaId", "code"]) &&
+    keys(m, ["v", "type", "mode", "name", "arenaId", "code", "worldRevision"]) &&
     ["quick", "create", "private"].includes(String(m.mode)) &&
     typeof m.name === "string" &&
     m.name.trim().length >= 1 &&
@@ -98,6 +103,7 @@ export function parseClientMessage(text: string): ClientMessage | null {
     /^[\p{L}\p{N} _.-]+$/u.test(m.name) &&
     typeof m.arenaId === "string" &&
     m.arenaId.length < 40 &&
+    revision(m.worldRevision) &&
     (m.mode === "private"
       ? typeof m.code === "string" && /^[A-Z2-9]{6}$/.test(m.code)
       : m.code === undefined)
@@ -105,7 +111,8 @@ export function parseClientMessage(text: string): ClientMessage | null {
     return m as ClientMessage;
   if (
     m.type === "resume" &&
-    keys(m, ["v", "type", "token"]) &&
+    keys(m, ["v", "type", "token", "worldRevision"]) &&
+    revision(m.worldRevision) &&
     typeof m.token === "string" &&
     /^[A-Za-z0-9_-]{43}$/.test(m.token)
   )

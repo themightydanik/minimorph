@@ -1,3 +1,4 @@
+import { WORLD_REVISION } from '@minimorph/multiplayer-protocol';
 import { getArena } from "@minimorph/game-content";
 import {
   stepArenaPlayer,
@@ -170,7 +171,7 @@ export class MultiplayerClient implements OnlineDriver {
       if (generation !== this.generation) return;
       this.lastMessage = Date.now();
       this.send(
-        this.token ? { v: 2, type: "resume", token: this.token } : join!,
+        this.token ? { v: 2, type: "resume", token: this.token, worldRevision: WORLD_REVISION } : { ...join!, worldRevision: WORLD_REVISION },
       );
     };
     ws.onmessage = (event) => {
@@ -191,6 +192,7 @@ export class MultiplayerClient implements OnlineDriver {
       if (m.type === "error") {
         if (
           [
+            "world_version",
             "session_expired",
             "room_expired",
             "invalid_code",
@@ -214,6 +216,10 @@ export class MultiplayerClient implements OnlineDriver {
       }
       if (m.type !== "welcome" && m.type !== "snapshot") return;
       const s = m.snapshot;
+      if (s?.worldRevision !== WORLD_REVISION) {
+        this.fail('Game levels have changed. Reload the game and use a matching server.');
+        return;
+      }
       if (
         !s ||
         !Array.isArray(s.participants) ||
