@@ -1,3 +1,4 @@
+import { createActionPose } from "./action-pose";
 import * as pc from "playcanvas";
 import type { PlayerState } from "./physics";
 export interface CharacterVisual {
@@ -249,7 +250,7 @@ export function animatedCharacterSource(config: AnimatedCharacterConfig): Charac
         root.addComponent("anim", { activate: true });
         for (const name of CHARACTER_CLIPS) root.anim!.assignAnimation(name, tracks.get(name)!, undefined, 1, ["Idle", "Run", "Fall"].includes(name));
         let current: CharacterClip | undefined;
-        let pitch = 0;
+        const actionPose = createActionPose(app, root);
         const canvas = app.graphicsDevice.canvas as HTMLCanvasElement;
         if (config.reportOnCanvas !== false) canvas.dataset.character = config.version;
         return {
@@ -257,22 +258,22 @@ export function animatedCharacterSource(config: AnimatedCharacterConfig): Charac
           update(state, dt) {
             root.anim!.speed = dt > 0 ? 1 : 0;
             const next = characterClip(state);
-            // Temporary existing-clip presentation, no new skeletal animation or scaling.
-            const targetPitch = state.recovery || state.won ? 0 : state.action === "dive" ? -25 : state.action === "slide" ? -65 : 0;
-            pitch += (targetPitch - pitch) * (1 - Math.exp(-18 * dt));
-            presentation.setLocalEulerAngles(pitch, config.yaw ?? 0, 0);
+            actionPose.update(state, dt);
+            presentation.setLocalEulerAngles(0, config.yaw ?? 0, 0);
             if (next !== current) {
               root.anim!.baseLayer!.transition(next, current ? 0.12 : 0, 0);
               current = next;
             }
             if (config.reportOnCanvas !== false) {
-            canvas.dataset.characterPitch = String(pitch);
+            canvas.dataset.characterPitch = "0";
+            canvas.dataset.characterPoseWeight = String(actionPose.weight);
+            canvas.dataset.characterActionPose = state.action;
             canvas.dataset.characterClip = next;
             canvas.dataset.characterActive = root.anim!.baseLayer!.activeState;
             canvas.dataset.characterTime = String(root.anim!.baseLayer!.activeStateCurrentTime);
             }
           },
-          destroy() { visual.destroy(); presentation.destroy(); },
+          destroy() { actionPose.destroy(); visual.destroy(); presentation.destroy(); },
         };
       } catch (error) {
         visual.destroy();

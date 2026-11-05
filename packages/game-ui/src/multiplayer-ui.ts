@@ -10,6 +10,7 @@ export function mountMultiplayer(
   getGame: () => Game | undefined,
   input: () => Input,
   clear: () => void,
+  onAudioPhase?: (phase: string, countdown?: number) => void,
 ) {
   const entry = document.createElement("div");
   entry.className = "online-entry";
@@ -79,6 +80,7 @@ export function mountMultiplayer(
   }
   function snapshot(s: RoomSnapshot, id: string) {
     if (!active) return;
+    onAudioPhase?.(s.phase, s.phase === "countdown" ? Math.max(0, Math.ceil((s.startAt! - s.serverTime) / 1000)) : 0);
     root.dataset.onlineRoom = s.roomId;
     root.dataset.onlinePhase = s.phase;
     title.textContent =
@@ -222,6 +224,7 @@ export function mountMultiplayer(
     client?.stop();
     client = undefined;
     active = false;
+    onAudioPhase?.("selection");
     clear();
     panel.hidden = true;
     live.hidden = true;

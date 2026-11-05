@@ -567,3 +567,14 @@ footer button, .panel button { min-height: 48px; }
 .touch-actions { display:flex;flex-direction:column;gap:12px;align-items:center;pointer-events:none; }
 .touch-controls .dive { width:70px;height:54px;border-radius:20px;border-color:#ffd38a;background:#66513bdb;font-size:11px;font-weight:bold; }
 @media(max-height:500px) { .joystick{width:128px;height:128px}.joystick-knob{width:44px;height:44px;left:calc(50% - 22px);top:calc(50% - 22px)}.touch-actions{gap:8px}.touch-controls .dive{height:44px} }
+
+.audio-settings { position:relative;pointer-events:auto;font-size:11px;flex-shrink:0; }
+.audio-settings summary { list-style:none;cursor:pointer;border:1px solid #7793bb66;border-radius:10px;background:#172944ee;padding:12px;min-height:44px;display:grid;place-items:center; }
+.audio-settings summary::-webkit-details-marker { display:none; }
+.audio-settings summary:focus-visible { outline:3px solid #4ce5e8; }
+.audio-panel { position:absolute;bottom:56px;left:0;width:250px;border:1px solid #6bded580;background:#13253cf5;border-radius:14px;padding:18px;box-shadow:0 12px 40px #0007;display:grid;gap:14px;touch-action:manipulation; }
+.audio-panel label { display:grid;gap:8px;font-size:11px; }
+.audio-panel input { width:100%;accent-color:#65e9da;min-height:28px;touch-action:pan-x; }
+.audio-panel button { font-size:11px; }
+.audio-panel small { line-height:1.5;color:#b4cadb;font-size:10px; }
+@media(max-width:700px) { footer { gap:6px; }.host-status{max-width:27%}.audio-settings summary{padding:10px 8px;font-size:10px}.audio-panel{width:240px} }

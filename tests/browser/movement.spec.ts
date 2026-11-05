@@ -19,7 +19,9 @@ test('production character follows jump, forward dive, slide, recovery and run',
   for (let i = 0; i < 30 && await canvas.getAttribute('data-action') === 'dive'; i++) await page.clock.runFor(20);
   await expect(canvas).toHaveAttribute('data-action', 'slide');
   await page.clock.runFor(100);
-  expect(Number(await canvas.getAttribute('data-character-pitch'))).toBeLessThan(-45);
+  expect(Number(await canvas.getAttribute('data-character-pitch'))).toBe(0);
+  expect(Number(await canvas.getAttribute('data-character-pose-weight'))).toBeGreaterThan(.9);
+  await expect(canvas).toHaveAttribute('data-character-action-pose', 'slide');
   await page.screenshot({ path: `test-results/pr9-slide-${info.project.name}.png` });
   for (let i = 0; i < 30 && await canvas.getAttribute('data-action') === 'slide'; i++) await page.clock.runFor(20);
   await expect(canvas).toHaveAttribute('data-action', 'recover');

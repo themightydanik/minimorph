@@ -1,0 +1,20 @@
+{
+  "phase": "after",
+  "revision": "ae0008d0485fc7af137734c6c55dd8b68af4e68f",
+  "workingTreeModified": true,
+  "viewport": [
+    1280,
+    720
+  ],
+  "dpr": 1,
+  "method": "actual PlayCanvas fixed-camera scene, 1.8 s settle, original full arena",
+  "actions": [
+    "arena",
+    "dive",
+    "slide",
+    "recover",
+    "vfx"
+  ],
+  "matchedLandingEffectAgeSeconds": 0.22,
+  "baselineRevision": "ae0008d"
+}

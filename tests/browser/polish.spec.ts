@@ -1,0 +1,34 @@
+import { test,expect } from '@playwright/test';
+test('audio waits for a gesture, plays bundled music and persists independent settings',async({page})=>{
+ test.setTimeout(120000);const audioRequests:string[]=[];page.on('request',r=>{if(r.url().endsWith('.wav'))audioRequests.push(r.url());});
+ await page.route('https://telegram.org/**',r=>r.abort());await page.goto('http://127.0.0.1:5173');
+ const app=page.locator('#app');await expect(page.locator('canvas')).toHaveAttribute('data-character','minimorph-optimized-v1',{timeout:60000});
+ await expect(app).toHaveAttribute('data-audio-state','locked');expect(audioRequests).toHaveLength(0);
+ await page.getByText('Audio',{exact:true}).click();await expect(app).toHaveAttribute('data-audio-state','running');await expect(app).toHaveAttribute('data-music-track','menu',{timeout:15000});
+ await page.getByLabel('Master volume',{exact:true}).focus();await page.keyboard.press('Home');await page.keyboard.press('ArrowRight');
+ await page.getByLabel('Music volume',{exact:true}).focus();await page.keyboard.press('Home');
+ await page.getByLabel('Sound effects volume',{exact:true}).focus();await page.keyboard.press('End');
+ await page.getByRole('button',{name:'Mute audio',exact:true}).click();
+ const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('minimorph-audio-v1')!));expect(stored).toEqual({master:.01,music:0,effects:1,muted:true});
+ await page.reload();await expect(app).toHaveAttribute('data-audio-state','locked');await page.getByText('Audio',{exact:true}).click();
+ await expect(page.getByLabel('Master volume',{exact:true})).toHaveValue('1');await expect(page.getByLabel('Music volume',{exact:true})).toHaveValue('0');await expect(page.getByLabel('Sound effects volume',{exact:true})).toHaveValue('100');
+ await expect(page.getByRole('button',{name:'Unmute audio',exact:true})).toHaveAttribute('aria-pressed','true');
+ expect(audioRequests.some(url=>url.includes('menu-'))).toBe(true);
+});
+test('real skeleton actions and remote VFX use the unchanged renderer and expire cleanly',async({page})=>{
+ test.setTimeout(120000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:5175/polish-review.html?action=slide&crowd=1');
+ await page.waitForFunction(()=>!!(window as unknown as {reviewReady:boolean}).reviewReady,undefined,{timeout:60000});
+ const canvas=page.locator('canvas');await expect(canvas).toHaveAttribute('data-character','minimorph-optimized-v1',{timeout:60000});
+ await expect.poll(async()=>Number(await canvas.getAttribute('data-character-pose-weight')),{timeout:20000}).toBeGreaterThan(.95);
+ const info=await page.evaluate(()=>(window as unknown as {reviewInfo:()=>{wholeCharacterPitch:number;bonePitch:number;bufferWidth:number;cssWidth:number;dpr:number}}).reviewInfo());
+ expect(Math.abs(info.wholeCharacterPitch)).toBeLessThan(.01);expect(Math.abs(info.bonePitch)).toBeGreaterThan(35);expect(Math.abs(info.bufferWidth-info.cssWidth*Math.min(info.dpr,1.5))).toBeLessThanOrEqual(1);
+ await expect(canvas).toHaveAttribute('data-remote-count','1');
+ await page.evaluate(()=>(window as unknown as {reviewStopAction:()=>void}).reviewStopAction());
+ await expect.poll(async()=>Number(await canvas.getAttribute('data-active-effects')),{timeout:15000}).toBe(0);
+ await page.evaluate(()=>(window as unknown as {reviewRemoteEvent:(event:string)=>void}).reviewRemoteEvent('land'));
+ await expect.poll(async()=>Number(await canvas.getAttribute('data-active-effects')),{timeout:15000}).toBeGreaterThan(0);
+ expect(Number(await canvas.getAttribute('data-active-effects'))).toBeLessThanOrEqual(48);
+ await expect.poll(async()=>Number(await canvas.getAttribute('data-active-effects')),{timeout:15000}).toBe(0);
+ expect(errors).toEqual([]);
+});
