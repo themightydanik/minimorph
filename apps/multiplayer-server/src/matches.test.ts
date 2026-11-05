@@ -12,6 +12,7 @@ const join = (
 ): ClientMessage => ({
   v: 2,
   type: "join",
+  experience: "race",
   worldRevision: WORLD_REVISION,
   mode,
   name: "Human",
@@ -282,7 +283,7 @@ it.each(['cosmic-sprint','orbit-chaos','gravity-mayhem'])('prediction matches an
  const { Prediction }=await import('@minimorph/multiplayer-client');
  const { sampleMechanism }=await import('@minimorph/game-simulation');
  const service=new MatchService(),human=peer();
- service.handle(human,{v:2,type:'join',worldRevision:WORLD_REVISION,mode:'create',name:'Human',arenaId},0);
+ service.handle(human,{v:2,type:'join',experience:'race',worldRevision:WORLD_REVISION,mode:'create',name:'Human',arenaId},0);
  service.handle(human,{v:2,type:'start'},0);service.tick(3000);
  const room=human.room!, participant=human.participant!, mechanism=room.arena.mechanisms.find(o=>o.kind==='moving-platform')!;
  // Boundary fixture starts on an authored support; all subsequent movement is ordinary protocol input.

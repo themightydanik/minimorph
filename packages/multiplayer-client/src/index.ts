@@ -1,4 +1,7 @@
-import { WORLD_REVISION } from '@minimorph/multiplayer-protocol';
+import {
+  WORLD_REVISION,
+  validRoomSnapshot,
+} from "@minimorph/multiplayer-protocol";
 import { getArena } from "@minimorph/game-content";
 import {
   stepArenaPlayer,
@@ -19,6 +22,11 @@ export type ConnectionState =
   | "starting"
   | "racing"
   | "finished"
+  | "round-results"
+  | "intermission"
+  | "preparing"
+  | "tournament-results"
+  | "completed"
   | "reconnecting"
   | "unavailable";
 export interface OnlineFrame {
@@ -27,6 +35,8 @@ export interface OnlineFrame {
   elapsed: number;
   phase: RoomSnapshot["phase"];
   yaw: number;
+  viewingId?: string;
+  spectating?: boolean;
 }
 export interface OnlineDriver {
   frame(now: number): OnlineFrame | undefined;
@@ -36,6 +46,7 @@ export class Prediction {
   local?: PlayerState;
   seq = 0;
   arenaId = "cosmic-sprint";
+  context?: { round: number; tournament: number };
   receive(state: PlayerState, ack: number, arenaId: string, racing: boolean) {
     this.arenaId = arenaId;
     this.seq = Math.max(this.seq, ack);
@@ -50,13 +61,20 @@ export class Prediction {
     for (let i = 0; i < 4; i++)
       stepArenaPlayer(
         this.local,
-        { x: c.x, z: c.z, jump: c.jump && i === 0, dive: !!c.dive, cameraYaw: c.yaw },
+        {
+          x: c.x,
+          z: c.z,
+          jump: c.jump && i === 0,
+          dive: !!c.dive,
+          cameraYaw: c.yaw,
+        },
         FIXED_STEP,
         getArena(this.arenaId),
       );
   }
   command(input: Input, yaw: number) {
     const c = {
+      ...this.context,
       seq: ++this.seq,
       x: input.x,
       z: input.z,
@@ -102,6 +120,8 @@ export class MultiplayerClient implements OnlineDriver {
   snapshot?: RoomSnapshot;
   yaw = 0;
   rtt = 0;
+  followedId?: string;
+  private roundKey = "";
   private ws?: WebSocket;
   private token = "";
   private connected = false;
@@ -171,7 +191,14 @@ export class MultiplayerClient implements OnlineDriver {
       if (generation !== this.generation) return;
       this.lastMessage = Date.now();
       this.send(
-        this.token ? { v: 2, type: "resume", token: this.token, worldRevision: WORLD_REVISION } : { ...join!, worldRevision: WORLD_REVISION },
+        this.token
+          ? {
+              v: 2,
+              type: "resume",
+              token: this.token,
+              worldRevision: WORLD_REVISION,
+            }
+          : { ...join!, worldRevision: WORLD_REVISION },
       );
     };
     ws.onmessage = (event) => {
@@ -187,7 +214,12 @@ export class MultiplayerClient implements OnlineDriver {
       } catch {
         return;
       }
-      if (m.v !== 2) { this.fail("Server/client movement versions differ. Update both and rejoin."); return; }
+      if (m.v !== 2) {
+        this.fail(
+          "Server/client movement versions differ. Update both and rejoin.",
+        );
+        return;
+      }
       this.lastMessage = Date.now();
       if (m.type === "error") {
         if (
@@ -217,7 +249,9 @@ export class MultiplayerClient implements OnlineDriver {
       if (m.type !== "welcome" && m.type !== "snapshot") return;
       const s = m.snapshot;
       if (s?.worldRevision !== WORLD_REVISION) {
-        this.fail('Game levels have changed. Reload the game and use a matching server.');
+        this.fail(
+          "Game levels have changed. Reload the game and use a matching server.",
+        );
         return;
       }
       if (
@@ -226,10 +260,62 @@ export class MultiplayerClient implements OnlineDriver {
         s.participants.length > 8 ||
         !s.participants.every(
           (p) =>
-            p.state && Number.isFinite(p.state.x) && Number.isFinite(p.state.z),
+            p &&
+            p.state &&
+            Number.isFinite(p.state.x) &&
+            Number.isFinite(p.state.z),
         )
       )
         return;
+      const tournament = s.tournament;
+      if (!validRoomSnapshot(s)) {
+        this.fail("Tournament state is incompatible. Reload and rejoin.");
+        return;
+      }
+      if (m.type === "snapshot" && this.snapshot?.roomId === s.roomId) {
+        const before = this.snapshot.tournament;
+        if (
+          before &&
+          tournament &&
+          (tournament.edition < before.edition ||
+            (tournament.edition === before.edition &&
+              tournament.round < before.round))
+        )
+          return;
+        if (
+          (before?.edition ?? 0) === (tournament?.edition ?? 0) &&
+          (before?.round ?? 0) === (tournament?.round ?? 0)
+        ) {
+          const phaseRank = (phase: RoomSnapshot["phase"]) =>
+            phase === "waiting" || phase === "preparing"
+              ? 0
+              : phase === "countdown"
+                ? 1
+                : phase === "racing"
+                  ? 2
+                  : phase === "completed"
+                    ? 5
+                    : phase === "intermission"
+                      ? 4
+                      : 3;
+          if (
+            s.tick < this.snapshot.tick ||
+            phaseRank(s.phase) < phaseRank(this.snapshot.phase)
+          )
+            return;
+        }
+      }
+      const roundKey = `${s.roomId}:${tournament?.edition ?? 0}:${tournament?.round ?? 0}`;
+      if (roundKey !== this.roundKey) {
+        this.roundKey = roundKey;
+        this.prediction.pending = [];
+        this.snapshots = [];
+        this.followedId = undefined;
+        this.yaw = 0;
+      }
+      this.prediction.context = tournament
+        ? { round: tournament.round, tournament: tournament.edition }
+        : undefined;
       if (m.type === "welcome") {
         this.id = m.id;
         this.token = m.token;
@@ -315,6 +401,14 @@ export class MultiplayerClient implements OnlineDriver {
       this.lastPing = now;
       this.send({ v: 2, type: "ping", sent: now });
     }
+    const me = this.snapshot?.participants.find((p) => p.id === this.id);
+    if (
+      this.snapshot?.phase !== "racing" ||
+      me?.status !== "racing" ||
+      (this.snapshot.tournament &&
+        !this.snapshot.tournament.activeIds.includes(this.id))
+    )
+      return;
     const input = this.input();
     this.yaw = wrapAngle(this.yaw + ((input.cameraTurn ?? 0) / 30) * 1.5);
     if (
@@ -322,8 +416,6 @@ export class MultiplayerClient implements OnlineDriver {
       this.prediction.pending.length >= 30
     )
       return;
-    const me = this.snapshot.participants.find((p) => p.id === this.id);
-    if (me?.status !== "racing") return;
     this.send({
       v: 2,
       type: "input",
@@ -348,18 +440,61 @@ export class MultiplayerClient implements OnlineDriver {
         (target - a.serverTime) / Math.max(1, b.serverTime - a.serverTime),
       ),
     );
-    const remotes = b.participants
-      .filter((p) => p.id !== this.id)
-      .map((p) =>
-        interpolate(a.participants.find((q) => q.id === p.id) ?? p, p, t),
-      );
+    const visible = b.participants.filter(
+      (p) =>
+        !this.snapshot!.tournament ||
+        this.snapshot!.tournament.activeIds.includes(p.id),
+    );
+    const rendered = visible.map((p) =>
+      interpolate(a.participants.find((q) => q.id === p.id) ?? p, p, t),
+    );
+    const me = this.snapshot.participants.find((p) => p.id === this.id);
+    const spectating =
+      !!this.snapshot.tournament &&
+      (me?.status !== "racing" ||
+        !this.snapshot.tournament.activeIds.includes(this.id));
+    const candidates = rendered.filter((p) => p.status === "racing");
+    const followed =
+      candidates.find((p) => p.id === this.followedId) ??
+      candidates[0] ??
+      rendered.find((p) => p.id === this.snapshot!.tournament?.championId) ??
+      rendered[0];
+    if (spectating && followed) this.followedId = followed.id;
+    const viewingId = spectating ? (followed?.id ?? this.id) : this.id;
     return {
-      local: this.prediction.local,
-      remotes,
+      local: spectating && followed ? followed.state : this.prediction.local,
+      viewingId,
+      spectating,
+      remotes: rendered.filter((p) => p.id !== viewingId),
       elapsed: this.snapshot.elapsed,
       phase: this.snapshot.phase,
       yaw: this.yaw,
     };
+  }
+  spectate(direction: number) {
+    const candidates =
+      this.snapshot?.participants.filter(
+        (p) =>
+          this.snapshot?.tournament?.activeIds.includes(p.id) &&
+          p.status === "racing",
+      ) ?? [];
+    if (!candidates.length) return;
+    const index = Math.max(
+      0,
+      candidates.findIndex((p) => p.id === this.followedId),
+    );
+    this.followedId =
+      candidates[
+        (index + direction + candidates.length) % candidates.length
+      ].id;
+  }
+  replayMatch() {
+    if (this.snapshot?.tournament)
+      this.send({
+        v: 2,
+        type: "replay",
+        tournament: this.snapshot.tournament.edition,
+      });
   }
   startMatch() {
     this.send({ v: 2, type: "start" });

@@ -280,7 +280,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
       cameraTurn: Number(pressed("KeyE")) - Number(pressed("KeyQ")),
     };
   };
-  const multiplayer = mountMultiplayer(root,()=>game,readControls,clearInput,(phase,countdown)=>audio.scene(phase,countdown));
+  const multiplayer = mountMultiplayer(root,()=>game,readControls,clearInput,(phase,countdown)=>audio.scene(phase,countdown),cue=>audio.play(cue));
   try {
     game = createGame(
       canvas,
@@ -333,7 +333,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
         if (!canvas.dataset.ready) canvas.dataset.ready = "true";
       },
       {
-        onPresentation: event => audio.play(event.kind, event.remote, lastPlayer ? Math.hypot(event.x - lastPlayer.x, event.z - lastPlayer.z) : 0),
+        onPresentation: event => { if(multiplayer.tournament&&(event.kind==='victory'||event.kind==='finish'))return;audio.play(event.kind,event.remote,lastPlayer?Math.hypot(event.x-lastPlayer.x,event.z-lastPlayer.z):0); },
         raceFlow: true,
         onSession: handleSession,
         character: animatedCharacterSource(characterConfig),

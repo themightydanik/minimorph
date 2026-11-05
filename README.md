@@ -73,3 +73,7 @@ PR #10 prepares shared arena lighting/material polish, pooled local/remote feedb
 ## Advanced racing geometry review
 
 PR #11 upgrades full-round routes, moving supports, alternating crossings and Gravity Mayhem's vertical summit. See [level design and validation](docs/advanced-levels.md) and [actual before/after comparisons](docs/evidence/advanced-levels/README.md). Training tracks and PR #10 presentation remain preserved; owner level-design approval is required before merge.
+
+## Tournament review
+
+PR #12 adds the authoritative Cosmic Sprint → Orbit Chaos → Gravity Mayhem elimination tournament (8 → 6 → 4), qualification, reconnect-safe round transitions and spectating. Quick Match and private rooms default to Tournament; Single race and Solo/training remain available. See [rules, protocol/deployment and known limits](docs/tournament.md) and [actual desktop/mobile evidence](docs/evidence/tournament/README.md). Matching WORLD_REVISION builds and owner approval are required before production activation.
