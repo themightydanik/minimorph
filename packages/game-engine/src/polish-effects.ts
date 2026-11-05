@@ -39,7 +39,7 @@ export function createPolishEffects(app: pc.Application, root: pc.Entity, shape:
     return {entity,material,life:0};
   });
   let ringCursor=0;
-  let cursor = 0, arenaId = '', world: ArenaRuntime | undefined, disposed = false;
+  let cursor = 0, currentArena: ArenaConfig | undefined, world: ArenaRuntime | undefined, disposed = false;
   function burst(x:number,y:number,z:number,count:number,kind:string,heading=0) {
     for (let i=0;i<count;i++) {
       const p = particles[cursor++ % particles.length], angle = i * 2.399 + cursor * .31;
@@ -61,7 +61,7 @@ export function createPolishEffects(app: pc.Application, root: pc.Entity, shape:
     },
     begin(arena:ArenaConfig,dt:number) {
       if(disposed)return;
-      if(arena.id!==arenaId){arenaId=arena.id;world=new ArenaRuntime(arena);}
+      if(arena!==currentArena){currentArena=arena;world=new ArenaRuntime(arena);}
       for(const slot of slots)slot.seen=false;
       for(const ring of rings)if(ring.life>0){
         ring.life=Math.max(0,ring.life-dt);ring.entity.enabled=ring.life>0;
