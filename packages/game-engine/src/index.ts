@@ -149,6 +149,7 @@ export function createGame(
     accumulator = 0,
     destroyed = false,
     pendingJump = false,
+    pendingDive = false,
     cameraYaw = 0;
   let lastWallTime = performance.now();
   const pose = createCameraPose();
@@ -175,6 +176,7 @@ export function createGame(
     canvas.dataset.mode = levels.mode;
     canvas.dataset.phase = session.phase;
     canvas.dataset.progress = String(Math.round(progress * 100));
+    canvas.dataset.action = player.action;
     canvas.dataset.event = player.lastEvent ?? "none";
     onState(player);
     const section = arena.sections?.find(s => -player.z >= s.start && -player.z < s.end);
@@ -182,7 +184,7 @@ export function createGame(
   };
   const visibility = () => {
     accumulator = 0;
-    pendingJump = false;
+    pendingJump = false; pendingDive = false;
     if (document.hidden && !online) { session.pause(); character.update(player, 0); }
     app.timeScale = document.hidden ? 0 : 1;
     notify();
@@ -199,6 +201,7 @@ export function createGame(
     if(network){previous={...player};player=network.local;cameraYaw=network.yaw;session.phase=network.phase==="waiting"?"prepare":network.phase;accumulator=0;}
     const input = online ? {x:0,z:0,jump:false} : readInput();
     pendingJump ||= wasRacing && input.jump;
+    pendingDive ||= wasRacing && !!input.dive;
     while (!online && accumulator >= FIXED_STEP) {
       previous = { ...player };
       cameraYaw = wrapAngle(
@@ -206,7 +209,7 @@ export function createGame(
       );
       if (session.phase === "racing") stepArenaPlayer(
         player,
-        { ...input, cameraYaw, jump: pendingJump },
+        { ...input, cameraYaw, jump: pendingJump, dive: pendingDive || !!input.dive },
         FIXED_STEP,
         levels.current,
       );
@@ -215,7 +218,7 @@ export function createGame(
         previous = { ...player };
         if (levels.current.sections) reframeRecovery(pose,player,cameraYaw,canvas.clientWidth/Math.max(1,canvas.clientHeight));
       }
-      pendingJump = false;
+      pendingJump = false; pendingDive = false;
       accumulator -= FIXED_STEP;
     }
     const alpha = online ? 1 : accumulator / FIXED_STEP;
@@ -280,14 +283,14 @@ export function createGame(
   }
   function resetPlayer(reframe = false) {
     player = createPlayer(levels.current); previous = { ...player };
-    accumulator = 0; pendingJump = false; effects.reset();
+    accumulator = 0; pendingJump = false; pendingDive = false; effects.reset();
     if (reframe) { cameraYaw = 0; Object.assign(pose, { x: player.x, y: player.y + 5, z: player.z + 9, lookX: player.x, lookY: player.y + 1, lookZ: player.z - 1 }); }
   }
   return {
     setOnline(driver,arenaId){
       online=undefined;
       if(arenaId)this.selectLevel(arenaId,"race");
-      online=driver;accumulator=0;pendingJump=false;
+      online=driver;accumulator=0;pendingJump=false;pendingDive=false;
       if(!driver){session.choose();notify();}
     },
     selectLevel(id, mode) {
@@ -299,10 +302,10 @@ export function createGame(
       app.batcher!.generate();
       resetPlayer(true); session.select(id); notify();
     },
-    start() { lastWallTime = performance.now(); session.start(); character.update(player, 0); pendingJump = false; notify(); },
-    chooseLevel() { session.choose(); pendingJump = false; notify(); },
-    pause() { if(online)return;session.pause(); character.update(player, 0); pendingJump = false; accumulator = 0; notify(); },
-    resume() { lastWallTime = performance.now(); session.start(); character.update(player, 0); pendingJump = false; notify(); },
+    start() { lastWallTime = performance.now(); session.start(); character.update(player, 0); pendingJump = false; pendingDive = false; notify(); },
+    chooseLevel() { session.choose(); pendingJump = false; pendingDive = false; notify(); },
+    pause() { if(online)return;session.pause(); character.update(player, 0); pendingJump = false; pendingDive = false; accumulator = 0; notify(); },
+    resume() { lastWallTime = performance.now(); session.start(); character.update(player, 0); pendingJump = false; pendingDive = false; notify(); },
     restart() {
       resetPlayer();
       session.select(levels.current.id);

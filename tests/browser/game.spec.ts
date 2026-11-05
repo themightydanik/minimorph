@@ -16,7 +16,7 @@ for (const [target, port] of [
     await page.goto(`http://127.0.0.1:${port}`);
     const canvas = page.locator("canvas");
     await expect(canvas).toHaveAttribute("data-ready", "true");
-    await expect(canvas).toHaveAttribute("data-character", "minimorph-animated-v1-temporary", { timeout: 30000 });
+    await expect(canvas).toHaveAttribute("data-character", "minimorph-optimized-v1", { timeout: 30000 });
     await chooseAndStart(page);
     await expect(page.locator(".host-status")).toContainText(
       "Browser practice",
@@ -44,10 +44,7 @@ for (const [target, port] of [
     const distance = page.locator("[data-distance]");
     await expect(distance).toHaveText("34.0m");
     if (testInfo.project.name === "mobile") {
-      const forward = page.getByRole("button", {
-        name: "Move forward",
-        exact: true,
-      });
+      const forward = page.getByRole("group", { name: "Movement joystick" });
       const box = (await forward.boundingBox())!;
       const jumpBox = (await page
         .getByRole("button", { name: "Jump", exact: true })
@@ -55,7 +52,7 @@ for (const [target, port] of [
       const session = await page.context().newCDPSession(page);
       const direction = {
         x: box.x + box.width / 2,
-        y: box.y + box.height / 2,
+        y: box.y + box.height * 0.18,
         id: 1,
       };
       await session.send("Input.dispatchTouchEvent", {
@@ -169,7 +166,7 @@ async function startControlledRun(page: Page, port: number) {
   await page.route("https://telegram.org/**", (route) => route.abort());
   await page.goto(`http://127.0.0.1:${port}`);
   // Let GLB decode/upload finish with a live frame loop before freezing time.
-  await expect(page.locator("canvas")).toHaveAttribute("data-character", "minimorph-animated-v1-temporary", { timeout: 30000 });
+  await expect(page.locator("canvas")).toHaveAttribute("data-character", "minimorph-optimized-v1", { timeout: 30000 });
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.clock.runFor(100);
   await expect(page.locator("canvas")).toHaveAttribute("data-ready", "true");
@@ -283,7 +280,7 @@ for (const [target, port] of [
 
 for (const port of [5173, 5174]) {
   test(`character load failure preserves playable fallback on ${port}`, async ({ page }) => {
-    await page.route('**/*minimorph_animated_v1*.glb', route => route.abort());
+    await page.route('**/*minimorph_candidate_v1*.glb', route => route.abort());
     await page.goto(`http://127.0.0.1:${port}`);
     const canvas = page.locator('canvas');
     await expect(canvas).toHaveAttribute('data-character', 'procedural-fallback', { timeout: 30000 });

@@ -22,3 +22,10 @@ describe('gameplay animation selection', () => {
     expect(characterClip(createPlayer())).toBe('Idle');
   });
 });
+it('uses only supplied clips for dive, slide and action recovery', () => {
+  const state = createPlayer();
+  state.action = 'dive'; expect(characterClip(state)).toBe('Fall');
+  state.action = 'slide'; expect(characterClip(state)).toBe('Fall');
+  state.action = 'recover'; expect(characterClip(state)).toBe('Land');
+  state.won = true; expect(characterClip(state)).toBe('Victory');
+});

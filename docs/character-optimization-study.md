@@ -1,5 +1,8 @@
 # Minimorph character optimization study — not approved for production
 
+**PR #9 update:** The owner explicitly approved activation of the exact PR #8 candidate. Production now selects it; the original and historical study evidence remain intact. See [activation, movement and rollback](character-movement.md). Any statements below about an unapproved candidate describe the earlier PR #8 study stage.
+
+
 The owner authorized preparing and comparing a candidate, with a separate approval required before replacement. [The policy](character-optimization-policy.md) applies to this PR. The production URL/version in `packages/game-ui/src/character-config.ts`, original animated/static GLBs, textures, rig sources and game renderer are unchanged. No production menu, automatic LOD, adaptive resolution or fallback selects this candidate.
 
 ## Prepared variant

@@ -179,7 +179,7 @@ export class Room {
         if (p.status !== "racing") continue;
         stepArenaPlayer(
           p.state,
-          { ...input, jump: input.jump && sub === 0 },
+          { ...input, jump: input.jump && sub === 0, dive: !!input.dive },
           FIXED_STEP,
           this.arena,
           p.world,
@@ -190,6 +190,7 @@ export class Room {
         }
       }
     }
+    // Dive is a held level: only a neutral/new command or stale-input timeout releases it.
     for (const p of this.participants)
       p.lastInput = { ...p.lastInput, jump: false };
     this.tick++;
@@ -237,7 +238,7 @@ export class MatchService {
     readonly options = { maxRooms: 32, timeoutSeconds: 240 },
   ) {}
   error(peer: Peer, code: string, message: string) {
-    peer.send({ v: 1, type: "error", code, message });
+    peer.send({ v: 2, type: "error", code, message });
   }
   issue(peer: Peer, room: Room, p: Participant, now: number) {
     if (p.tokenHash) this.tokens.delete(p.tokenHash);
@@ -258,7 +259,7 @@ export class MatchService {
       old.close();
     }
     peer.send({
-      v: 1,
+      v: 2,
       type: "welcome",
       id: p.id,
       token,
@@ -268,7 +269,7 @@ export class MatchService {
   handle(peer: Peer, m: ClientMessage, now: number) {
     peer.lastSeen = now;
     if (m.type === "ping") {
-      peer.send({ v: 1, type: "pong", sent: m.sent, serverTime: now });
+      peer.send({ v: 2, type: "pong", sent: m.sent, serverTime: now });
       return;
     }
     if (m.type === "resume") {

@@ -209,7 +209,7 @@ export function mountMultiplayer(
       },
     });
     client.connect({
-      v: 1,
+      v: 2,
       type: "join",
       mode,
       name,

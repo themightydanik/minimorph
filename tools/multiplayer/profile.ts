@@ -44,7 +44,7 @@ try {
           !starts.has(s.roomId)
         ) {
           starts.add(s.roomId);
-          send({ v: 1, type: "start" });
+          send({ v: 2, type: "start" });
         }
       }
     });
@@ -53,14 +53,14 @@ try {
     const group = Math.floor(i / 4),
       arenaId = group ? "orbit-chaos" : "cosmic-sprint";
     if (i % 4 === 0)
-      send({ v: 1, type: "join", mode: "create", name: `Load ${i}`, arenaId });
+      send({ v: 2, type: "join", mode: "create", name: `Load ${i}`, arenaId });
     else {
       const room = [...server.service.rooms.values()].find(
         (r) => r.arenaId === arenaId,
       );
       if (!room) throw Error("Missing benchmark room");
       send({
-        v: 1,
+        v: 2,
         type: "join",
         mode: "private",
         code: room.code,
@@ -78,7 +78,7 @@ try {
         if (at - next > 1000) next = at;
         if (phase === "racing")
           send({
-            v: 1,
+            v: 2,
             type: "input",
             command: { seq: ++seq, x: 0, z: -1, jump: seq % 30 === 0, yaw: 0 },
           });

@@ -22,3 +22,13 @@ for (const arena of arenas)
         JSON.stringify({ name: p.name, state: p.state }),
       ).toBe(true);
   });
+it('hard bots dive only on descent into a long safe deck and respect action locks', async () => {
+  const { botInput } = await import('./bots');
+  const { createPlayer, ArenaRuntime } = await import('@minimorph/game-simulation');
+  const arena = { ...arenas[0], mechanisms: [], obstacles: [], platforms: [{ id: 'safe', x: 0, y: 0, z: 0, width: 10, depth: 40 }] };
+  const world = new ArenaRuntime(arena), state = createPlayer(arena);
+  Object.assign(state, { x: 0, z: 0, y: .5, grounded: false, vy: -2, coyote: 0 });
+  expect(botInput(state, arena, world, 'hard').dive).toBe(true);
+  state.vy = 2; expect(botInput(state, arena, world, 'hard').dive).toBe(false);
+  state.action = 'recover'; expect(botInput(state, arena, world, 'hard')).toMatchObject({ jump: false, dive: false, x: 0, z: 0 });
+});

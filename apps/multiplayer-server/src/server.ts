@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
 import { appendFile } from "node:fs/promises";
 import { WebSocketServer, WebSocket } from "ws";
-import { parseClientMessage } from "@minimorph/multiplayer-protocol";
+import { parseClientMessage, PROTOCOL_VERSION } from "@minimorph/multiplayer-protocol";
 import type {
   ServerMessage,
   MatchResult,
@@ -100,7 +100,7 @@ export async function startServer(options: ServerOptions) {
     } else if (req.url === "/readyz") {
       res.writeHead(ready ? 200 : 503, { "Content-Type": "application/json" });
       res.end(
-        JSON.stringify({ ready, protocol: 1, rooms: service.rooms.size }),
+        JSON.stringify({ ready, protocol: PROTOCOL_VERSION, rooms: service.rooms.size }),
       );
     } else {
       res.writeHead(404);
@@ -219,7 +219,7 @@ export async function startServer(options: ServerOptions) {
   function broadcast(now: number) {
     for (const room of service.rooms.values()) {
       const data = JSON.stringify({
-        v: 1,
+        v: 2,
         type: "snapshot",
         snapshot: room.snapshot(now),
       });

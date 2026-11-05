@@ -62,15 +62,19 @@ def validate(structure_only=False, report_path=None):
     source = Skin(SOURCE)
     candidate = Skin(CANDIDATE)
     kept = np.fromfile(str(CANDIDATE) + ".vertex-map.u32", dtype="<u4")
+    approval = json.loads((CANDIDATE.parent / "production-approval.json").read_text())
+    assert approval["approvedForProduction"] is True
+    assert approval["candidateSha256"] == hashlib.sha256(CANDIDATE.read_bytes()).hexdigest()
     config = (ROOT / "packages/game-ui/src/character-config.ts").read_text()
     assert (
-        "animation/minimorph_animated_v1.glb" in config
-        and "optimization/" not in config
-    ), "Candidate is not approved for production"
+        "optimization/minimorph_candidate_v1.glb" in config
+        and "version: 'minimorph-optimized-v1'" in config
+    ), "Production must select the owner-approved PR #8 candidate"
     assert (
         hashlib.sha256(SOURCE.read_bytes()).hexdigest()
         == "1bcecf7f25e35f1cfb7e4afce6542098a29c44bd9e86cd4ac281da3c3a818f76"
     )
+    assert hashlib.sha256(CANDIDATE.read_bytes()).hexdigest() == "cd566c9024676775e3efe8d751de3605a035eca3ca4bc3c00082d7b5d283d6b6"
     for key in [
         "nodes",
         "skins",
@@ -142,7 +146,7 @@ def validate(structure_only=False, report_path=None):
                 }
             )
     report = {
-        "productionApproved": False,
+        "productionApproved": True,
         "originalTriangles": len(source.tri),
         "candidateTriangles": len(candidate.tri),
         "originalVertices": len(source.pos),
@@ -157,7 +161,7 @@ def validate(structure_only=False, report_path=None):
         "maxRetainedVertexPoseDifferenceMetres": max_retained,
         "retainedPoseSampleCount": len(source.clips) * 5,
         "poseSamples": samples,
-        "limitations": "Removed-vertex distances use a centroid shortlist and 30 sampled poses, not continuous surface equivalence. Existing original rig defects remain; triangle interpolation and sleeve/body shading can differ. Owner visual approval required.",
+        "limitations": "Removed-vertex distances use a centroid shortlist and 30 sampled poses, not continuous surface equivalence. Existing original rig defects remain; triangle interpolation and sleeve/body shading can differ. Production activation approved by owner in PR #9; historical study metadata remains unchanged.",
     }
     out = (
         Path(report_path)

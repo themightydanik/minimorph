@@ -12,7 +12,7 @@ function observe(page: Page) {
     welcomes: number;
   } = { loads: 0, welcomes: 0 };
   page.on("request", (r) => {
-    if (r.url().endsWith(".glb") && r.url().includes("minimorph_animated_v1"))
+    if (r.url().endsWith(".glb") && r.url().includes("minimorph_candidate_v1"))
       state.loads++;
   });
   page.on("websocket", (ws) =>
@@ -33,7 +33,7 @@ async function menu(page: Page, name: string) {
   await page.goto("http://127.0.0.1:5173");
   await expect(page.locator("canvas")).toHaveAttribute(
     "data-character",
-    "minimorph-animated-v1-temporary",
+    "minimorph-optimized-v1",
     { timeout: 60000 },
   );
   await page.locator("[data-online-name]").fill(name);
@@ -139,14 +139,14 @@ test("two actual browsers share eight authoritative participants, movement, anim
     if (info.project.name === "mobile") {
       const cdp = await page.context().newCDPSession(page),
         direction = (await page
-          .getByRole("button", { name: "Move forward", exact: true })
+          .getByRole("group", { name: "Movement joystick" })
           .boundingBox())!,
         jump = (await page
           .getByRole("button", { name: "Jump", exact: true })
           .boundingBox())!;
       const finger = {
         x: direction.x + direction.width / 2,
-        y: direction.y + direction.height / 2,
+        y: direction.y + direction.height * 0.18,
         id: 1,
       };
       await cdp.send("Input.dispatchTouchEvent", {

@@ -1,0 +1,9 @@
+{
+  "approvedForProduction": true,
+  "approval": "Explicit owner instruction for PR #9: Production Character + Movement & Mobile Controls",
+  "candidate": "assets/characters/minimorph/optimization/minimorph_candidate_v1.glb",
+  "candidateSha256": "cd566c9024676775e3efe8d751de3605a035eca3ca4bc3c00082d7b5d283d6b6",
+  "original": "assets/characters/minimorph/animation/minimorph_animated_v1.glb",
+  "originalSha256": "1bcecf7f25e35f1cfb7e4afce6542098a29c44bd9e86cd4ac281da3c3a818f76",
+  "note": "The embedded GLB and PR #8 preparation metadata remain byte-identical historical study records. This record authorizes that exact candidate."
+}

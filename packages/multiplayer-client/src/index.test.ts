@@ -89,7 +89,7 @@ it("a silent half-open socket starts recovery without waiting for its close hand
   );
   try {
     client.connect({
-      v: 1,
+      v: 2,
       type: "join",
       mode: "quick",
       name: "Tester",
@@ -99,7 +99,7 @@ it("a silent half-open socket starts recovery without waiting for its close hand
     first.onopen?.();
     first.onmessage?.({
       data: JSON.stringify({
-        v: 1,
+        v: 2,
         type: "welcome",
         id: "human",
         token: "a".repeat(43),
@@ -144,4 +144,19 @@ it("a silent half-open socket starts recovery without waiting for its close hand
     vi.unstubAllGlobals();
     vi.useRealTimers();
   }
+});
+it('dive prediction and replay exactly match authoritative substeps through slide and recovery', () => {
+  const prediction = new Prediction(), server = createPlayer(arenas[0]);
+  prediction.receive(server, 0, arenas[0].id, true);
+  const actions = new Set<string>();
+  for (let n = 0; n < 80; n++) {
+    const command = prediction.command({ x: .13, z: -.65, jump: n === 5, dive: n === 12 }, .1);
+    for (let i = 0; i < 4; i++) stepArenaPlayer(server, {
+      ...command, cameraYaw: command.yaw, jump: command.jump && i === 0, dive: command.dive,
+    }, FIXED_STEP, arenas[0]);
+    actions.add(server.action);
+    expect(prediction.local).toEqual(server);
+    if (n % 4 === 0) prediction.receive(server, command.seq, arenas[0].id, true);
+  }
+  expect([...actions]).toEqual(expect.arrayContaining(['normal', 'dive', 'slide', 'recover']));
 });

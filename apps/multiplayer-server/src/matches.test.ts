@@ -9,7 +9,7 @@ const join = (
   mode: "quick" | "create" | "private" = "quick",
   code?: string,
 ): ClientMessage => ({
-  v: 1,
+  v: 2,
   type: "join",
   mode,
   name: "Human",
@@ -73,9 +73,9 @@ it("private codes, owner start, capacity, expiry and one-human seven-bot races",
   const code = a.room!.code!;
   expect(code).toMatch(/^[A-Z2-9]{6}$/);
   s.handle(b, join("private", code), 1);
-  s.handle(b, { v: 1, type: "start" }, 2);
+  s.handle(b, { v: 2, type: "start" }, 2);
   expect(a.room!.phase).toBe("waiting");
-  s.handle(a, { v: 1, type: "start" }, 3);
+  s.handle(a, { v: 2, type: "start" }, 3);
   expect(a.room!.participants).toHaveLength(8);
   const bad = peer();
   s.handle(bad, join("private", "AAAAAA"), 4);
@@ -84,7 +84,7 @@ it("private codes, owner start, capacity, expiry and one-human seven-bot races",
   expect(bad.messages.at(-1)).toMatchObject({ code: "already_started" });
   const solo = peer();
   s.handle(solo, join("create"), 5);
-  s.handle(solo, { v: 1, type: "start" }, 6);
+  s.handle(solo, { v: 2, type: "start" }, 6);
   expect(solo.room!.participants.filter((p) => p.bot)).toHaveLength(7);
   const full = peer();
   s.handle(full, join("create"), 7);
@@ -101,14 +101,14 @@ it("server owns movement, input acknowledgments, obstacle clock and checkpoint r
   const s = new MatchService(),
     a = peer();
   s.handle(a, join("create"), 0);
-  s.handle(a, { v: 1, type: "start" }, 0);
+  s.handle(a, { v: 2, type: "start" }, 0);
   s.tick(3000);
   const p = a.participant!,
     initial = p.state.z;
   s.handle(
     a,
     {
-      v: 1,
+      v: 2,
       type: "input",
       command: { seq: 1, x: 0, z: -1, jump: true, yaw: 0 },
     },
@@ -125,7 +125,7 @@ it("server owns movement, input acknowledgments, obstacle clock and checkpoint r
     s.handle(
       a,
       {
-        v: 1,
+        v: 2,
         type: "input",
         command: { seq: i + 2, x: -1, z: 0, jump: false, yaw: 0 },
       },
@@ -139,7 +139,7 @@ it("server owns movement, input acknowledgments, obstacle clock and checkpoint r
   s.handle(
     a,
     {
-      v: 1,
+      v: 2,
       type: "input",
       command: { seq: 999999, x: 1, z: 0, jump: false, yaw: 0 },
     },
@@ -153,23 +153,23 @@ it("reconnect rotates a participant-scoped token, rejects replay and expires dis
     a = peer();
   s.handle(a, join("create"), 0);
   const first = welcome(a);
-  s.handle(a, { v: 1, type: "start" }, 1);
+  s.handle(a, { v: 2, type: "start" }, 1);
   s.tick(3001);
   const id = a.participant!.id,
     room = a.room!;
   s.disconnect(a, 4000);
   const resumed = peer("resumed");
-  s.handle(resumed, { v: 1, type: "resume", token: first.token }, 23999);
+  s.handle(resumed, { v: 2, type: "resume", token: first.token }, 23999);
   expect(resumed.participant!.id).toBe(id);
   const rotated = welcome(resumed);
   expect(rotated.token).not.toBe(first.token);
   const attacker = peer("other");
-  s.handle(attacker, { v: 1, type: "resume", token: first.token }, 24000);
+  s.handle(attacker, { v: 2, type: "resume", token: first.token }, 24000);
   expect(attacker.messages.at(-1)).toMatchObject({ code: "session_expired" });
   s.disconnect(resumed, 25000);
   s.tick(45001);
   expect(room.participants.find((p) => p.id === id)!.status).toBe("dnf");
-  s.handle(attacker, { v: 1, type: "resume", token: rotated.token }, 45002);
+  s.handle(attacker, { v: 2, type: "resume", token: rotated.token }, 45002);
   expect(attacker.participant).toBeUndefined();
 });
 it("finish order uses simulation time with deterministic ties; timeout produces stored server results", async () => {
@@ -179,7 +179,7 @@ it("finish order uses simulation time with deterministic ties; timeout produces 
     b = peer("b");
   s.handle(a, join("create"), 0);
   s.handle(b, join("private", a.room!.code!), 1);
-  s.handle(a, { v: 1, type: "start" }, 2);
+  s.handle(a, { v: 2, type: "start" }, 2);
   const room = a.room!;
   // Boundary fixture only: client protocol has no position/finish fields; browser acceptance races use actual inputs.
   for (const p of [a.participant!, b.participant!])
@@ -219,6 +219,60 @@ it("waiting owner transfer and replacement humans preserve distinct safe start s
   expect(
     new Set(room.participants.map((p) => `${p.state.x}:${p.state.z}`)).size,
   ).toBe(3);
-  s.handle(b, { v: 1, type: "start" }, 5);
+  s.handle(b, { v: 2, type: "start" }, 5);
   expect(room.participants).toHaveLength(8);
+});
+it('authoritatively applies analog jump/dive actions and matches client prediction through recovery', async () => {
+  const { Prediction } = await import('@minimorph/multiplayer-client');
+  const service = new MatchService(), human = peer();
+  service.handle(human, join('create'), 0);
+  service.handle(human, { v: 2, type: 'start' }, 0); service.tick(3000);
+  const participant = human.participant!, prediction = new Prediction();
+  prediction.receive(participant.state, participant.ack, human.room!.arena.id, true);
+  const actions = new Set<string>();
+  for (let i = 0; i < 70; i++) {
+    const command = prediction.command({ x: .08, z: -.55, jump: i === 5, dive: i === 12 }, 0);
+    service.handle(human, { v: 2, type: 'input', command }, 3001 + i * 34);
+    human.room!.simulate();
+    expect(participant.ack).toBe(command.seq);
+    expect(participant.state).toEqual(prediction.local);
+    actions.add(participant.state.action);
+    if (i % 5 === 0) prediction.receive(participant.state, participant.ack, human.room!.arena.id, true);
+  }
+  expect([...actions]).toEqual(expect.arrayContaining(['normal', 'dive', 'slide', 'recover']));
+  expect(human.room!.snapshot(6000).participants.find(p => p.id === participant.id)!.state.action).toBe(participant.state.action);
+});
+it.each(['held', 'rapid'] as const)('%s Dive remains deterministic through action boundaries and delayed reconciliation', async pattern => {
+  const { Prediction } = await import('@minimorph/multiplayer-client');
+  const service = new MatchService(), human = peer();
+  service.handle(human, join('create'), 0);
+  service.handle(human, { v: 2, type: 'start' }, 0); service.tick(3000);
+  const participant = human.participant!, prediction = new Prediction(), arenaId = human.room!.arena.id;
+  prediction.receive(participant.state, participant.ack, arenaId, true);
+  const history: { seq: number; state: typeof participant.state }[] = [];
+  let starts = 0;
+  for (let i = 0; i < 90; i++) {
+    const before = participant.state.diveCooldown;
+    const command = prediction.command({ x: 0, z: 0, jump: false, dive: pattern === 'held' || i % 2 === 0 }, 0);
+    service.handle(human, { v: 2, type: 'input', command }, 3001 + i * 34);
+    human.room!.simulate();
+    if (participant.state.diveCooldown > before) starts++;
+    expect(participant.state.diveHeld).toBe(command.dive);
+    expect(prediction.local).toEqual(participant.state);
+    history.push({ seq: command.seq, state: structuredClone(participant.state) });
+    if (i >= 2 && i % 5 === 0) {
+      // A stale snapshot must replay unacknowledged Dive/neutral commands with their held latch intact.
+      const older = history[i - 2];
+      prediction.receive(older.state, older.seq, arenaId, true);
+      expect(prediction.pending).toHaveLength(2);
+      expect(prediction.local).toEqual(participant.state);
+    }
+  }
+  if (pattern === 'held') {
+    expect(starts).toBe(1); expect(participant.state.action).toBe('normal');
+    expect(participant.state.diveCooldown).toBe(0);
+    human.room!.simulate(); // No new packet must not manufacture a Dive release.
+    expect(participant.state.diveHeld).toBe(true);
+    expect(participant.state.action).toBe('normal');
+  } else expect(starts).toBeGreaterThan(1);
 });
