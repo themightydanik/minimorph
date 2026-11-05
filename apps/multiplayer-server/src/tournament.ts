@@ -85,7 +85,10 @@ export class TournamentRoom extends Room {
       edition: this.edition,
       round: this.round,
       activeIds: this.activeIds,
-      orderIds: rankParticipants(this.active()).map((p) => p.id),
+      orderIds: (
+        this.history.find((r) => r.round === this.round)?.rows ??
+        rankParticipants(this.active())
+      ).map((p) => p.id),
       qualifiedIds:
         this.phase === "racing" && this.round < 3
           ? this.finishers()
@@ -105,11 +108,13 @@ export class TournamentRoom extends Room {
   }
   override simulate() {
     super.simulate();
-    if (this.round === 3 && !this.championId) {
+    if (this.round === 3) {
       const first = rankParticipants(
         this.active().filter((p) => p.finishTime !== null),
       )[0];
-      if (first) this.championId = first.id;
+      // Derive the live leader from the same total order as final results.
+      // A later observed finish can tie an earlier one in simulation time.
+      this.championId = first?.id ?? null;
     }
   }
   override finish(now: number) {
@@ -171,7 +176,7 @@ export class TournamentRoom extends Room {
             a.id.localeCompare(b.id),
         )
         .map((p, i) => ({ ...p, place: i + 1 }));
-      this.championId ??= this.placements[0]?.id ?? null;
+      this.championId = this.placements[0]?.id ?? null;
       this.result = {
         roomId: this.id,
         arenaId: this.arenaId,

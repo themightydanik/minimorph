@@ -177,3 +177,79 @@ it("invalid tournament snapshots fail closed before UI access, including malform
   ])
     expect(validRoomSnapshot({ ...s, ...corrupt } as typeof s)).toBe(false);
 });
+it.each(["equal-time", "all-dnf", "empty-final"])(
+  "accepts consistent %s final snapshots and rejects conflicting championship claims",
+  async (scenario) => {
+    const empty = scenario === "empty-final";
+    const { validRoomSnapshot } = await import("./index"),
+      { TournamentRoom } = await import(
+        "../../../apps/multiplayer-server/src/tournament"
+      );
+    const room = new TournamentRoom(undefined, 0, 0);
+    room.start(0);
+    let now = 3000;
+    room.advance(now, 240);
+    for (let round = 1; round <= 3; round++) {
+      if (round === 3 && scenario === "equal-time")
+        for (const p of room.participants.filter((p) =>
+          room.activeIds.includes(p.id),
+        ))
+          Object.assign(p.state, {
+            ...room.arena.finish,
+            checkpoint: room.arena.checkpoints.length,
+          });
+      room.advance((now += 240001), 240);
+      expect(validRoomSnapshot(room.snapshot(now))).toBe(true);
+      if (round === 3) break;
+      if (empty && round === 2)
+        for (const p of room.participants)
+          if (room.qualifiedIds.includes(p.id)) p.withdrawn = true;
+      for (const delay of [3000, 5000, 1000, 3000]) {
+        room.advance((now += delay), 240);
+        expect(validRoomSnapshot(room.snapshot(now))).toBe(true);
+      }
+    }
+    room.advance((now += 12000), 240);
+    const snapshot = room.snapshot(now),
+      t = snapshot.tournament!;
+    expect(snapshot.phase).toBe("completed");
+    expect(validRoomSnapshot(snapshot)).toBe(true);
+    expect(t.history[2].rows.length).toBe(empty ? 0 : 4);
+    expect(t.orderIds.length).toBe(empty ? 0 : 4);
+    expect(t.championId).toBe(t.placements[0].id);
+    expect(snapshot.result!.rows[0].id).toBe(t.championId);
+    const corruptions: ((s: typeof snapshot) => void)[] = [
+      (s) => {
+        s.tournament!.championId = s.tournament!.placements[1].id;
+      },
+      (s) => {
+        s.result!.championId = s.tournament!.placements[1].id;
+      },
+      (s) => {
+        s.result!.rows.reverse();
+      },
+      (s) => {
+        s.result!.rows[0].time = 1;
+      },
+      (s) => {
+        s.tournament!.placements[0].roundReached =
+          3 - s.tournament!.placements[0].roundReached;
+      },
+      (s) => {
+        s.tournament!.history[1].rows[0].time = 1;
+      },
+      (s) => {
+        s.tournament!.orderIds.reverse();
+        if (empty) s.tournament!.orderIds.push(s.tournament!.championId!);
+      },
+      (s) => {
+        s.result = undefined;
+      },
+    ];
+    for (const corrupt of corruptions) {
+      const bad = structuredClone(snapshot);
+      corrupt(bad);
+      expect(validRoomSnapshot(bad)).toBe(false);
+    }
+  },
+);

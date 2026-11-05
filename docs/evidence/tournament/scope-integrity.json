@@ -21,8 +21,8 @@
   "sourceSha256": {
     "apps/multiplayer-server/src/rooms.ts": "97288d6f4864cc8942a22195d91c7845394fe365a2daa7a0ac3d0e48a1a24132",
     "apps/multiplayer-server/src/matches.ts": "6249a10b2963ff1e8dd9af8728d965ba173a6e8f4a2c32f7d7ddf05fbd354a4f",
-    "apps/multiplayer-server/src/tournament.ts": "c1d85a1e9fc153db1ed11e5d4606f77d91532d3f1bfa6967e6a1121d5676f890",
-    "packages/multiplayer-protocol/src/index.ts": "10dc81dbec75d5b8fbe21a5d0532f4182e43944ab1d580bfd76b7eb84c19fc6c",
+    "apps/multiplayer-server/src/tournament.ts": "cbd9fa8bdb52fc2fc03f283fabaec996e9f3194ff5565bfc3eafb2201a3be43b",
+    "packages/multiplayer-protocol/src/index.ts": "25f1d95d9c9889ef728a00bad1cbf26b9038ddb201e8b0c72f85b3d72717d0d4",
     "packages/multiplayer-client/src/index.ts": "688d10501c43e264313afc8ef2a5c5b00ede59b680d9e3a0f4b8c98ca6c33744",
     "packages/game-engine/src/index.ts": "5c38ec710be3ddc4e4fbdf6169f55a11f1e3a1af843c579cb0631ef5fe2b1741",
     "packages/game-ui/src/index.ts": "f6bdf8f61465275595c32d96a18476ea873092044510d67534532094afe36a63",

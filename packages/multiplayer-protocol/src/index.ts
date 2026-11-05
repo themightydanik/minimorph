@@ -341,6 +341,7 @@ export function validRoomSnapshot(s: RoomSnapshot): boolean {
         (p, j) =>
           p.place !== j + 1 ||
           !["finished", "dnf"].includes(p.status) ||
+          (p.status === "dnf" ? p.time !== null : p.time === null) ||
           (p.time !== null && (!Number.isFinite(p.time) || p.time < 0)),
       )
     )
@@ -358,6 +359,21 @@ export function validRoomSnapshot(s: RoomSnapshot): boolean {
     return false;
   if (t.championId !== null && (t.round !== 3 || !ids.includes(t.championId)))
     return false;
+  // Closed round order is the frozen result order, including an empty final.
+  if (
+    closed &&
+    t.orderIds.some((id, i) => id !== t.history[t.round - 1].rows[i]?.id)
+  )
+    return false;
+  if (closed && t.orderIds.length !== t.history[t.round - 1].rows.length)
+    return false;
+  if (
+    !closed &&
+    t.championId !== null &&
+    (t.orderIds[0] !== t.championId ||
+      !finite(s.participants.find((p) => p.id === t.championId)?.finishTime))
+  )
+    return false;
   if (
     !Array.isArray(t.placements) ||
     t.placements.length > 8 ||
@@ -373,9 +389,53 @@ export function validRoomSnapshot(s: RoomSnapshot): boolean {
     ["tournament-results", "completed"].includes(s.phase) &&
     (t.round !== 3 ||
       t.placements.length !== ids.length ||
-      t.championId !== t.placements[0]?.id)
+      t.championId !== (t.placements[0]?.id ?? null))
   )
     return false;
+  if (["tournament-results", "completed"].includes(s.phase)) {
+    // Check agreement of server-supplied frozen ranks; do not rerun physics or
+    // manufacture final entrants when every qualifier withdrew before it.
+    const expected = t.history
+      .flatMap((r) =>
+        r.rows.map((row) => ({
+          ...row,
+          roundReached: r.round,
+        })),
+      )
+      .filter(
+        (row, i, rows) =>
+          !rows.slice(i + 1).some((later) => later.id === row.id),
+      )
+      .sort((a, b) => b.roundReached - a.roundReached || a.place - b.place);
+    const result = s.result;
+    if (
+      !record(result) ||
+      !Array.isArray(result.rows) ||
+      result.roomId !== s.roomId ||
+      result.arenaId !== s.arenaId ||
+      result.tournamentEdition !== t.edition ||
+      !finite(result.endedAt) ||
+      (result.championId ?? null) !== t.championId ||
+      expected.length !== ids.length ||
+      result.rows.length !== ids.length
+    )
+      return false;
+    for (const [i, p] of t.placements.entries()) {
+      const row = expected[i],
+        final = result.rows[i];
+      if (
+        !record(final) ||
+        p.id !== row.id ||
+        p.roundReached !== row.roundReached ||
+        p.status !== row.status ||
+        p.time !== row.time ||
+        (["id", "name", "bot", "place", "status", "time"] as const).some(
+          (key) => final[key] !== p[key],
+        )
+      )
+        return false;
+    }
+  }
   if (["round-results", "intermission"].includes(s.phase) && t.round === 3)
     return false;
   return (
