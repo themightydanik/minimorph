@@ -72,6 +72,7 @@ export class AudioManager {
   }
   async unlock() {
     if (this.disposed) return;
+    if (this.unlocked && !this.blocked && this.context?.state === 'running' && this.music?.name === this.desired) return;
     try {
       if (!this.context) {
         this.context = this.contextFactory();
@@ -99,7 +100,7 @@ export class AudioManager {
     this.loading.set(name, promise); return promise;
   }
   scene(phase: string, countdown = 0) {
-    const next: Music = phase === 'finished' ? 'results' : ['racing', 'countdown', 'paused'].includes(phase) ? 'race' : 'menu';
+    const next: Music = phase === 'finished' ? 'results' : (phase === 'racing' || phase === 'countdown' || phase === 'paused') ? 'race' : 'menu';
     if (phase === 'countdown' && this.phase !== 'countdown') this.countdownSeen.clear();
     if (phase === 'countdown' && countdown > 0 && !this.countdownSeen.has(countdown)) { this.countdownSeen.add(countdown); this.play('countdown'); }
     if (phase === 'racing' && this.phase === 'countdown') this.play('start');

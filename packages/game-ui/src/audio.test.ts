@@ -5,10 +5,10 @@ class Param { value=1; setTargetAtTime(v:number){this.value=v;} setValueAtTime(v
 class Gain { gain=new Param(); connect(){} disconnect(){} }
 class Source { buffer?:AudioBuffer;loop=false;onended?:()=>void;stops=0;connect(){}disconnect(){}start(){}stop(){this.stops++;this.onended?.();} }
 class Context {
-  state='suspended';currentTime=0;destination={};sources:Source[]=[];blocked=false;
+  state='suspended';currentTime=0;resumeCalls=0;destination={};sources:Source[]=[];blocked=false;
   createGain(){return new Gain();} createBufferSource(){const s=new Source();this.sources.push(s);return s;}
   createDynamicsCompressor(){return {...new Gain(),threshold:new Param(),knee:new Param(),ratio:new Param(),attack:new Param(),release:new Param(),connect(){}};}
-  async resume(){if(this.blocked)throw Error('gesture required');this.state='running';}
+  async resume(){this.resumeCalls++;if(this.blocked)throw Error('gesture required');this.state='running';}
   async suspend(){this.state='suspended';} async close(){this.state='closed';}
   async decodeAudioData(){return {} as AudioBuffer;}
 }
@@ -32,6 +32,7 @@ describe('audio preferences and browser playback boundary',()=>{
  });
  it('caches assets, suppresses repeated countdown snapshots and prioritizes bounded effect voices',async()=>{
   const {manager,context}=setup();await manager.unlock();await vi.waitFor(()=>expect(manager.currentMusic).toBe('menu'));
+  await manager.unlock();expect(context.resumeCalls).toBe(1);
   for(const count of [3,2,1,2,1]){context.currentTime++;manager.scene('countdown',count);}
   expect(manager.played.countdown).toBe(3);
   context.currentTime++;manager.scene('racing');manager.scene('racing');expect(manager.played.start).toBe(1);

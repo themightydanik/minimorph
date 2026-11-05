@@ -10,7 +10,7 @@
     "packages/game-engine/src/polish-lighting.ts": "15d66fec81cb9c2ea4bc2e9f78b2a675af087bded5b758729a0ce81b0a5f2409",
     "packages/game-engine/src/polish-effects.ts": "4d716ff85b8d3a28fee0185a5cb6eff413feb868c7a649bda054ad22b82fed97",
     "packages/game-engine/src/presentation-events.ts": "e0f9d4ea8cef61f46b9ee229523f0852afdce57282091f09eef4a9ea0862dd7c",
-    "packages/game-ui/src/audio.ts": "80e9bc15e0bde059335d2e6f49b35168b0ba413bc085d4794c09ad557ec80446",
+    "packages/game-ui/src/audio.ts": "536377ba3229342a218dc52e8c1010aab894c3a44edca64c06ef90a33150df08",
     "packages/game-ui/src/index.ts": "09e86241f8aaec49f98483c3c5565e8416424a821c5d5dfa3d6358d17daf2e1f",
     "assets/audio/manifest.json": "a7eabfe010b2410da317ad86763996ec0b4630c0d70b9d5a09ba234e842c5e95"
   },
