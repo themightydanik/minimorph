@@ -1,3 +1,4 @@
+import { AudioManager } from "./audio";
 import { mountJoystick } from "./joystick";
 import { mountMultiplayer } from './multiplayer-ui';
 import type { RaceMode } from "@minimorph/game-content";
@@ -29,7 +30,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     <section class="screen results" aria-label="Race results" hidden><div class="panel"><span class="eyebrow">ORBIT COMPLETE</span><h2>Nice landing,<br> cadet.</h2><p class="result-badge"></p><div class="result-stats"><span>YOUR TIME<strong data-result-time></strong></span><span>BEST TIME<strong data-best-time></strong></span><span>RECOVERIES<strong data-result-falls></strong></span></div><div class="result-splits" aria-label="Checkpoint splits"></div><button class="primary" data-next>Next arena</button><button data-replay>Race again</button><button data-back>Choose arena</button><p class="storage-status"></p></div></section>
     <section class="screen pause" aria-label="Race paused" hidden><div class="panel"><span class="eyebrow">TAKE A BREATHER</span><h2>Flight paused.</h2><p>Your timer is stopped. Resume when you are ready.</p><button class="primary" data-resume>Resume race</button><button data-back>Choose arena</button></div></section>
     <section class="screen fatal" role="alert" hidden><div class="panel"><h2>Graphics connection lost.</h2><p>Reload this page to resume. Your saved progress is safe.</p></div></section>
-    <footer><span class="host-status"></span><span class="keyboard-help">WASD / ARROWS · MOVE &nbsp; SPACE · JUMP &nbsp; SHIFT · DIVE &nbsp; Q / E · CAMERA</span><button class="arena-menu" type="button">Arenas</button><button class="restart" type="button">↻ Restart</button></footer>
+    <footer><details class="audio-settings"><summary>Audio</summary><div class="audio-panel"><strong>Sound & music</strong><label>Master volume<input data-volume="master" type="range" min="0" max="100" step="1"></label><label>Music volume<input data-volume="music" type="range" min="0" max="100" step="1"></label><label>Sound effects volume<input data-volume="effects" type="range" min="0" max="100" step="1"></label><button data-audio-mute type="button" aria-pressed="false">Mute audio</button><small data-audio-hint>Sound starts after a tap.</small></div></details><span class="host-status"></span><span class="keyboard-help">WASD / ARROWS · MOVE &nbsp; SPACE · JUMP &nbsp; SHIFT · DIVE &nbsp; Q / E · CAMERA</span><button class="arena-menu" type="button">Arenas</button><button class="restart" type="button">↻ Restart</button></footer>
     <div class="camera-controls" aria-label="Camera controls"><button data-key="KeyQ" aria-label="Rotate camera left">↶</button><button data-key="KeyE" aria-label="Rotate camera right">↷</button></div>
     <nav class="touch-controls" aria-label="Touch controls"><div class="joystick" role="group" aria-label="Movement joystick"><span class="joystick-knob" aria-hidden="true"></span><span class="joystick-label" aria-hidden="true">MOVE</span></div><div class="touch-actions"><button class="dive" data-key="ShiftLeft" aria-label="Dive">DIVE</button><button class="jump" data-key="Space" aria-label="Jump">JUMP</button></div></nav>
   </main>`;
@@ -53,6 +54,24 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     distance = root.querySelector("[data-distance]")!;
   const controller = new AbortController(),
     options = { signal: controller.signal };
+  const audio = new AudioManager(undefined, undefined, (state, music) => {
+    root.dataset.audioState = state;
+    root.dataset.musicTrack = music ?? "none";
+    const hint = root.querySelector('[data-audio-hint]');
+    if (hint) hint.textContent = state === 'running' ? 'Volume changes apply immediately.' : state === 'unavailable' ? 'Audio unavailable. Gameplay remains available.' : 'Sound starts after a tap.';
+  });
+  const mute = root.querySelector<HTMLButtonElement>('[data-audio-mute]')!;
+  const renderAudio = () => {
+    for (const slider of root.querySelectorAll<HTMLInputElement>('[data-volume]')) slider.value = String(Math.round(audio.preferences[slider.dataset.volume as 'master' | 'music' | 'effects'] * 100));
+    mute.setAttribute('aria-pressed', String(audio.preferences.muted)); mute.textContent = audio.preferences.muted ? 'Unmute audio' : 'Mute audio';
+  };
+  renderAudio();
+  root.querySelectorAll<HTMLInputElement>('[data-volume]').forEach(slider => slider.addEventListener('input', () => { audio.setPreferences({ [slider.dataset.volume!]: Number(slider.value) / 100 }); }, options));
+  mute.addEventListener('click', () => { audio.setPreferences({ muted: !audio.preferences.muted }); renderAudio(); }, options);
+  const unlockAudio = (event: Event) => { if (event.isTrusted) void audio.unlock(); };
+  root.addEventListener('pointerdown', unlockAudio, { ...options, capture: true });
+  root.addEventListener('keydown', unlockAudio, { ...options, capture: true });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) audio.suspend(); }, options);
   const keys = new Set<string>(),
     pointers = new Map<number, { key: string; codes: string[] }>();
   const joystick = mountJoystick(root.querySelector<HTMLElement>(".joystick")!, controller.signal);
@@ -118,6 +137,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
   }
   function handleSession(snapshot: RaceSnapshot & { progress: number; mode: RaceMode; section: string; hint: string }) {
     if (multiplayer?.active) return;
+    audio.scene(snapshot.phase, snapshot.countdown);
     const arena = getArena(snapshot.arenaId, snapshot.mode);
     if (lastArena !== `${snapshot.mode}:${snapshot.arenaId}`) {
       root.style.setProperty("--arena-accent", arena.palette.accent);
@@ -180,7 +200,8 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
         e.target instanceof HTMLButtonElement ||
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLSelectElement ||
-        e.target instanceof HTMLAnchorElement
+        e.target instanceof HTMLAnchorElement ||
+        e.target instanceof HTMLElement && !!e.target.closest(".audio-settings")
       )
         return;
       e.preventDefault();
@@ -197,7 +218,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     },
     options,
   );
-  window.addEventListener("blur", () => { clearInput(); game?.pause(); }, options);
+  window.addEventListener("blur", () => { clearInput(); audio.suspend(); game?.pause(); }, options);
   document.addEventListener("visibilitychange", clearInput, options);
   root.querySelectorAll<HTMLButtonElement>("[data-key]").forEach((button) => {
     button.addEventListener(
@@ -238,6 +259,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
       e.preventDefault();
       clearInput();
       multiplayer.destroy();
+      audio.suspend();
       game?.destroy();
       game = undefined;
       root.querySelector<HTMLElement>(".fatal")!.hidden = false;
@@ -258,7 +280,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
       cameraTurn: Number(pressed("KeyE")) - Number(pressed("KeyQ")),
     };
   };
-  const multiplayer = mountMultiplayer(root,()=>game,readControls,clearInput);
+  const multiplayer = mountMultiplayer(root,()=>game,readControls,clearInput,(phase,countdown)=>audio.scene(phase,countdown));
   try {
     game = createGame(
       canvas,
@@ -311,6 +333,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
         if (!canvas.dataset.ready) canvas.dataset.ready = "true";
       },
       {
+        onPresentation: event => audio.play(event.kind, event.remote, lastPlayer ? Math.hypot(event.x - lastPlayer.x, event.z - lastPlayer.z) : 0),
         raceFlow: true,
         onSession: handleSession,
         character: animatedCharacterSource(characterConfig),
@@ -332,6 +355,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     destroy() {
       clearInput();
       controller.abort();
+      audio.destroy();
       multiplayer.destroy();
       game?.destroy();
       root.replaceChildren();

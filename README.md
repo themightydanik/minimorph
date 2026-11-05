@@ -65,3 +65,7 @@ Character skin-regression tests require `python -m pip install -r tools/blender/
 PR #8 prepared a 125,928-triangle candidate. The owner approved its production activation for PR #9; the original 160,000-triangle model remains intact for rollback. See the [owner approval policy](docs/character-optimization-policy.md), [study and rollback boundary](docs/character-optimization-study.md), and [actual comparisons / 1–8 actor measurements](docs/evidence/character-optimization/README.md). No world quality or rendering resolution is reduced, and the exact candidate is now selected by the production configuration.
 
 See [movement, analog controls, multiplayer compatibility and rollback](docs/character-movement.md) for PR #9.
+
+## Visual and audio polish review
+
+PR #10 prepares shared arena lighting/material polish, pooled local/remote feedback, original CC0 music/SFX and persistent audio settings. See the [implementation and limitations](docs/visual-audio-polish.md), [before/after evidence](docs/evidence/visual-audio-polish/README.md) and [external action-animation specification](docs/action-animation-asset-spec.md). Procedural action poses remain provisional; dedicated high-quality clips are not claimed complete. Owner visual/listening approval is required before merge.

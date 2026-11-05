@@ -32,12 +32,14 @@ export function createRemotePlayers(
       material: pc.StandardMaterial;
     }
   >();
+  const active = new Set<string>();
+  const projected = new pc.Vec3(), screen = new pc.Vec3();
   const labels = document.createElement("div");
   labels.className = "participant-labels";
   canvas.parentElement!.append(labels);
   return {
     update(players: ParticipantSnapshot[], camera: pc.Entity, dt: number) {
-      const active = new Set(players.map((p) => p.id));
+      active.clear(); for(const player of players)active.add(player.id);
       for (const [id, e] of entries)
         if (!active.has(id)) {
           e.visual.destroy();
@@ -85,7 +87,7 @@ export function createRemotePlayers(
         e.label.dataset.x = String(p.state.x);
         e.label.dataset.z = String(p.state.z);
         const at = camera.camera!.worldToScreen(
-          new pc.Vec3(p.state.x, p.state.y + 2.2, p.state.z),
+          projected.set(p.state.x, p.state.y + 2.2, p.state.z), screen,
         );
         const width = canvas.clientWidth,
           height = canvas.clientHeight,

@@ -16,7 +16,10 @@ import { LevelManager } from "./levels";
 import { RaceSession } from "./session";
 import type { RaceSnapshot } from "./session";
 import { createArenaScene } from "./arena-scene";
-import { createEffects } from "./effects";
+import { createPolishEffects } from "./polish-effects";
+import { createPolishLighting } from "./polish-lighting";
+import { PresentationEvents } from "./presentation-events";
+import type { PresentationEvent } from "./presentation-events";
 export { RaceSession } from "./session";
 export type { RaceSnapshot, RacePhase } from "./session";
 export { LevelManager } from "./levels";
@@ -26,6 +29,7 @@ export type { CharacterSource, CharacterVisual } from "./character";
 export { createPlayer, stepPlayer } from "./physics";
 export type { PlayerState } from "./physics";
 export interface GameOptions {
+  onPresentation?: (event: PresentationEvent) => void;
   remoteCharacter?: CharacterSource;
   initialArena?: string;
   mode?: RaceMode;
@@ -80,17 +84,18 @@ export function createGame(
     m.diffuse = new pc.Color().fromString(hex);
     if (glow) {
       m.emissive = m.diffuse.clone();
-      m.emissiveIntensity = 0.8;
+      m.emissiveIntensity = 0.32;
     }
-    m.shininess = 40;
+    m.useMetalness = true;
+    m.metalness = glow ? .05 : .18;
+    m.shininess = glow ? 34 : 55;
     m.update();
     return m;
   };
   const material = (hex: string, glow = false) => { const m = makeMaterial(hex, glow); materials.push(m); return m; };
   const silver = material("#b9cbe2"),
     cyan = material("#38edec", true),
-    navy = material("#141d3c"),
-    white = material("#f1f7ff", true);
+    navy = material("#141d3c");
   const shape = (
     name: string,
     type: "box" | "capsule" | "cone" | "cylinder" | "sphere",
@@ -111,16 +116,7 @@ export function createGame(
     parent.addChild(e);
     return e;
   };
-  app.scene.ambientLight = new pc.Color(0.55, 0.62, 0.8);
-  const sun = new pc.Entity("Starlight");
-  sun.addComponent("light", {
-    type: "directional",
-    color: new pc.Color(0.8, 0.9, 1),
-    intensity: 1.4,
-    castShadows: false,
-  });
-  sun.setEulerAngles(45, 30, 0);
-  app.root.addChild(sun);
+  const lighting = createPolishLighting(app);
   const camera = new pc.Entity("Follow camera");
   camera.addComponent("camera", {
     clearColor: new pc.Color(0.025, 0.035, 0.09),
@@ -130,7 +126,8 @@ export function createGame(
   app.root.addChild(camera);
   let arenaScene = createArenaScene(app, levels.current, shape, makeMaterial);
   const effectRoot = new pc.Entity("Pooled visual effects"); app.root.addChild(effectRoot);
-  const effects = createEffects(effectRoot, shape, white);
+  const effects = createPolishEffects(app, effectRoot, shape);
+  const events = new PresentationEvents(event => { if (!document.hidden) effects.emit(event); options.onPresentation?.(event); });
   camera.camera!.clearColor = new pc.Color().fromString(levels.current.palette.sky);
   canvas.dataset.arena = levels.current.id;
   const cat = new pc.Entity("Character controller anchor");
@@ -185,6 +182,7 @@ export function createGame(
   const visibility = () => {
     accumulator = 0;
     pendingJump = false; pendingDive = false;
+    if (document.hidden) effects.reset();
     if (document.hidden && !online) { session.pause(); character.update(player, 0); }
     app.timeScale = document.hidden ? 0 : 1;
     notify();
@@ -241,7 +239,17 @@ export function createGame(
     cat.setLocalScale(recoveryScale, recoveryScale, recoveryScale);
     character.update(player, session.phase === "paused" || session.phase === "countdown" ? 0 : dt);
     arenaScene.update(network ? {...player,elapsed:network.elapsed} : player);
-    effects.update(player, levels.current, dt);
+    const presentationDt = session.phase === "paused" || session.phase === "countdown" ? 0 : dt;
+    effects.begin(levels.current, presentationDt);
+    events.observe("local", player);
+    effects.track("local", player, false, presentationDt);
+    if (network) for (const remote of network.remotes) {
+      if (remote.status === "dnf") continue;
+      events.observe(remote.id, remote.state, true);
+      effects.track(remote.id, remote.state, true, presentationDt);
+    }
+    effects.end();
+    canvas.dataset.activeEffects = String(effects.active);
     const framing = levels.current.sections?.find(s => -player.z >= s.start && -player.z < s.end);
     updateCamera(
       pose,
@@ -268,6 +276,7 @@ export function createGame(
     remotes.destroy();
     character.destroy();
     effects.destroy();
+    lighting.destroy();
     arenaScene.destroy();
     app.destroy();
     materials.forEach((m) => m.destroy());
@@ -283,11 +292,13 @@ export function createGame(
   }
   function resetPlayer(reframe = false) {
     player = createPlayer(levels.current); previous = { ...player };
-    accumulator = 0; pendingJump = false; pendingDive = false; effects.reset();
+    accumulator = 0; pendingJump = false; pendingDive = false; effects.reset(); events.reset();
     if (reframe) { cameraYaw = 0; Object.assign(pose, { x: player.x, y: player.y + 5, z: player.z + 9, lookX: player.x, lookY: player.y + 1, lookZ: player.z - 1 }); }
   }
   return {
     setOnline(driver,arenaId){
+      // Reconnect uses the same driver/arena; retain visual high-water marks, not old cue playback.
+      if (driver && driver === online && (!arenaId || arenaId === levels.current.id)) return;
       online=undefined;
       if(arenaId)this.selectLevel(arenaId,"race");
       online=driver;accumulator=0;pendingJump=false;pendingDive=false;

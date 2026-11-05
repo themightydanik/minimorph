@@ -1,0 +1,18 @@
+{
+  "baseline": "ae0008d0485fc7af137734c6c55dd8b68af4e68f",
+  "approvedCharacterSha256": "cd566c9024676775e3efe8d751de3605a035eca3ca4bc3c00082d7b5d283d6b6",
+  "productionCharacterUnchanged": true,
+  "protectedSourceDiff": [],
+  "presentationSourceSha256": {
+    "packages/game-engine/src/index.ts": "d65fa6fecca09ddacdca753ba73bcb166f054bfc98861ef30c3579b48d593856",
+    "packages/game-engine/src/character.ts": "dbb20719813354b26a275f5bfc8415189172f15d007c730d6e38cf51f52a7094",
+    "packages/game-engine/src/action-pose.ts": "c4e3d110bb888b0a7b788face9238ab904c5bcc1d300a98629b85c9cf5366859",
+    "packages/game-engine/src/polish-lighting.ts": "15d66fec81cb9c2ea4bc2e9f78b2a675af087bded5b758729a0ce81b0a5f2409",
+    "packages/game-engine/src/polish-effects.ts": "9674d4a74668d63c4ad0acb05a1d9a49e44212075cbd0a0bbe8268c6005941ab",
+    "packages/game-engine/src/presentation-events.ts": "e0f9d4ea8cef61f46b9ee229523f0852afdce57282091f09eef4a9ea0862dd7c",
+    "packages/game-ui/src/audio.ts": "536377ba3229342a218dc52e8c1010aab894c3a44edca64c06ef90a33150df08",
+    "packages/game-ui/src/index.ts": "09e86241f8aaec49f98483c3c5565e8416424a821c5d5dfa3d6358d17daf2e1f",
+    "assets/audio/manifest.json": "a7eabfe010b2410da317ad86763996ec0b4630c0d70b9d5a09ba234e842c5e95"
+  },
+  "audioManifestSha256": "a7eabfe010b2410da317ad86763996ec0b4630c0d70b9d5a09ba234e842c5e95"
+}
