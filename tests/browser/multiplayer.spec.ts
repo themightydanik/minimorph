@@ -249,12 +249,16 @@ test("two actual browsers share eight authoritative participants, movement, anim
         { timeout: 20000 },
       )
       .not.toBe(String(initial));
-    await page.screenshot({
-      path: `test-results/pr7-two-clients-${info.project.name}.png`,
-    });
-    await second.screenshot({
-      path: `test-results/pr7-other-client-${info.project.name}.png`,
-    });
+    // Optional diagnostic readback must not block the network/reconnect assertions
+    // on two concurrent software WebGL contexts. Dedicated arena tests capture visuals.
+    if (process.env.MULTIPLAYER_EVIDENCE === "1") {
+      await page.screenshot({
+        path: `test-results/pr7-two-clients-${info.project.name}.png`,
+      });
+      await second.screenshot({
+        path: `test-results/pr7-other-client-${info.project.name}.png`,
+      });
+    }
     const oldId = b.id,
       welcomes = b.welcomes;
     blocked = true;
