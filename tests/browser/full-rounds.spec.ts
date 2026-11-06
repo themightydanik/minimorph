@@ -15,6 +15,7 @@ test('full racing circuit with ordinary keys, checkpoints, Victory and persisten
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await page.getByRole('button',{name:'Play Cosmic Sprint',exact:true}).click();
  for(const [id,,checkpoints] of circuit){
+  if(id==='cosmic-sprint')await waitParkAssets(page);
   await page.getByRole('button',{name:'Start race',exact:true}).click();await page.clock.fastForward(3100);
   await expect(canvas).toHaveAttribute('data-phase','racing');await canvas.focus();
   const held=new Set<string>();let elapsed=0,shot=0,turboCaptured=false;

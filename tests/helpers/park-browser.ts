@@ -10,9 +10,18 @@ import {
 export async function waitParkAssets(page: Page) {
   const canvas = page.locator("canvas");
   if (await canvas.getAttribute("data-arena-assets"))
-    await expect(canvas).toHaveAttribute("data-arena-assets", "ready", {
-      timeout: 180000,
-    });
+    await expect
+      .poll(
+        async () => {
+          const status = await canvas.getAttribute("data-arena-assets");
+          // PlayCanvas defers embedded file.contents callbacks with setTimeout(0).
+          // Flush that queue under the replay clock without rendering idle wait frames.
+          if (status === "loading") await page.clock.runFor(1);
+          return canvas.getAttribute("data-arena-assets");
+        },
+        { timeout: 180000 },
+      )
+      .toBe("ready");
 }
 /** Waits on real asset events; advances only the intended amount of simulation, never player state. */
 export async function advancePark(page: Page, seconds: number) {
@@ -43,6 +52,7 @@ export async function capturePark(page: Page, info: TestInfo, name: string) {
           .getAttribute("data-arena-asset-count");
         if (!value) return true;
         const [loaded, total] = value.split("/").map(Number);
+        if (loaded !== total) await page.clock.runFor(1);
         return loaded === total;
       },
       { timeout: 180000 },
