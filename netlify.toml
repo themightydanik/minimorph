@@ -8,3 +8,13 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Editor code is included only in deploy-preview (or explicit local editor builds).
+[[redirects]]
+  from = "/editor/*"
+  to = "/index.html"
+  status = 200
+[[redirects]]
+  from = "/editor"
+  to = "/index.html"
+  status = 200

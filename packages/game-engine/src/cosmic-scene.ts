@@ -116,15 +116,16 @@ export function createCosmicScene(
   app: pc.Application,
   arena: ArenaConfig,
   onLoad?: (status: ArenaLoadStatus) => void,
+  editor = false,
 ) {
   const root = new pc.Entity(
     "Galactic Fun Park — authored GLB environment",
     app,
   );
   app.root.addChild(root);
-  const entries = new Map<string, Entry>(),
-    placements = arena.visuals!,
-    keys = [...new Set(placements.map((v) => v.asset))];
+  const entries = new Map<string, Entry>();
+  let placements = arena.visuals!;
+  const keys = [...new Set(placements.map((v) => v.asset))];
   const canvas = app.graphicsDevice.canvas as HTMLCanvasElement;
   let disposed = false,
     overview = false,
@@ -368,6 +369,69 @@ export function createCosmicScene(
   }
   const scene = {
     root,
+    /** Editor placements use this very renderer and its instancing transforms. */
+    setLayout(next: ArenaConfig) {
+      arena = next;
+      placements = next.visuals!;
+      for (const [key, entry] of entries) {
+        const record = inventory.find((a) => a.runtime === `${key}.glb`)!;
+        if (
+          entry.loaded &&
+          record.parts.some(
+            (_, i) =>
+              placements.some(
+                (v) =>
+                  v.asset === key && (v.part === undefined || v.part === i),
+              ) && !entry.groups.some((g) => g.partIndex === i),
+          )
+        ) {
+          entries.delete(key);
+          remove(entry);
+        }
+      }
+      for (const entry of entries.values())
+        for (const group of entry.groups) {
+          const count = placements.filter(
+            (v) =>
+              v.asset === entry.key &&
+              (v.part === undefined || v.part === group.partIndex),
+          ).length;
+          if (count > group.buffer.numVertices) {
+            group.mesh.setInstancing(null);
+            group.buffer.destroy();
+            group.buffer = new pc.VertexBuffer(
+              app.graphicsDevice,
+              pc.VertexFormat.getDefaultInstancingFormat(app.graphicsDevice),
+              count,
+              { usage: pc.BUFFER_DYNAMIC },
+            );
+            group.mesh.setInstancing(group.buffer, false);
+            group.data = new Float32Array(count * 16);
+          }
+          // Editor can move objects outside the original group bounds.
+          group.mesh.cull = false;
+        }
+      scene.update(lastState);
+    },
+    placementBounds(id: string) {
+      const v = placements.find((v) => v.id === id);
+      if (!v) return undefined;
+      const record = inventory.find((a) => a.runtime === `${v.asset}.glb`)!;
+      let result: pc.BoundingBox | undefined;
+      for (const part of record.parts) {
+        if (v.part !== undefined && part !== record.parts[v.part]) continue;
+        const local = new pc.BoundingBox();
+        local.setMinMax(new pc.Vec3(...part.min), new pc.Vec3(...part.max));
+        const world = new pc.BoundingBox();
+        world.setFromTransformedAabb(
+          local,
+          transform(v, part, record, lastState),
+        );
+        if (result) result.add(world);
+        else result = world;
+      }
+      return result;
+    },
     get ready() {
       return ready;
     },
@@ -399,7 +463,8 @@ export function createCosmicScene(
       // Let the approved character finish importing before starting heavy environment decoding.
       canLoad =
         active &&
-        (canvas.dataset.character === "minimorph-optimized-v1" ||
+        (editor ||
+          canvas.dataset.character === "minimorph-optimized-v1" ||
           canvas.dataset.character === "procedural-fallback");
       wanted = keys
         .filter(
