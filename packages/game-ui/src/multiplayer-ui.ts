@@ -1,3 +1,4 @@
+import { courseProgress, compareRaceParticipants } from "@minimorph/game-simulation";
 import { TOURNAMENT_ROUNDS } from "@minimorph/multiplayer-protocol";
 import { TournamentFeedback } from "./tournament-feedback";
 import type { SoundCue } from "./audio";
@@ -183,27 +184,10 @@ export function mountMultiplayer(
       ? t.orderIds.map((id) => s.participants.find((p) => p.id === id)!)
       : s.participants
           .slice()
-          .sort(
-            (a, b) =>
-              (a.finishTime ?? Infinity) - (b.finishTime ?? Infinity) ||
-              b.state.checkpoint - a.state.checkpoint ||
-              a.state.z - b.state.z ||
-              a.id.localeCompare(b.id),
-          );
+          .sort((a, b) => compareRaceParticipants(a, b, arena));
     const position = ordered.findIndex((p) => p.id === id) + 1;
-    const percent = viewed?.state.won
-      ? 100
-      : Math.round(
-          100 *
-            Math.min(
-              1,
-              Math.max(
-                0,
-                (arena.spawn.z - (viewed?.state.z ?? arena.spawn.z)) /
-                  (arena.spawn.z - arena.finish.z),
-              ),
-            ),
-        );
+    const percent = Math.round(100 * courseProgress(arena,
+      viewed?.state ?? { ...arena.spawn, checkpoint: 0, won: false }));
     root.querySelector("[data-progress-label]")!.textContent = `${percent}%`;
     root.querySelector<HTMLElement>("[data-progress-bar]")!.style.width =
       `${percent}%`;

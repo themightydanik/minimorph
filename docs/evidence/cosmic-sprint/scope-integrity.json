@@ -1,0 +1,80 @@
+{
+  "base": "5a6b7a9b2bc9edb0560f886c283b21146daaaa76",
+  "worldRevision": "tournament-v1-galactic-park-v1",
+  "before": {
+    "x": [
+      -11,
+      12
+    ],
+    "z": [
+      -388,
+      6
+    ],
+    "width": 23,
+    "length": 394,
+    "sections": [
+      "01 \u00b7 Rotor runway",
+      "02 \u00b7 Cross-current belts",
+      "03 \u00b7 Pendulum crossing",
+      "04 \u00b7 Sliding windows",
+      "05 \u00b7 Shuttle junction",
+      "06 \u00b7 Bounce gardens",
+      "07 \u00b7 Pulse gauntlet"
+    ],
+    "platforms": 32,
+    "mechanisms": 26
+  },
+  "after": {
+    "x": [
+      -30.5,
+      108.66400484310111
+    ],
+    "z": [
+      -225,
+      36
+    ],
+    "width": 139.1640048431011,
+    "length": 261,
+    "sections": [
+      "01 \u00b7 Star Launch",
+      "02 \u00b7 Hammer Plaza",
+      "03 \u00b7 Turbo Lane / Bounce Garden",
+      "04 \u00b7 Orbit Carousel",
+      "05 \u00b7 Star Finish"
+    ],
+    "platforms": 25,
+    "mechanisms": 11
+  },
+  "otherArenas": [
+    {
+      "id": "orbit-chaos",
+      "baselineSha256": "218e8bc4b52fb921734d0a67a4a465f889ba0214934c07020fc8156b82651455",
+      "currentSha256": "218e8bc4b52fb921734d0a67a4a465f889ba0214934c07020fc8156b82651455",
+      "identical": true
+    },
+    {
+      "id": "gravity-mayhem",
+      "baselineSha256": "96d271c02e3e0e0b83f5c737697c8712761428b0cd32f3b3ac1233d1819dddf2",
+      "currentSha256": "96d271c02e3e0e0b83f5c737697c8712761428b0cd32f3b3ac1233d1819dddf2",
+      "identical": true
+    }
+  ],
+  "protectedPaths": [
+    "assets/characters",
+    "assets/audio",
+    "packages/game-engine/src/character.ts",
+    "packages/game-engine/src/action-pose.ts",
+    "packages/game-engine/src/polish-effects.ts",
+    "packages/game-engine/src/polish-lighting.ts",
+    "packages/game-ui/src/joystick.ts",
+    "packages/game-ui/src/audio.ts",
+    "packages/game-simulation/src/physics.ts"
+  ],
+  "protectedSourceDiff": [],
+  "approvedCharacterSha256": "cd566c9024676775e3efe8d751de3605a035eca3ca4bc3c00082d7b5d283d6b6",
+  "physicalDeviceTested": false,
+  "ciChange": {
+    "workflow": ".github/workflows/ci.yml",
+    "change": "Browser job timeout 40 \u2192 60 minutes for full real-GLB desktop/mobile regressions and explicit asset-retry coverage. All jobs, test assertions and required gates retained."
+  }
+}

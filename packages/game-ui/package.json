@@ -11,6 +11,7 @@
     "@minimorph/game-engine": "*",
     "@minimorph/game-content": "*",
     "@minimorph/multiplayer-client": "*",
-    "@minimorph/multiplayer-protocol": "*"
+    "@minimorph/multiplayer-protocol": "*",
+    "@minimorph/game-simulation": "*"
   }
 }

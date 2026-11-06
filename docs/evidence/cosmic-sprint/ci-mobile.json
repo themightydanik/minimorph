@@ -1,0 +1,84 @@
+{
+  "profile": "mobile",
+  "sourceCommit": "3c7097e48a325597f73dbbd97926bae114e4ac26",
+  "workflowRun": "https://github.com/themightydanik/minimorph/actions/runs/42200103434",
+  "artifactId": 13496291790,
+  "artifactSha256": "3033d2e0558041b48a39ed8abfdfc4f204a24d1549c52c818c0498518f785275",
+  "method": "Unmodified PNGs from successful full mobile Playwright CI (32 passed); actual PlayCanvas scene and ordinary recorded keyboard/touch inputs. Controlled clock; not a performance benchmark.",
+  "configuredDevice": "Playwright Pixel 7; screenshot pixel dimensions read from actual PNG headers. Device emulation is not physical-device validation.",
+  "physicalDevice": false,
+  "screenshots": [
+    {
+      "name": "overview",
+      "file": "mobile-overview.png",
+      "pngPixels": [
+        1082,
+        2202
+      ],
+      "sha256": "4354af8d6b8831dd02e0656a7db8ec6ce7d15ae47933fab499a25a0dda71de26"
+    },
+    {
+      "name": "star-launch",
+      "file": "mobile-star-launch.png",
+      "pngPixels": [
+        1082,
+        2202
+      ],
+      "sha256": "ba0bbfcf68890507748885fa489ac80a61ef56b90fbdf38b6a757e6700ff3ab1"
+    },
+    {
+      "name": "hammer-plaza",
+      "file": "mobile-hammer-plaza.png",
+      "pngPixels": [
+        1082,
+        2202
+      ],
+      "sha256": "5e693489900655a4765508f6eeb9b2c55ef36420c89a0d204da4f2d0c62c1406"
+    },
+    {
+      "name": "bounce-garden",
+      "file": "mobile-bounce-garden.png",
+      "pngPixels": [
+        1082,
+        2202
+      ],
+      "sha256": "9d501a9de11452dcd55319febaacd3b6c0daaa24e83f3dfb6f9e031bd58cb98e"
+    },
+    {
+      "name": "orbit-carousel",
+      "file": "mobile-orbit-carousel.png",
+      "pngPixels": [
+        1082,
+        2202
+      ],
+      "sha256": "df084b2f1356fdeee809ee4211abdde97fc5fda2f24200a837017c1472b8f51b"
+    },
+    {
+      "name": "star-finish",
+      "file": "mobile-star-finish.png",
+      "pngPixels": [
+        1082,
+        2202
+      ],
+      "sha256": "f330d616fabc81f55e07e3596366dfe282f4f77a834056a7064a2b67ec3734c4"
+    },
+    {
+      "name": "bounce-finish",
+      "file": "mobile-bounce-finish.png",
+      "pngPixels": [
+        1082,
+        2202
+      ],
+      "sha256": "b16821cb5aceeb3c69ca2a90171f9830946dcd40c27e04653dffd29552083894"
+    },
+    {
+      "name": "turbo-lane",
+      "file": "mobile-turbo-lane.png",
+      "pngPixels": [
+        1082,
+        2202
+      ],
+      "sha256": "99b3751ef08c3fdb4e419e4331ff39f8c690f11f9c40e03fba10f59f646203d3"
+    }
+  ]
+}

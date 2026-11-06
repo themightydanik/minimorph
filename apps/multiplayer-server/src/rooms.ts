@@ -3,6 +3,7 @@ import { getArena } from "@minimorph/game-content";
 import type { ArenaConfig } from "@minimorph/game-content";
 import {
   ArenaRuntime,
+  compareRaceParticipants,
   createPlayer,
   stepArenaPlayer,
   FIXED_STEP,
@@ -91,8 +92,8 @@ export class Room {
     const state = createPlayer(this.arena);
     state.collapseTimes = this.collapseTimes;
     // Two safe rows entirely on the existing start deck. Participants are non-solid to one another.
-    state.x = [-1.8, -0.6, 0.6, 1.8][i % 4];
-    state.z = 2 + Math.floor(i / 4) * 2;
+    state.x = this.arena.spawn.x + [-1.8, -0.6, 0.6, 1.8][i % 4];
+    state.z = this.arena.spawn.z + Math.floor(i / 4) * 2;
     const p: Participant = {
       id: randomUUID(),
       name,
@@ -201,18 +202,8 @@ export class Room {
     }
     this.phase = "finished";
     this.lastActive = now;
-    const sorted = [...this.participants].sort((a, b) => {
-      if (a.finishTime !== null || b.finishTime !== null)
-        return (
-          (a.finishTime ?? Infinity) - (b.finishTime ?? Infinity) ||
-          a.id.localeCompare(b.id)
-        );
-      return (
-        b.state.checkpoint - a.state.checkpoint ||
-        a.state.z - b.state.z ||
-        a.id.localeCompare(b.id)
-      );
-    });
+    const sorted = [...this.participants].sort((a, b) =>
+      compareRaceParticipants(a, b, this.arena));
     this.result = {
       roomId: this.id,
       arenaId: this.arenaId,

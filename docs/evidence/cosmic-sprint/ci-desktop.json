@@ -1,0 +1,20 @@
+{
+  "profile": "desktop",
+  "sourceCommit": "3c7097e48a325597f73dbbd97926bae114e4ac26",
+  "workflowRun": "https://github.com/themightydanik/minimorph/actions/runs/42200103434",
+  "artifactId": 13495642966,
+  "artifactSha256": "5ddc8d702562a49035365e864cc807fb2f954a4784008dc959f006990d7d429d",
+  "method": "Unmodified PNG from successful full desktop Playwright CI; ordinary recorded keys on actual PlayCanvas scene. Controlled clock; not a performance benchmark. Other desktop zone captures are local.",
+  "physicalDevice": false,
+  "screenshots": [
+    {
+      "name": "turbo-lane",
+      "file": "desktop-turbo-lane.png",
+      "pngPixels": [
+        1280,
+        720
+      ],
+      "sha256": "3cb3e485c4a6093fb3a7138d3f7d3353ddf2bbc6e04a37b8344146657295e07a"
+    }
+  ]
+}

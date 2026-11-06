@@ -36,9 +36,9 @@ export function updateCamera(
   const safe = course.checkpoints[player.checkpoint - 1] ?? course.spawn;
   const targetY = Math.max(safe.y - 0.8, player.y) + 1;
   // Hold above the course while falling; damp the look target as well as the eye.
-  pose.lookX = damp(pose.lookX, player.x, 7, dt, 24);
+  pose.lookX = damp(pose.lookX, player.x+(course.navigation?player.vx*.3:0), 7, dt, 24);
   pose.lookY = damp(pose.lookY, targetY, 5, dt, 12);
-  pose.lookZ = damp(pose.lookZ, player.z - 1, 7, dt, 24);
+  pose.lookZ = damp(pose.lookZ, player.z+(course.navigation?player.vz*.3:-1), 7, dt, 24);
   const lag = Math.hypot(player.x - pose.lookX, player.z - 1 - pose.lookZ);
   const distance = (aspect < 1 ? 11.5 : 8.5) + (framing?.cameraDistance ?? 0) + Math.min(lag * 0.8, 12);
   const speed = Math.hypot(player.vx, player.vz);

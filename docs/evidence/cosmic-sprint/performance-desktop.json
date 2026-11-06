@@ -1,0 +1,141 @@
+{
+  "profile": "desktop",
+  "physicalDevice": false,
+  "method": "Native requestAnimationFrame clock, 60 frames after loading and warmup; actual integrated multiplayer race scene with 8 animated approved characters and real WebSocket snapshots. Ordinary owner Start and bounded review-clock advance reach racing; the existing local review server then holds physics between commands. Software Chromium rendering; not a Redmi Note 8 FPS claim.",
+  "viewport": [
+    1280,
+    720
+  ],
+  "devicePixelRatio": 1,
+  "buffer": [
+    1280,
+    720
+  ],
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "assetTransfers": [
+    {
+      "file": "minimorph_candidate_v1-BtUnJwu7.glb",
+      "encodedBytes": 26238044,
+      "transferBytes": 26238344,
+      "durationMs": 567.9000000059605
+    },
+    {
+      "file": "cosmic-start-gate-CavjMU0P.glb",
+      "encodedBytes": 9692568,
+      "transferBytes": 9692868,
+      "durationMs": 165.80000001192093
+    },
+    {
+      "file": "wide-floating-island-JZQDUDSu.glb",
+      "encodedBytes": 9456216,
+      "transferBytes": 9456516,
+      "durationMs": 161
+    },
+    {
+      "file": "basis_transcoder-DBaCnI5p.wasm",
+      "encodedBytes": 1060846,
+      "transferBytes": 1061146,
+      "durationMs": 25.599999994039536
+    },
+    {
+      "file": "main-floor-tile-CcdfxISQ.glb",
+      "encodedBytes": 8970120,
+      "transferBytes": 8970420,
+      "durationMs": 2493.600000023842
+    },
+    {
+      "file": "checkpoint-gate-marker-DcfoJZZQ.glb",
+      "encodedBytes": 10993628,
+      "transferBytes": 10993928,
+      "durationMs": 180.40000000596046
+    },
+    {
+      "file": "giant-padded-hammer-BBbY00P1.glb",
+      "encodedBytes": 10862068,
+      "transferBytes": 10862368,
+      "durationMs": 3720.100000023842
+    },
+    {
+      "file": "space-decoration-kit-DVPjTsdN.glb",
+      "encodedBytes": 9827596,
+      "transferBytes": 9827896,
+      "durationMs": 156.30000001192093
+    },
+    {
+      "file": "circular-arena-floor-j0zkdtO_.glb",
+      "encodedBytes": 8783560,
+      "transferBytes": 8783860,
+      "durationMs": 4193.699999988079
+    },
+    {
+      "file": "landing-transition-platform-CsKCG_8j.glb",
+      "encodedBytes": 10589888,
+      "transferBytes": 10590188,
+      "durationMs": 117.19999998807907
+    },
+    {
+      "file": "large-floor-panel-BUXOPBYs.glb",
+      "encodedBytes": 8881468,
+      "transferBytes": 8881768,
+      "durationMs": 4444.4000000059605
+    },
+    {
+      "file": "turbo-conveyor-CyTYQCUy.glb",
+      "encodedBytes": 12346280,
+      "transferBytes": 12346580,
+      "durationMs": 230.2999999821186
+    },
+    {
+      "file": "inflatable-bounce-pad-Rs7BC3wE.glb",
+      "encodedBytes": 11281328,
+      "transferBytes": 11281628,
+      "durationMs": 4307.699999988079
+    },
+    {
+      "file": "sliding-bumper-BMhLKDy4.glb",
+      "encodedBytes": 11020268,
+      "transferBytes": 11020568,
+      "durationMs": 205.59999999403954
+    },
+    {
+      "file": "rotating-carousel-z6NegjB8.glb",
+      "encodedBytes": 9622552,
+      "transferBytes": 9622852,
+      "durationMs": 4296.199999988079
+    }
+  ],
+  "samples": 60,
+  "medianFrameMs": 1283.300000000003,
+  "p95FrameMs": 2483.300000000003,
+  "medianCadenceFps": 0.7792410192472514,
+  "data": {
+    "character": "minimorph-optimized-v1",
+    "engine": "PlayCanvas 2.23.3",
+    "arenaAssets": "ready",
+    "arenaAssetCount": "13/13",
+    "arenaInstances": "44",
+    "arenaTriangles": "709060",
+    "arena": "cosmic-sprint",
+    "activeEffects": "0",
+    "remoteCount": "7",
+    "drawCalls": "41",
+    "textureBytes": "285295552",
+    "frameMs": "1266.6000000000058",
+    "heading": "0",
+    "hits": "0",
+    "mode": "race",
+    "phase": "racing",
+    "progress": "0",
+    "simulationTime": "1.033333",
+    "action": "normal",
+    "event": "none",
+    "ready": "true",
+    "characterPitch": "0",
+    "characterPoseWeight": "0",
+    "characterActionPose": "normal",
+    "characterClip": "Idle",
+    "characterActive": "Idle",
+    "characterTime": "10.082899999999974"
+  },
+  "executableVersion": "Chromium 154.0.8037.57 built on Debian GNU/Linux 13 (trixie); recorded with /usr/bin/chromium --version"
+}

@@ -1,0 +1,129 @@
+{
+  "profile": "mobile",
+  "physicalDevice": false,
+  "method": "Native requestAnimationFrame clock, 60 frames after loading and warmup; actual integrated multiplayer race scene with 8 animated approved characters and real WebSocket snapshots. Ordinary owner Start and bounded review-clock advance reach racing; the existing local review server then holds physics between commands. Software Chromium rendering; not a Redmi Note 8 FPS claim.",
+  "viewport": [
+    412,
+    839
+  ],
+  "devicePixelRatio": 2.625,
+  "buffer": [
+    618,
+    1258
+  ],
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "assetTransfers": [
+    {
+      "file": "minimorph_candidate_v1-BtUnJwu7.glb",
+      "encodedBytes": 26238044,
+      "transferBytes": 26238344,
+      "durationMs": 158.7000000178814
+    },
+    {
+      "file": "cosmic-start-gate-CavjMU0P.glb",
+      "encodedBytes": 9692568,
+      "transferBytes": 9692868,
+      "durationMs": 481.19999998807907
+    },
+    {
+      "file": "wide-floating-island-JZQDUDSu.glb",
+      "encodedBytes": 9456216,
+      "transferBytes": 9456516,
+      "durationMs": 480.90000000596046
+    },
+    {
+      "file": "basis_transcoder-DBaCnI5p.wasm",
+      "encodedBytes": 1060846,
+      "transferBytes": 1061146,
+      "durationMs": 48.79999998211861
+    },
+    {
+      "file": "main-floor-tile-CcdfxISQ.glb",
+      "encodedBytes": 8970120,
+      "transferBytes": 8970420,
+      "durationMs": 2663.2000000178814
+    },
+    {
+      "file": "checkpoint-gate-marker-DcfoJZZQ.glb",
+      "encodedBytes": 10993628,
+      "transferBytes": 10993928,
+      "durationMs": 285.30000001192093
+    },
+    {
+      "file": "giant-padded-hammer-BBbY00P1.glb",
+      "encodedBytes": 10862068,
+      "transferBytes": 10862368,
+      "durationMs": 3048.5
+    },
+    {
+      "file": "space-decoration-kit-DVPjTsdN.glb",
+      "encodedBytes": 9827596,
+      "transferBytes": 9827896,
+      "durationMs": 130.5
+    },
+    {
+      "file": "circular-arena-floor-j0zkdtO_.glb",
+      "encodedBytes": 8783560,
+      "transferBytes": 8783860,
+      "durationMs": 2703.9000000059605
+    },
+    {
+      "file": "landing-transition-platform-CsKCG_8j.glb",
+      "encodedBytes": 10589888,
+      "transferBytes": 10590188,
+      "durationMs": 109.7999999821186
+    },
+    {
+      "file": "large-floor-panel-BUXOPBYs.glb",
+      "encodedBytes": 8881468,
+      "transferBytes": 8881768,
+      "durationMs": 4082.199999988079
+    },
+    {
+      "file": "inflatable-bounce-pad-Rs7BC3wE.glb",
+      "encodedBytes": 11281328,
+      "transferBytes": 11281628,
+      "durationMs": 273.5
+    },
+    {
+      "file": "rotating-carousel-z6NegjB8.glb",
+      "encodedBytes": 9622552,
+      "transferBytes": 9622852,
+      "durationMs": 4017.2999999821186
+    }
+  ],
+  "samples": 60,
+  "medianFrameMs": 1233.4000000000015,
+  "p95FrameMs": 2549.9000000000087,
+  "medianCadenceFps": 0.8107669855683467,
+  "data": {
+    "character": "minimorph-optimized-v1",
+    "engine": "PlayCanvas 2.23.3",
+    "arenaAssets": "ready",
+    "arenaAssetCount": "11/11",
+    "arenaInstances": "35",
+    "arenaTriangles": "566036",
+    "arena": "cosmic-sprint",
+    "activeEffects": "0",
+    "remoteCount": "7",
+    "heading": "0",
+    "hits": "0",
+    "mode": "race",
+    "phase": "racing",
+    "progress": "0",
+    "simulationTime": "1.033333",
+    "action": "normal",
+    "event": "none",
+    "ready": "true",
+    "drawCalls": "37",
+    "textureBytes": "251740960",
+    "frameMs": "1333.300000000003",
+    "characterPitch": "0",
+    "characterPoseWeight": "0",
+    "characterActionPose": "normal",
+    "characterClip": "Idle",
+    "characterActive": "Idle",
+    "characterTime": "9.166599999999963"
+  },
+  "executableVersion": "Chromium 154.0.8037.57 built on Debian GNU/Linux 13 (trixie); recorded with /usr/bin/chromium --version"
+}

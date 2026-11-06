@@ -1,0 +1,3674 @@
+{
+  "release": "cosmic-assets-v1",
+  "method": "meshoptimizer 0.25 attribute-aware simplification, error <=0.25%, original embedded image bytes/materials retained; no recolor or texture resizing",
+  "assets": [
+    {
+      "name": "Checkpoint.Gate.Marker.glb",
+      "runtime": "checkpoint-gate-marker.glb",
+      "sourceSha256": "01e1ec124a46ea6c2a49b3fee0152adac0becf37c4f025a2f9d8260ce7d92253",
+      "runtimeSha256": "f4b10db141ab3d33cd0f5bdc6e24be3a84d44e4e79c7ce247c5331470d5c1eb8",
+      "sourceBytes": 6621600,
+      "runtimeBytes": 10993628,
+      "sourceVertices": 335041,
+      "sourceTriangles": 647624,
+      "runtimeVertices": 13488,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0006341671105474234,
+      "objectError": 0.0006341671105474234,
+      "bounds": {
+        "min": [
+          -0.332489013671875,
+          -0.310546875,
+          -0.5
+        ],
+        "max": [
+          0.332489013671875,
+          0.310546875,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.66497802734375,
+        0.62109375,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_90eed19e-36a8-4f59-b028-9626f3e3de6a",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_90eed19e-36a8-4f59-b028-9626f3e3de6a",
+          "mimeType": "image/jpeg",
+          "bytes": 880747,
+          "sha256": "2e3f85757de49f4ecb8248e989964a280cb81387c51c110773211db2316e8024",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_90eed19e-36a8-4f59-b028-9626f3e3de6a",
+          "mimeType": "image/jpeg",
+          "bytes": 421098,
+          "sha256": "412991d039957fe00351b87caae8de32a90f7b0ea7259997cfbd1883a39ce56f",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_90eed19e-36a8-4f59-b028-9626f3e3de6a",
+          "mimeType": "image/png",
+          "bytes": 1815676,
+          "sha256": "7d873a9b5a63f210045139f916ac746f5c5639680e26e582f9c3e773f252521a",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        647624
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "2e3f85757de49f4ecb8248e989964a280cb81387c51c110773211db2316e8024",
+          "sha256": "65e4fccc1b43c1372176823bebca42138f3f937d51940c3f6d94d987aaa130ef",
+          "bytes": 4720432,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 44.000 Mean: 0.441 RMS: 1.119 PSNR: 47.155 dB"
+          ],
+          "encoderRgbPsnr": 47.155
+        },
+        {
+          "sourceImageSha256": "412991d039957fe00351b87caae8de32a90f7b0ea7259997cfbd1883a39ce56f",
+          "sha256": "66d57852bb2c38d057a6290ced510a959e97625606a47fc5517a7683923447c0",
+          "bytes": 3288011,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 15.000 Mean: 0.088 RMS: 0.323 PSNR: 57.942 dB"
+          ],
+          "encoderRgbPsnr": 57.942
+        },
+        {
+          "sourceImageSha256": "7d873a9b5a63f210045139f916ac746f5c5639680e26e582f9c3e773f252521a",
+          "sha256": "7c4328012ccc4ecc51c8ff149056d04be5e53fca6967c2bdfe92aac1e742c153",
+          "bytes": 2311693,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 62.000 Mean: 0.154 RMS: 0.683 PSNR: 51.437 dB"
+          ],
+          "encoderRgbPsnr": 51.437
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.332427978515625,
+            -0.3104248046875,
+            -0.499969482421875
+          ],
+          "max": [
+            0.332427978515625,
+            0.31048583984375,
+            0.499908447265625
+          ],
+          "walkY": -0.2993767092740851,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Circular.Arena.Floor.glb",
+      "runtime": "circular-arena-floor.glb",
+      "sourceSha256": "ee7a5d9fe97de9fadf984135814dc2bdc2178169b22c82e498783a44b932d6d6",
+      "runtimeSha256": "8f484cf88a6f6e5dc3cc6af4aa921dba2694a7cd316f5aab3dc5cfbee0afded9",
+      "sourceBytes": 6816996,
+      "runtimeBytes": 8783560,
+      "sourceVertices": 353218,
+      "sourceTriangles": 669933,
+      "runtimeVertices": 15478,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0008786870166659355,
+      "objectError": 0.0008786870166659355,
+      "bounds": {
+        "min": [
+          -0.499603271484375,
+          -0.10517120361328125,
+          -0.5
+        ],
+        "max": [
+          0.499603271484375,
+          0.10517120361328125,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.99920654296875,
+        0.2103424072265625,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_48e728ff-6b7c-4acb-9c29-1b416ca80ba4",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_48e728ff-6b7c-4acb-9c29-1b416ca80ba4",
+          "mimeType": "image/jpeg",
+          "bytes": 667883,
+          "sha256": "4a5c3761549135d3a5cb780801b4d2f03cd10ab9b6cb101b36006a6737386a7a",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_48e728ff-6b7c-4acb-9c29-1b416ca80ba4",
+          "mimeType": "image/jpeg",
+          "bytes": 240877,
+          "sha256": "b97106762e3491777b0f34b36dabf732b5cf543742166578efe726143fe4de14",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_48e728ff-6b7c-4acb-9c29-1b416ca80ba4",
+          "mimeType": "image/png",
+          "bytes": 2225182,
+          "sha256": "34421223b4c5ed51303f06e820947102edebcc9163633e079b901207f37e090a",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        669933
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "4a5c3761549135d3a5cb780801b4d2f03cd10ab9b6cb101b36006a6737386a7a",
+          "sha256": "7772a1e3dad32d11b4178aa349c664f913fd99c0ea98eda61e375bf971ba53d1",
+          "bytes": 4002897,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 33.000 Mean: 0.286 RMS: 0.839 PSNR: 49.651 dB"
+          ],
+          "encoderRgbPsnr": 49.651
+        },
+        {
+          "sourceImageSha256": "b97106762e3491777b0f34b36dabf732b5cf543742166578efe726143fe4de14",
+          "sha256": "98b84a4c065c4ede730c737a91ae5ecc486b8b641235bd24c2e5b23683f1fb53",
+          "bytes": 1455706,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 9.000 Mean: 0.016 RMS: 0.133 PSNR: 65.660 dB"
+          ],
+          "encoderRgbPsnr": 65.66
+        },
+        {
+          "sourceImageSha256": "34421223b4c5ed51303f06e820947102edebcc9163633e079b901207f37e090a",
+          "sha256": "53cc58b2b2efe57375a7f69c8ed870f756d849354447dc93a0bbec5cb84a454a",
+          "bytes": 2587797,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 54.000 Mean: 0.172 RMS: 0.815 PSNR: 49.906 dB"
+          ],
+          "encoderRgbPsnr": 49.906
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.499603271484375,
+            -0.10509490966796875,
+            -0.5
+          ],
+          "max": [
+            0.499542236328125,
+            0.10498046875,
+            0.49993896484375
+          ],
+          "walkY": 0.09814648620017327,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Cosmic.Start.Gate.glb",
+      "runtime": "cosmic-start-gate.glb",
+      "sourceSha256": "3c303cd887b54cdd51e971c296d7b33647025f8251ec1d2c335b397734d8725a",
+      "runtimeSha256": "3b7c8ff49f91aaf941b1383d743c3268ad4be89ab685a2e8a6b37462fc6e2152",
+      "sourceBytes": 6834156,
+      "runtimeBytes": 9692568,
+      "sourceVertices": 350642,
+      "sourceTriangles": 680326,
+      "runtimeVertices": 13077,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0005620165029540658,
+      "objectError": 0.0005620165029540658,
+      "bounds": {
+        "min": [
+          -0.1302337646484375,
+          -0.2355194091796875,
+          -0.5
+        ],
+        "max": [
+          0.1302337646484375,
+          0.2355194091796875,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.260467529296875,
+        0.471038818359375,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_f1fe2cc9-3b28-4fb2-ad2b-6791929b6fe9",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_f1fe2cc9-3b28-4fb2-ad2b-6791929b6fe9",
+          "mimeType": "image/jpeg",
+          "bytes": 725965,
+          "sha256": "4081dd1341203f595a0d1144f4291f8509f5c73885f24ae1075f0a745ea03fd1",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_f1fe2cc9-3b28-4fb2-ad2b-6791929b6fe9",
+          "mimeType": "image/jpeg",
+          "bytes": 293711,
+          "sha256": "38b9d052bdad664262b301f40b461331e47449d944687525b22c5e429ff99836",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_f1fe2cc9-3b28-4fb2-ad2b-6791929b6fe9",
+          "mimeType": "image/png",
+          "bytes": 2124144,
+          "sha256": "72f5323afe1fe86cc6be5513c3206a4a21d5296e043f0f5eee22b5ed08112b90",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        680326
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "4081dd1341203f595a0d1144f4291f8509f5c73885f24ae1075f0a745ea03fd1",
+          "sha256": "33fbd85d020e030b0516e1fc2377b9409cef13018209a15b7a7a1295b17ef333",
+          "bytes": 4448694,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 36.000 Mean: 0.349 RMS: 0.993 PSNR: 48.194 dB"
+          ],
+          "encoderRgbPsnr": 48.194
+        },
+        {
+          "sourceImageSha256": "38b9d052bdad664262b301f40b461331e47449d944687525b22c5e429ff99836",
+          "sha256": "38b393d5eb4bdd1bc59fdbb43711ad7585e55acdab0e7df8f82590add41ef96d",
+          "bytes": 1968848,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 8.000 Mean: 0.022 RMS: 0.150 PSNR: 64.598 dB"
+          ],
+          "encoderRgbPsnr": 64.598
+        },
+        {
+          "sourceImageSha256": "72f5323afe1fe86cc6be5513c3206a4a21d5296e043f0f5eee22b5ed08112b90",
+          "sha256": "9586f133c189171f9c7a628f0db776dce8e1a2c94053ee7de0db4242826dd72b",
+          "bytes": 2614687,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 58.000 Mean: 0.213 RMS: 0.886 PSNR: 49.178 dB"
+          ],
+          "encoderRgbPsnr": 49.178
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.130157470703125,
+            -0.2354888916015625,
+            -0.499908447265625
+          ],
+          "max": [
+            0.12982177734375,
+            0.23529052734375,
+            0.49981689453125
+          ],
+          "walkY": 0.18162156626112702,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Curved.Floor.Corner.glb",
+      "runtime": "curved-floor-corner.glb",
+      "sourceSha256": "98ba8a2c611a6505b3473bb4f2fc4e314ba87578c163a2cf75bd179629ecb96c",
+      "runtimeSha256": "e3966c2d4719bd4866b3b407e519e6b1b04b42a74afabe392cc84f6ca2804641",
+      "sourceBytes": 6965068,
+      "runtimeBytes": 9647144,
+      "sourceVertices": 353591,
+      "sourceTriangles": 674452,
+      "runtimeVertices": 15392,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0006686020060442388,
+      "objectError": 0.0006686020060442388,
+      "bounds": {
+        "min": [
+          -0.32611083984375,
+          -0.106964111328125,
+          -0.5
+        ],
+        "max": [
+          0.32611083984375,
+          0.106964111328125,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.6522216796875,
+        0.21392822265625,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_2eb95957-844b-407a-9ed2-4d71d4f76f24",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_2eb95957-844b-407a-9ed2-4d71d4f76f24",
+          "mimeType": "image/jpeg",
+          "bytes": 617612,
+          "sha256": "0502ae5b018146053fb3c26cfd425c8dc5d5bebc3c9c02e24c58888cc4fb20bc",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_2eb95957-844b-407a-9ed2-4d71d4f76f24",
+          "mimeType": "image/jpeg",
+          "bytes": 315349,
+          "sha256": "efeadc5415d10bf4c1e4fd68ecc8b9fd23d2609aff416d91ac26c375ca2d8baa",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_2eb95957-844b-407a-9ed2-4d71d4f76f24",
+          "mimeType": "image/png",
+          "bytes": 2445512,
+          "sha256": "5d110cf870584ce22685b4f1a53d62e01bed9b307b1480dbed37e9c45c289b35",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        674452
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "0502ae5b018146053fb3c26cfd425c8dc5d5bebc3c9c02e24c58888cc4fb20bc",
+          "sha256": "d14cb17fe81451477da6dc712e285590fa003b5f58eef7b3fb3f9174e73bd8ed",
+          "bytes": 3863749,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 37.000 Mean: 0.246 RMS: 0.762 PSNR: 50.490 dB"
+          ],
+          "encoderRgbPsnr": 50.49
+        },
+        {
+          "sourceImageSha256": "efeadc5415d10bf4c1e4fd68ecc8b9fd23d2609aff416d91ac26c375ca2d8baa",
+          "sha256": "9df1a4e55a939368812f341bff020349b21e26feb0ee6fbf9d628e3945ee1f34",
+          "bytes": 2288215,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 10.000 Mean: 0.034 RMS: 0.188 PSNR: 62.647 dB"
+          ],
+          "encoderRgbPsnr": 62.647
+        },
+        {
+          "sourceImageSha256": "5d110cf870584ce22685b4f1a53d62e01bed9b307b1480dbed37e9c45c289b35",
+          "sha256": "ca953feb59f946adf83e44195c194eb84cbe14f8919ce0f5eb4e6d803e6aed91",
+          "bytes": 2760775,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 67.000 Mean: 0.246 RMS: 0.981 PSNR: 48.299 dB"
+          ],
+          "encoderRgbPsnr": 48.299
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.32598876953125,
+            -0.1068878173828125,
+            -0.5
+          ],
+          "max": [
+            0.3260498046875,
+            0.1068572998046875,
+            0.49993896484375
+          ],
+          "walkY": 0.10025833024396438,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Curved.Platform.Ramp.Kit.glb",
+      "runtime": "curved-platform-ramp-kit.glb",
+      "sourceSha256": "d1468c1035beffce7c70bfecbf6935eeb8eea6bde34f2f18e877f08c40bd8cf7",
+      "runtimeSha256": "885f7ee612c995c244482732f2868c0499d0741c8a70ebddcadb5f4aa672cc6f",
+      "sourceBytes": 7858092,
+      "runtimeBytes": 12207752,
+      "sourceVertices": 353195,
+      "sourceTriangles": 675277,
+      "runtimeVertices": 13742,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0010065727401524782,
+      "objectError": 0.0010065727401524782,
+      "bounds": {
+        "min": [
+          -0.4803466796875,
+          -0.1290283203125,
+          -0.5
+        ],
+        "max": [
+          0.4803466796875,
+          0.1290283203125,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.960693359375,
+        0.258056640625,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_46d2b739-41a7-4d5b-b11a-66293d2e62a2",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_46d2b739-41a7-4d5b-b11a-66293d2e62a2",
+          "mimeType": "image/jpeg",
+          "bytes": 880752,
+          "sha256": "ace259b2d7ceb0867ea36a8c01d2466f7a5f6718cfd820f902e3058c3a7b72db",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_46d2b739-41a7-4d5b-b11a-66293d2e62a2",
+          "mimeType": "image/jpeg",
+          "bytes": 559580,
+          "sha256": "2c4ae0b6d2e1c97dd571d5565c8d683e28d519a7c4d07e180e2226e57e30cec1",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_46d2b739-41a7-4d5b-b11a-66293d2e62a2",
+          "mimeType": "image/png",
+          "bytes": 2555549,
+          "sha256": "4f152eabfcc995a78d5819a96c9d9d09b522e9aee04fe8789bce2a67cb0d297b",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 5,
+      "largestComponents": [
+        166618,
+        143250,
+        134570,
+        133079,
+        97760
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "ace259b2d7ceb0867ea36a8c01d2466f7a5f6718cfd820f902e3058c3a7b72db",
+          "sha256": "7aa97fc1f4ae0a045b4d62df1177d636fb91071db3fc3ea138ef380982eb94a5",
+          "bytes": 4730008,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 35.000 Mean: 0.496 RMS: 1.139 PSNR: 47.000 dB"
+          ],
+          "encoderRgbPsnr": 47
+        },
+        {
+          "sourceImageSha256": "2c4ae0b6d2e1c97dd571d5565c8d683e28d519a7c4d07e180e2226e57e30cec1",
+          "sha256": "fd3c64b5b756b3ec7f72dd24ae2f96d797e671bb541211da8c3ac7f3231116b9",
+          "bytes": 3963680,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 11.000 Mean: 0.206 RMS: 0.512 PSNR: 53.944 dB"
+          ],
+          "encoderRgbPsnr": 53.944
+        },
+        {
+          "sourceImageSha256": "4f152eabfcc995a78d5819a96c9d9d09b522e9aee04fe8789bce2a67cb0d297b",
+          "sha256": "977a7c68dde645b2ea150f8c09a60de8fec354e822e246ff94f41e2966e4addd",
+          "bytes": 2829534,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 93.000 Mean: 0.300 RMS: 1.173 PSNR: 46.747 dB"
+          ],
+          "encoderRgbPsnr": 46.747
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.480010986328125,
+            -0.005576133728027344,
+            -0.39788818359375
+          ],
+          "max": [
+            -0.1389007568359375,
+            0.11705780029296875,
+            0.145599365234375
+          ],
+          "walkY": 0.10015338811792918,
+          "triangles": 4686
+        },
+        {
+          "name": "Part1",
+          "min": [
+            -0.1335906982421875,
+            -0.115386962890625,
+            -0.499755859375
+          ],
+          "max": [
+            0.26361083984375,
+            -0.021331787109375,
+            -0.123931884765625
+          ],
+          "walkY": -0.02663996261147448,
+          "triangles": 3924
+        },
+        {
+          "name": "Part2",
+          "min": [
+            -0.175262451171875,
+            0.019701004028320312,
+            0.2137451171875
+          ],
+          "max": [
+            0.295196533203125,
+            0.128875732421875,
+            0.499847412109375
+          ],
+          "walkY": 0.11503759223647922,
+          "triangles": 3954
+        },
+        {
+          "name": "Part3",
+          "min": [
+            0.31878662109375,
+            -0.128936767578125,
+            -0.09030914306640625
+          ],
+          "max": [
+            0.480255126953125,
+            0.043792724609375,
+            0.28607177734375
+          ],
+          "walkY": -0.011872406767803764,
+          "triangles": 3022
+        },
+        {
+          "name": "Part4",
+          "min": [
+            -0.18359375,
+            -0.07025909423828125,
+            -0.1287841796875
+          ],
+          "max": [
+            0.281829833984375,
+            0.06324005126953125,
+            0.2032318115234375
+          ],
+          "walkY": 0.04768194410318877,
+          "triangles": 4414
+        }
+      ]
+    },
+    {
+      "name": "Decorative.Floor.Surface.Variants.glb",
+      "runtime": "decorative-floor-surface-variants.glb",
+      "sourceSha256": "4349ad38616783c9c76f257bc69dd7e57f77023531f9159e7b4e2691477850d0",
+      "runtimeSha256": "221f12c15f5d2046fcfe1934cfe0811d71b97743f82f0e2be0af1724dc78b03b",
+      "sourceBytes": 7250908,
+      "runtimeBytes": 10166924,
+      "sourceVertices": 341914,
+      "sourceTriangles": 648192,
+      "runtimeVertices": 14814,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0008664673077873886,
+      "objectError": 0.0008664673077873886,
+      "bounds": {
+        "min": [
+          -0.48150634765625,
+          -0.131439208984375,
+          -0.5
+        ],
+        "max": [
+          0.48150634765625,
+          0.131439208984375,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.9630126953125,
+        0.26287841796875,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_9ab7ba91-16c7-4087-8a69-7ac72955811c",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_9ab7ba91-16c7-4087-8a69-7ac72955811c",
+          "mimeType": "image/jpeg",
+          "bytes": 891935,
+          "sha256": "01ad8089316fb66bbb5a463fe048896c5ffe9f229180c24e24f0958e3e14fb2e",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_9ab7ba91-16c7-4087-8a69-7ac72955811c",
+          "mimeType": "image/jpeg",
+          "bytes": 329827,
+          "sha256": "5f5b7d62174b48dba2c16573016b64d99b80f00b3bb8a11270e7fa794da166f4",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_9ab7ba91-16c7-4087-8a69-7ac72955811c",
+          "mimeType": "image/png",
+          "bytes": 2510638,
+          "sha256": "2aecbe7a3eec418c5e212fe784a8b9c40e6a3aa9790b1555f478a258505fb8d2",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 4,
+      "largestComponents": [
+        169402,
+        160288,
+        159326,
+        159176
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "01ad8089316fb66bbb5a463fe048896c5ffe9f229180c24e24f0958e3e14fb2e",
+          "sha256": "45659af8a6f94bbb23a8ac9759e2afacbf41e2827f0b7ee0cda88fcefa491950",
+          "bytes": 4439297,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 55.000 Mean: 0.490 RMS: 1.247 PSNR: 46.211 dB"
+          ],
+          "encoderRgbPsnr": 46.211
+        },
+        {
+          "sourceImageSha256": "5f5b7d62174b48dba2c16573016b64d99b80f00b3bb8a11270e7fa794da166f4",
+          "sha256": "1c12b497e4073ebaa8e3166d08f86dd7fdbd82fad70c62a4db3f585cf1e48784",
+          "bytes": 2309710,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 14.000 Mean: 0.037 RMS: 0.196 PSNR: 62.271 dB"
+          ],
+          "encoderRgbPsnr": 62.271
+        },
+        {
+          "sourceImageSha256": "2aecbe7a3eec418c5e212fe784a8b9c40e6a3aa9790b1555f478a258505fb8d2",
+          "sha256": "6ad04503086471cfdbabf607ee14841e3140de55897c2b0e45b1bc85d3ada608",
+          "bytes": 2699805,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 92.000 Mean: 0.322 RMS: 1.354 PSNR: 45.498 dB"
+          ],
+          "encoderRgbPsnr": 45.498
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            0.11385345458984375,
+            -0.131378173828125,
+            -0.299957275390625
+          ],
+          "max": [
+            0.4814453125,
+            -0.026403427124023438,
+            0.0714263916015625
+          ],
+          "walkY": -0.03322750854131626,
+          "triangles": 4970
+        },
+        {
+          "name": "Part1",
+          "min": [
+            -0.2166290283203125,
+            0.022405624389648438,
+            -0.4998779296875
+          ],
+          "max": [
+            0.17022705078125,
+            0.13140869140625,
+            -0.1251220703125
+          ],
+          "walkY": 0.12426688578943064,
+          "triangles": 5608
+        },
+        {
+          "name": "Part2",
+          "min": [
+            -0.156707763671875,
+            -0.1313018798828125,
+            0.130279541015625
+          ],
+          "max": [
+            0.217132568359375,
+            -0.026296615600585938,
+            0.49951171875
+          ],
+          "walkY": -0.030402976675586453,
+          "triangles": 4838
+        },
+        {
+          "name": "Part3",
+          "min": [
+            -0.481414794921875,
+            0.022397994995117188,
+            -0.059520721435546875
+          ],
+          "max": [
+            -0.095550537109375,
+            0.131011962890625,
+            0.322479248046875
+          ],
+          "walkY": 0.12391411659585233,
+          "triangles": 4584
+        }
+      ]
+    },
+    {
+      "name": "Floor.Markings.Directional.Indicators.glb",
+      "runtime": "floor-markings-directional-indicators.glb",
+      "sourceSha256": "ca4b2821ead4847d4564b70cd470fa0a6d2347c9a10c9d57c7e1e8df43de1d6a",
+      "runtimeSha256": "47ca53a86611a32ddef055ce4e4f4976be112a0f83d140376a2926f3e8572878",
+      "sourceBytes": 6212732,
+      "runtimeBytes": 8985776,
+      "sourceVertices": 354555,
+      "sourceTriangles": 687648,
+      "runtimeVertices": 13477,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0004946303670294583,
+      "objectError": 0.0004946303670294583,
+      "bounds": {
+        "min": [
+          -0.4361572265625,
+          -0.03308868408203125,
+          -0.5
+        ],
+        "max": [
+          0.4361572265625,
+          0.03308868408203125,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.872314453125,
+        0.0661773681640625,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_ea8d17a7-ec38-4919-b9d7-72eb47dbb5e5",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_ea8d17a7-ec38-4919-b9d7-72eb47dbb5e5",
+          "mimeType": "image/jpeg",
+          "bytes": 780048,
+          "sha256": "c5280d4c654846dbd8307b610c07c6e57c4edc0696169bc08d98fdc09d193809",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_ea8d17a7-ec38-4919-b9d7-72eb47dbb5e5",
+          "mimeType": "image/jpeg",
+          "bytes": 296585,
+          "sha256": "28c20088c6ee1a5f3803241732f03fb6e7c16887c737125ca732bd9cc06ab4d9",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_ea8d17a7-ec38-4919-b9d7-72eb47dbb5e5",
+          "mimeType": "image/png",
+          "bytes": 1452156,
+          "sha256": "8df6eabe5b9aa9ed5925d4b5224ce8235dde19977be31ea038952c6d258ecb78",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 6,
+      "largestComponents": [
+        195136,
+        160976,
+        88196,
+        85856,
+        82914,
+        74570
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "c5280d4c654846dbd8307b610c07c6e57c4edc0696169bc08d98fdc09d193809",
+          "sha256": "750fcefea75130a952d33a3d334aea61ee4f80ee59cd41acada184190eb2b3d2",
+          "bytes": 4339005,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 42.000 Mean: 0.374 RMS: 1.092 PSNR: 47.366 dB"
+          ],
+          "encoderRgbPsnr": 47.366
+        },
+        {
+          "sourceImageSha256": "28c20088c6ee1a5f3803241732f03fb6e7c16887c737125ca732bd9cc06ab4d9",
+          "sha256": "d10441a7e404bab07f0fe0627e18f328c74db25ecba6fe6c6f5bd507f5620748",
+          "bytes": 2078121,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 12.000 Mean: 0.024 RMS: 0.158 PSNR: 64.145 dB"
+          ],
+          "encoderRgbPsnr": 64.145
+        },
+        {
+          "sourceImageSha256": "8df6eabe5b9aa9ed5925d4b5224ce8235dde19977be31ea038952c6d258ecb78",
+          "sha256": "a7d0f086ad9a0a8960ecc41ecba4465a17a60770a9681ae0ea3b7d937294e008",
+          "bytes": 1891835,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 23.000 Mean: 0.093 RMS: 0.464 PSNR: 54.807 dB"
+          ],
+          "encoderRgbPsnr": 54.807
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            0.213348388671875,
+            -0.033050537109375,
+            -0.3245849609375
+          ],
+          "max": [
+            0.436065673828125,
+            0.013814926147460938,
+            -0.07866668701171875
+          ],
+          "walkY": 0.012999597214593595,
+          "triangles": 2766
+        },
+        {
+          "name": "Part1",
+          "min": [
+            0.05411529541015625,
+            -0.026485443115234375,
+            -0.492523193359375
+          ],
+          "max": [
+            0.175933837890625,
+            0.011160850524902344,
+            0.013677597045898438
+          ],
+          "walkY": 0.010758659367202751,
+          "triangles": 2584
+        },
+        {
+          "name": "Part2",
+          "min": [
+            -0.436065673828125,
+            -0.026454925537109375,
+            -0.499969482421875
+          ],
+          "max": [
+            -0.03847503662109375,
+            0.032009124755859375,
+            -0.0027151107788085938
+          ],
+          "walkY": 0.031065095447247233,
+          "triangles": 4378
+        },
+        {
+          "name": "Part3",
+          "min": [
+            -0.395355224609375,
+            -0.026494979858398438,
+            0.2362060546875
+          ],
+          "max": [
+            -0.06421661376953125,
+            0.026914596557617188,
+            0.48907470703125
+          ],
+          "walkY": 0.024455822461046276,
+          "triangles": 1910
+        },
+        {
+          "name": "Part4",
+          "min": [
+            0.01172637939453125,
+            -0.026529312133789062,
+            0.0595245361328125
+          ],
+          "max": [
+            0.429412841796875,
+            0.03308868408203125,
+            0.5
+          ],
+          "walkY": 0.03308868408203125,
+          "triangles": 6256
+        },
+        {
+          "name": "Part5",
+          "min": [
+            -0.394927978515625,
+            -0.026559829711914062,
+            0.052730560302734375
+          ],
+          "max": [
+            -0.064422607421875,
+            0.026927947998046875,
+            0.305694580078125
+          ],
+          "walkY": 0.02067937617068651,
+          "triangles": 2106
+        }
+      ]
+    },
+    {
+      "name": "Giant.Padded.Hammer.glb",
+      "runtime": "giant-padded-hammer.glb",
+      "sourceSha256": "5e268032fb48eaa1f01046ac80fa16f5a4be9d1f2da9dd2dd65639112c0db24e",
+      "runtimeSha256": "72366c8af92fd558808b1be91fdfd45929b0c2b1776f8b9e60c73e1d35c7afe5",
+      "sourceBytes": 7009892,
+      "runtimeBytes": 10862068,
+      "sourceVertices": 341981,
+      "sourceTriangles": 663264,
+      "runtimeVertices": 12860,
+      "runtimeTriangles": 19994,
+      "relativeError": 0.0007867480162531137,
+      "objectError": 0.0007867480162531137,
+      "bounds": {
+        "min": [
+          -0.182159423828125,
+          -0.264984130859375,
+          -0.5
+        ],
+        "max": [
+          0.182159423828125,
+          0.264984130859375,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.36431884765625,
+        0.52996826171875,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_f990e599-3864-46d2-a332-acdf7e9d0035",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_f990e599-3864-46d2-a332-acdf7e9d0035",
+          "mimeType": "image/jpeg",
+          "bytes": 878906,
+          "sha256": "680204c84330affa90f4c0f1dcb80598fb79be64d54814e6b63320c548058cbe",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_f990e599-3864-46d2-a332-acdf7e9d0035",
+          "mimeType": "image/jpeg",
+          "bytes": 455875,
+          "sha256": "4131e563fef2d08a161876918f22c5073127e65da129b522829740f44f6c0d4d",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_f990e599-3864-46d2-a332-acdf7e9d0035",
+          "mimeType": "image/png",
+          "bytes": 1971558,
+          "sha256": "14a8e98f21f8571dcddf3b999f8f2708185ac2efa32397c0cec27b79f3139df8",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        663264
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "680204c84330affa90f4c0f1dcb80598fb79be64d54814e6b63320c548058cbe",
+          "sha256": "c9d644446a9ce6430f94847f02c4623081340dda0a48678e6c03afa9a1479319",
+          "bytes": 4739353,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 43.000 Mean: 0.420 RMS: 1.099 PSNR: 47.313 dB"
+          ],
+          "encoderRgbPsnr": 47.313
+        },
+        {
+          "sourceImageSha256": "4131e563fef2d08a161876918f22c5073127e65da129b522829740f44f6c0d4d",
+          "sha256": "6df48a53baa7e71461d2a06cefde830a4b47806ec3923af73f014fcb5a75241f",
+          "bytes": 3018104,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 15.000 Mean: 0.098 RMS: 0.364 PSNR: 56.909 dB"
+          ],
+          "encoderRgbPsnr": 56.909
+        },
+        {
+          "sourceImageSha256": "14a8e98f21f8571dcddf3b999f8f2708185ac2efa32397c0cec27b79f3139df8",
+          "sha256": "58c08f7e5317499620d3bd6e6672624f66ba4871c479ad2f51fe117fea99f61f",
+          "bytes": 2448543,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 49.000 Mean: 0.176 RMS: 0.745 PSNR: 50.685 dB"
+          ],
+          "encoderRgbPsnr": 50.685
+        }
+      ],
+      "parts": [
+        {
+          "name": "Moving",
+          "min": [
+            -0.1504364013671875,
+            -0.1045684814453125,
+            -0.49993896484375
+          ],
+          "max": [
+            0.13861083984375,
+            0.264801025390625,
+            0.499786376953125
+          ],
+          "walkY": 0.1987406312696986,
+          "triangles": 15453
+        },
+        {
+          "name": "Stationary",
+          "min": [
+            -0.182159423828125,
+            -0.26495361328125,
+            -0.19525146484375
+          ],
+          "max": [
+            0.1820220947265625,
+            -0.08531951904296875,
+            0.18115234375
+          ],
+          "walkY": -0.1541313955130504,
+          "triangles": 4541
+        }
+      ]
+    },
+    {
+      "name": "Inflatable.Bounce.Pad.glb",
+      "runtime": "inflatable-bounce-pad.glb",
+      "sourceSha256": "2f8da26e187792c269fb8a947db581dbe08c61a140a9a85f7922e16282cd8cd6",
+      "runtimeSha256": "dc50ae93227e8172dfbde294ccc226c86a68b98af41cb1de50809b42c45bb0d8",
+      "sourceBytes": 7066552,
+      "runtimeBytes": 11281328,
+      "sourceVertices": 351637,
+      "sourceTriangles": 663811,
+      "runtimeVertices": 15473,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0010882153874263167,
+      "objectError": 0.0010882153874263167,
+      "bounds": {
+        "min": [
+          -0.49993896484375,
+          -0.182098388671875,
+          -0.5
+        ],
+        "max": [
+          0.49993896484375,
+          0.182098388671875,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.9998779296875,
+        0.36419677734375,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_f2a7b1c3-ed66-4053-8783-0f83e1935445",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_f2a7b1c3-ed66-4053-8783-0f83e1935445",
+          "mimeType": "image/jpeg",
+          "bytes": 888842,
+          "sha256": "86acba571b913fb2139350efbbf524e7e7bc1bcd671555d7359fba34973f35d4",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_f2a7b1c3-ed66-4053-8783-0f83e1935445",
+          "mimeType": "image/jpeg",
+          "bytes": 573593,
+          "sha256": "20d93f83f958d8e6a2e89c2ca52c21d73a6864c3954d2db717c1beee969d9853",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_f2a7b1c3-ed66-4053-8783-0f83e1935445",
+          "mimeType": "image/png",
+          "bytes": 1919140,
+          "sha256": "d4db3ff6d79b5a12e11fd8df00a2455bb678ca83f02f5ab06f60cb12fc178662",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        663811
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "86acba571b913fb2139350efbbf524e7e7bc1bcd671555d7359fba34973f35d4",
+          "sha256": "77c4711e41e2de8e8f5e675ff073b03f82bde4c98373ada8abbadef042a222ea",
+          "bytes": 4519174,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 46.000 Mean: 0.426 RMS: 1.119 PSNR: 47.155 dB"
+          ],
+          "encoderRgbPsnr": 47.155
+        },
+        {
+          "sourceImageSha256": "20d93f83f958d8e6a2e89c2ca52c21d73a6864c3954d2db717c1beee969d9853",
+          "sha256": "9fc66b4ed005509c72c2f66cb3f14d3f93842d7e3dacef7a33a78973a503bf4f",
+          "bytes": 3743115,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 14.000 Mean: 0.155 RMS: 0.458 PSNR: 54.916 dB"
+          ],
+          "encoderRgbPsnr": 54.916
+        },
+        {
+          "sourceImageSha256": "d4db3ff6d79b5a12e11fd8df00a2455bb678ca83f02f5ab06f60cb12fc178662",
+          "sha256": "371bccbb5f28d8d0005642937bd8ee8a8d4ff0aed90059f13a78520e1e60777c",
+          "bytes": 2282054,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 69.000 Mean: 0.141 RMS: 0.716 PSNR: 51.030 dB"
+          ],
+          "encoderRgbPsnr": 51.03
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.49981689453125,
+            -0.1820831298828125,
+            -0.5
+          ],
+          "max": [
+            0.49981689453125,
+            0.182037353515625,
+            0.5
+          ],
+          "walkY": 0.1207409053138839,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Landing.Transition.Platform.glb",
+      "runtime": "landing-transition-platform.glb",
+      "sourceSha256": "e252e5ccfef7b9728b94111ab83d9d356afbb62cdc5a01c0417f8102f12d3fa6",
+      "runtimeSha256": "85e0a6e004512a27ff087ff33c9ca261d69123f24785f0b969861066e44d398d",
+      "sourceBytes": 7187172,
+      "runtimeBytes": 10589888,
+      "sourceVertices": 354821,
+      "sourceTriangles": 670014,
+      "runtimeVertices": 15362,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0010899825720116496,
+      "objectError": 0.0010899825720116496,
+      "bounds": {
+        "min": [
+          -0.457244873046875,
+          -0.1123809814453125,
+          -0.5
+        ],
+        "max": [
+          0.457244873046875,
+          0.1123809814453125,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.91448974609375,
+        0.224761962890625,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_094b1098-e09f-4b57-8740-a02f1af03716",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_094b1098-e09f-4b57-8740-a02f1af03716",
+          "mimeType": "image/jpeg",
+          "bytes": 1043024,
+          "sha256": "b14ccfa3f787b6c5fc3ca964e68d012e9829302799fe0959a2adcd3d938c0e26",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_094b1098-e09f-4b57-8740-a02f1af03716",
+          "mimeType": "image/jpeg",
+          "bytes": 357265,
+          "sha256": "347a640489da445af14fd36fbb70bcded050a512218e1f8e59a07657470985b9",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_094b1098-e09f-4b57-8740-a02f1af03716",
+          "mimeType": "image/png",
+          "bytes": 1989581,
+          "sha256": "2a72b3191232cc60386dc387074cefe066c1816953c88bafe52fb4193ae83c51",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        670014
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "b14ccfa3f787b6c5fc3ca964e68d012e9829302799fe0959a2adcd3d938c0e26",
+          "sha256": "345d6f18b403204cdb5225f23f3f80d9e8811f016e790c7da464a38c363c8227",
+          "bytes": 4708487,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 57.000 Mean: 0.531 RMS: 1.241 PSNR: 46.253 dB"
+          ],
+          "encoderRgbPsnr": 46.253
+        },
+        {
+          "sourceImageSha256": "347a640489da445af14fd36fbb70bcded050a512218e1f8e59a07657470985b9",
+          "sha256": "c56efa9bf5e514f501d6c6ef3d6a13420b6a83142f7a4708ab0a3ba31990951c",
+          "bytes": 2828697,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 11.000 Mean: 0.052 RMS: 0.235 PSNR: 60.705 dB"
+          ],
+          "encoderRgbPsnr": 60.705
+        },
+        {
+          "sourceImageSha256": "2a72b3191232cc60386dc387074cefe066c1816953c88bafe52fb4193ae83c51",
+          "sha256": "09ef8746511bddc1c098c7d89d97a4cd127409b3518ef609c3f3531c05c105d8",
+          "bytes": 2319244,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 53.000 Mean: 0.190 RMS: 0.853 PSNR: 49.508 dB"
+          ],
+          "encoderRgbPsnr": 49.508
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.457061767578125,
+            -0.1123504638671875,
+            -0.4996337890625
+          ],
+          "max": [
+            0.457061767578125,
+            0.112335205078125,
+            0.499603271484375
+          ],
+          "walkY": 0.09024426293374577,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Large.Floor.Panel.glb",
+      "runtime": "large-floor-panel.glb",
+      "sourceSha256": "be3bb81f10f5cfa2ca7471746739d705afee72b056b5be26ac1fde31fc8b08c8",
+      "runtimeSha256": "878984d732cda03e46d7f1df7bc26e2c1e4f822f2bc20135292065243627485f",
+      "sourceBytes": 6273088,
+      "runtimeBytes": 8881468,
+      "sourceVertices": 347184,
+      "sourceTriangles": 662922,
+      "runtimeVertices": 15141,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.000559325038921088,
+      "objectError": 0.000559325038921088,
+      "bounds": {
+        "min": [
+          -0.217987060546875,
+          -0.0718841552734375,
+          -0.5
+        ],
+        "max": [
+          0.217987060546875,
+          0.0718841552734375,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.43597412109375,
+        0.143768310546875,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_223f39c7-6ee5-4efa-b4b4-4adc58ce56c5",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_223f39c7-6ee5-4efa-b4b4-4adc58ce56c5",
+          "mimeType": "image/jpeg",
+          "bytes": 812233,
+          "sha256": "b406d70b0b1ba3460ae5c629b38ee7fbc626f5a66048357d4f9e90551657ba58",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_223f39c7-6ee5-4efa-b4b4-4adc58ce56c5",
+          "mimeType": "image/jpeg",
+          "bytes": 283146,
+          "sha256": "ce9f7f0ccabf3f20ca2d8db2bc416ffa288d816f97b408c4c770c7bbe056382f",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_223f39c7-6ee5-4efa-b4b4-4adc58ce56c5",
+          "mimeType": "image/png",
+          "bytes": 1697637,
+          "sha256": "4ac90bbc47f4fa660a2c450fdad9efd2b134f3d82283f9c62d85fe6a7dfedef8",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        662922
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "b406d70b0b1ba3460ae5c629b38ee7fbc626f5a66048357d4f9e90551657ba58",
+          "sha256": "9a6fc6afc22e76e948c93a1e0c9e380801f2deb17f00ea0ddaa046476842471c",
+          "bytes": 4060760,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 34.000 Mean: 0.343 RMS: 0.917 PSNR: 48.880 dB"
+          ],
+          "encoderRgbPsnr": 48.88
+        },
+        {
+          "sourceImageSha256": "ce9f7f0ccabf3f20ca2d8db2bc416ffa288d816f97b408c4c770c7bbe056382f",
+          "sha256": "0912aa563cfcc62599618446e9ee12d026c961795b01c44512ab5d96b3970b2c",
+          "bytes": 1918154,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 10.000 Mean: 0.027 RMS: 0.169 PSNR: 63.577 dB"
+          ],
+          "encoderRgbPsnr": 63.577
+        },
+        {
+          "sourceImageSha256": "4ac90bbc47f4fa660a2c450fdad9efd2b134f3d82283f9c62d85fe6a7dfedef8",
+          "sha256": "1a486df539dfc29bbf94eda8cdce3b88066157a8dc7212eb21668f7a0e231ffb",
+          "bytes": 2176165,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 56.000 Mean: 0.161 RMS: 0.755 PSNR: 50.577 dB"
+          ],
+          "encoderRgbPsnr": 50.577
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.2178955078125,
+            -0.0716094970703125,
+            -0.499847412109375
+          ],
+          "max": [
+            0.217987060546875,
+            0.0715484619140625,
+            0.49993896484375
+          ],
+          "walkY": 0.0634561244746152,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Main.Floor.Tile.glb",
+      "runtime": "main-floor-tile.glb",
+      "sourceSha256": "e9903db7ab57d1a79a2911f59475ad1de0022372a71a57db7818ed68187795bb",
+      "runtimeSha256": "88d35858f379372b819a69664a1f484d0d948725e1ed1c715b5bf054f5795d41",
+      "sourceBytes": 6185656,
+      "runtimeBytes": 8970120,
+      "sourceVertices": 349167,
+      "sourceTriangles": 659711,
+      "runtimeVertices": 16635,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0008518959512002766,
+      "objectError": 0.0008518959512002766,
+      "bounds": {
+        "min": [
+          -0.5,
+          -0.1244354248046875,
+          -0.49981689453125
+        ],
+        "max": [
+          0.5,
+          0.1244354248046875,
+          0.49981689453125
+        ]
+      },
+      "dimensions": [
+        1,
+        0.248870849609375,
+        0.9996337890625
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_2152a8b8-e6d1-4308-9936-045d500ff12f",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_2152a8b8-e6d1-4308-9936-045d500ff12f",
+          "mimeType": "image/jpeg",
+          "bytes": 833915,
+          "sha256": "c9314f86c62badb4bb4ce19817ecc84f6fe1f124598505a022558a663da7af85",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_2152a8b8-e6d1-4308-9936-045d500ff12f",
+          "mimeType": "image/jpeg",
+          "bytes": 300474,
+          "sha256": "0de646ec9455ea29a2394441b7df40a83e51c99016124026eec81d2cad59226c",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_2152a8b8-e6d1-4308-9936-045d500ff12f",
+          "mimeType": "image/png",
+          "bytes": 1642955,
+          "sha256": "77b0170a49bdd145cce86eb4508cf3ff02ce04ec0a2a7a4a3369e4677cdfc200",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        659711
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "c9314f86c62badb4bb4ce19817ecc84f6fe1f124598505a022558a663da7af85",
+          "sha256": "40c230282a7bd2c8cc1d0e536ff7629d14a1b0b35d9216dbf3bad3c591252412",
+          "bytes": 4104111,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 38.000 Mean: 0.362 RMS: 0.967 PSNR: 48.425 dB"
+          ],
+          "encoderRgbPsnr": 48.425
+        },
+        {
+          "sourceImageSha256": "0de646ec9455ea29a2394441b7df40a83e51c99016124026eec81d2cad59226c",
+          "sha256": "2ed934eb0cb1055151cfcf90c9996d3651f1191caa5fbfc6a03f7d3b712db669",
+          "bytes": 2062489,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 12.000 Mean: 0.030 RMS: 0.177 PSNR: 63.148 dB"
+          ],
+          "encoderRgbPsnr": 63.148
+        },
+        {
+          "sourceImageSha256": "77b0170a49bdd145cce86eb4508cf3ff02ce04ec0a2a7a4a3369e4677cdfc200",
+          "sha256": "f72d62719f5d689ff53415b102e9bdac80565a8fa9e32690d6931483fe18ec4d",
+          "bytes": 2029319,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 67.000 Mean: 0.137 RMS: 0.731 PSNR: 50.853 dB"
+          ],
+          "encoderRgbPsnr": 50.853
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.499725341796875,
+            -0.12438201904296875,
+            -0.49932861328125
+          ],
+          "max": [
+            0.49981689453125,
+            0.12424468994140625,
+            0.499603271484375
+          ],
+          "walkY": 0.11634794972936913,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Narrow.Wide.Bridge.Kit.glb",
+      "runtime": "narrow-wide-bridge-kit.glb",
+      "sourceSha256": "819f5261c8e460675cda6759a0ec6a32f03e4863d35e1250817bcd0764e1ecc0",
+      "runtimeSha256": "01296abc668576911dbeffa73c13f2a0ca92f86323e9f0b66f43829403a86581",
+      "sourceBytes": 7381212,
+      "runtimeBytes": 11009640,
+      "sourceVertices": 352925,
+      "sourceTriangles": 676699,
+      "runtimeVertices": 13394,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0009126428631134331,
+      "objectError": 0.0009126428631134331,
+      "bounds": {
+        "min": [
+          -0.5,
+          -0.06934356689453125,
+          -0.382171630859375
+        ],
+        "max": [
+          0.5,
+          0.06934356689453125,
+          0.382171630859375
+        ]
+      },
+      "dimensions": [
+        1,
+        0.1386871337890625,
+        0.76434326171875
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_9249f6c5-4948-4613-b7ff-4e25598ed3b9",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_9249f6c5-4948-4613-b7ff-4e25598ed3b9",
+          "mimeType": "image/jpeg",
+          "bytes": 1144740,
+          "sha256": "373bae2dc52b516344328bde32fc0e9344ca74fd194fa211d372339d17476806",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_9249f6c5-4948-4613-b7ff-4e25598ed3b9",
+          "mimeType": "image/jpeg",
+          "bytes": 488722,
+          "sha256": "bb2895ff2a0e79c9372fd6b7dfce465066ec5d74fdb242c2f0961e06b6fc7a44",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_9249f6c5-4948-4613-b7ff-4e25598ed3b9",
+          "mimeType": "image/png",
+          "bytes": 1908877,
+          "sha256": "df584542c27368748be2573424ca8a6dae4c8b0f5f125b95e37945956d122314",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 3,
+      "largestComponents": [
+        286506,
+        283509,
+        106684
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "373bae2dc52b516344328bde32fc0e9344ca74fd194fa211d372339d17476806",
+          "sha256": "c929b1dc9a8aa24f528f6c6b24910aeffbb8c76bfc5df3596522cda578c98bac",
+          "bytes": 4807712,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 52.000 Mean: 0.632 RMS: 1.408 PSNR: 45.159 dB"
+          ],
+          "encoderRgbPsnr": 45.159
+        },
+        {
+          "sourceImageSha256": "bb2895ff2a0e79c9372fd6b7dfce465066ec5d74fdb242c2f0961e06b6fc7a44",
+          "sha256": "1f35dd4833cd62c239887f6b14910ef60ae3b19e22b94e9f3fcde41c847a4dc7",
+          "bytes": 3362834,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 11.000 Mean: 0.121 RMS: 0.379 PSNR: 56.552 dB"
+          ],
+          "encoderRgbPsnr": 56.552
+        },
+        {
+          "sourceImageSha256": "df584542c27368748be2573424ca8a6dae4c8b0f5f125b95e37945956d122314",
+          "sha256": "3b84dcd631bd7fcc5f012a778244403cb6d22b221de78fe2b6a7bf6977a27749",
+          "bytes": 2167153,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 47.000 Mean: 0.246 RMS: 1.006 PSNR: 48.078 dB"
+          ],
+          "encoderRgbPsnr": 48.078
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            0.389495849609375,
+            -0.0691375732421875,
+            -0.243194580078125
+          ],
+          "max": [
+            0.499603271484375,
+            0.012099266052246094,
+            0.343963623046875
+          ],
+          "walkY": 0.00813322431705877,
+          "triangles": 3192
+        },
+        {
+          "name": "Part1",
+          "min": [
+            -0.499908447265625,
+            -0.06916046142578125,
+            -0.2489013671875
+          ],
+          "max": [
+            -0.205413818359375,
+            0.06911468505859375,
+            0.382171630859375
+          ],
+          "walkY": 0.018474425374510724,
+          "triangles": 8636
+        },
+        {
+          "name": "Part2",
+          "min": [
+            -0.05455780029296875,
+            -0.06757354736328125,
+            -0.382110595703125
+          ],
+          "max": [
+            0.277069091796875,
+            0.06427001953125,
+            0.323211669921875
+          ],
+          "walkY": 0.01190467320540851,
+          "triangles": 8172
+        }
+      ]
+    },
+    {
+      "name": "Platform.Edge.Trim.Kit.glb",
+      "runtime": "platform-edge-trim-kit.glb",
+      "sourceSha256": "83a76c1b643236de6ca633b0c38cce9958fef2352cc3410bf6049df89dd0bd7c",
+      "runtimeSha256": "59dc29429091bd050bac8c9dcbca283aaf43d13006aefcda42378e89f7cd7ec6",
+      "sourceBytes": 7268736,
+      "runtimeBytes": 10078856,
+      "sourceVertices": 354626,
+      "sourceTriangles": 682736,
+      "runtimeVertices": 13428,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0006905231857672334,
+      "objectError": 0.0006905231857672334,
+      "bounds": {
+        "min": [
+          -0.5,
+          -0.10296630859375,
+          -0.47894287109375
+        ],
+        "max": [
+          0.5,
+          0.10296630859375,
+          0.47894287109375
+        ]
+      },
+      "dimensions": [
+        1,
+        0.2059326171875,
+        0.9578857421875
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_ae7fab79-1e54-46fe-8782-533f431c20c7",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_ae7fab79-1e54-46fe-8782-533f431c20c7",
+          "mimeType": "image/jpeg",
+          "bytes": 955593,
+          "sha256": "484801f04cf61d1796ecb70fb380f30a4950ac9e757696fc7ef4ad66fdd73165",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_ae7fab79-1e54-46fe-8782-533f431c20c7",
+          "mimeType": "image/jpeg",
+          "bytes": 298829,
+          "sha256": "74b8f91ecc576b785d8449243ad8ed6a43b1c849e379c1b09ecc486179ce6ed9",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_ae7fab79-1e54-46fe-8782-533f431c20c7",
+          "mimeType": "image/png",
+          "bytes": 2170261,
+          "sha256": "f67e9f5fb27100fed695d4072a10d1781f5e6d68a70b988a9a38e46b1875554d",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 5,
+      "largestComponents": [
+        210968,
+        184770,
+        125142,
+        112022,
+        49834
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "484801f04cf61d1796ecb70fb380f30a4950ac9e757696fc7ef4ad66fdd73165",
+          "sha256": "b3e1ba06ea31de271c0b1a65ae20bd9a7d55d0eb4e5ae9139130e719f3d53979",
+          "bytes": 4832730,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 36.000 Mean: 0.471 RMS: 1.116 PSNR: 47.180 dB"
+          ],
+          "encoderRgbPsnr": 47.18
+        },
+        {
+          "sourceImageSha256": "74b8f91ecc576b785d8449243ad8ed6a43b1c849e379c1b09ecc486179ce6ed9",
+          "sha256": "4bd22393bbfcca6df854121800ac4125743b1791b16246f35d94694a17aa75d2",
+          "bytes": 2022840,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 9.000 Mean: 0.024 RMS: 0.157 PSNR: 64.217 dB"
+          ],
+          "encoderRgbPsnr": 64.217
+        },
+        {
+          "sourceImageSha256": "f67e9f5fb27100fed695d4072a10d1781f5e6d68a70b988a9a38e46b1875554d",
+          "sha256": "966a8f0b32ddf82ecfd0925e50ac5f4e097dc307595e460c8097fdd27c87da60",
+          "bytes": 2548798,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 81.000 Mean: 0.296 RMS: 1.195 PSNR: 46.587 dB"
+          ],
+          "encoderRgbPsnr": 46.587
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            0.26123046875,
+            -0.0997161865234375,
+            -0.1820068359375
+          ],
+          "max": [
+            0.431396484375,
+            0.026823043823242188,
+            -0.0653228759765625
+          ],
+          "walkY": 0.026546261374583165,
+          "triangles": 1454
+        },
+        {
+          "name": "Part1",
+          "min": [
+            -0.499847412109375,
+            -0.017435073852539062,
+            -0.2285308837890625
+          ],
+          "max": [
+            -0.1314697265625,
+            0.102935791015625,
+            -0.026414871215820312
+          ],
+          "walkY": 0.09460734884795233,
+          "triangles": 3074
+        },
+        {
+          "name": "Part2",
+          "min": [
+            -0.10009765625,
+            -0.1027069091796875,
+            -0.478790283203125
+          ],
+          "max": [
+            0.1678924560546875,
+            0.016407012939453125,
+            0.1370391845703125
+          ],
+          "walkY": 0.014751545051419446,
+          "triangles": 5676
+        },
+        {
+          "name": "Part3",
+          "min": [
+            -0.370452880859375,
+            -0.01750946044921875,
+            0.1321868896484375
+          ],
+          "max": [
+            0.3297119140625,
+            0.10254669189453125,
+            0.478851318359375
+          ],
+          "walkY": 0.1023368644599786,
+          "triangles": 5558
+        },
+        {
+          "name": "Part4",
+          "min": [
+            0.171905517578125,
+            -0.10150146484375,
+            0.11942291259765625
+          ],
+          "max": [
+            0.499786376953125,
+            0.017131805419921875,
+            0.362030029296875
+          ],
+          "walkY": 0.016795125672568068,
+          "triangles": 4238
+        }
+      ]
+    },
+    {
+      "name": "Platform.Underside.Support.Kit.glb",
+      "runtime": "platform-underside-support-kit.glb",
+      "sourceSha256": "330a5c72210c0b7431d2f76ab2268cd09ad5418ce9ce8b262269d0176218da87",
+      "runtimeSha256": "59a1a3e506f6abf42b7ee1d13684ce0522c1833aacb3c69fd78973c32128e70c",
+      "sourceBytes": 7242360,
+      "runtimeBytes": 12321880,
+      "sourceVertices": 362205,
+      "sourceTriangles": 685034,
+      "runtimeVertices": 15158,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0010837778681889176,
+      "objectError": 0.0010837778681889176,
+      "bounds": {
+        "min": [
+          -0.3494873046875,
+          -0.31378173828125,
+          -0.5
+        ],
+        "max": [
+          0.3494873046875,
+          0.31378173828125,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.698974609375,
+        0.6275634765625,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_d4e8bc0e-581f-4034-a656-0eaecdf9d4cd",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_d4e8bc0e-581f-4034-a656-0eaecdf9d4cd",
+          "mimeType": "image/jpeg",
+          "bytes": 1080395,
+          "sha256": "624c818be56cfb821118e2b6b2025771408a9a57e8db05101dbb5f0ad3894ca1",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_d4e8bc0e-581f-4034-a656-0eaecdf9d4cd",
+          "mimeType": "image/jpeg",
+          "bytes": 707305,
+          "sha256": "82a7f8e2d7ddae0fd1eba34dfb5ed9e8fc354f160763a4f6fc33718365f0fd37",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_d4e8bc0e-581f-4034-a656-0eaecdf9d4cd",
+          "mimeType": "image/png",
+          "bytes": 1602353,
+          "sha256": "e4b85a2e4d8ef581cda2ef4ec8ff763984a59ec7cab46f4121b5b41c3204453b",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 4,
+      "largestComponents": [
+        309128,
+        150438,
+        127206,
+        98262
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "624c818be56cfb821118e2b6b2025771408a9a57e8db05101dbb5f0ad3894ca1",
+          "sha256": "d7a9bc82d4a766eda9926c27cc473bfdb09ae1ae195fe9ff74ece988a8229e91",
+          "bytes": 5052873,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 48.000 Mean: 0.553 RMS: 1.215 PSNR: 46.440 dB"
+          ],
+          "encoderRgbPsnr": 46.44
+        },
+        {
+          "sourceImageSha256": "82a7f8e2d7ddae0fd1eba34dfb5ed9e8fc354f160763a4f6fc33718365f0fd37",
+          "sha256": "c238e7270b480e42bc3595e1ee7c94adc354971b2cd331f1a571e7fd08d33c7e",
+          "bytes": 4527794,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 17.000 Mean: 0.252 RMS: 0.591 PSNR: 52.697 dB"
+          ],
+          "encoderRgbPsnr": 52.697
+        },
+        {
+          "sourceImageSha256": "e4b85a2e4d8ef581cda2ef4ec8ff763984a59ec7cab46f4121b5b41c3204453b",
+          "sha256": "4c1383a2290569ac23936703c615d86af7e6e5db09a2ae513c9a5eebfe7a4934",
+          "bytes": 2012087,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 48.000 Mean: 0.120 RMS: 0.639 PSNR: 52.026 dB"
+          ],
+          "encoderRgbPsnr": 52.026
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.318511962890625,
+            -0.310516357421875,
+            -0.472747802734375
+          ],
+          "max": [
+            -0.08022308349609375,
+            -0.038600921630859375,
+            -0.12253570556640625
+          ],
+          "walkY": -0.039955921541196544,
+          "triangles": 3072
+        },
+        {
+          "name": "Part1",
+          "min": [
+            -0.3489990234375,
+            0.06388092041015625,
+            -0.49993896484375
+          ],
+          "max": [
+            0.011610984802246094,
+            0.2923583984375,
+            -0.1423187255859375
+          ],
+          "walkY": 0.2649884995094873,
+          "triangles": 4416
+        },
+        {
+          "name": "Part2",
+          "min": [
+            -0.11263275146484375,
+            -0.3134765625,
+            -0.07103729248046875
+          ],
+          "max": [
+            0.175262451171875,
+            -0.004319190979003906,
+            0.431732177734375
+          ],
+          "walkY": -0.008508758376841032,
+          "triangles": 3894
+        },
+        {
+          "name": "Part3",
+          "min": [
+            -0.248809814453125,
+            0.066070556640625,
+            -0.1123199462890625
+          ],
+          "max": [
+            0.34869384765625,
+            0.31353759765625,
+            0.499786376953125
+          ],
+          "walkY": 0.28620529382408666,
+          "triangles": 8618
+        }
+      ]
+    },
+    {
+      "name": "Rotating.Carousel.glb",
+      "runtime": "rotating-carousel.glb",
+      "sourceSha256": "29377b39e377d1c1d2fa8c8d08b1f61c003df094524479598a050d13de71e027",
+      "runtimeSha256": "31e9091805130eb1a679363bfeb49e3715a68531f8e80fe2d7bf444cbc7a86bc",
+      "sourceBytes": 6933528,
+      "runtimeBytes": 9622552,
+      "sourceVertices": 354600,
+      "sourceTriangles": 677462,
+      "runtimeVertices": 14581,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0010066154645755887,
+      "objectError": 0.0010066154645755887,
+      "bounds": {
+        "min": [
+          -0.498016357421875,
+          -0.2489166259765625,
+          -0.5
+        ],
+        "max": [
+          0.498016357421875,
+          0.2489166259765625,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.99603271484375,
+        0.497833251953125,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_ca9afe0b-5db5-401e-8ddf-a5dff38758db",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_ca9afe0b-5db5-401e-8ddf-a5dff38758db",
+          "mimeType": "image/jpeg",
+          "bytes": 930635,
+          "sha256": "848fe2fba637da75707854bfda64b4d8948d2fa7564b362cf09de559cd3f1721",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_ca9afe0b-5db5-401e-8ddf-a5dff38758db",
+          "mimeType": "image/jpeg",
+          "bytes": 324118,
+          "sha256": "7740a6efa26d6b8823ad50ab9d7955fa5d1330b83801293013c56782c442adce",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_ca9afe0b-5db5-401e-8ddf-a5dff38758db",
+          "mimeType": "image/png",
+          "bytes": 1952737,
+          "sha256": "82739637eab760cc77227e24c60565a9ad8e047affd7e6f9ae2a977867f4c8e5",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        677462
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "848fe2fba637da75707854bfda64b4d8948d2fa7564b362cf09de559cd3f1721",
+          "sha256": "79c43051a6b34a5693c44098c925b492de622f67776551dc72cd722f9ae0e9c8",
+          "bytes": 4540931,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 42.000 Mean: 0.489 RMS: 1.205 PSNR: 46.514 dB"
+          ],
+          "encoderRgbPsnr": 46.514
+        },
+        {
+          "sourceImageSha256": "7740a6efa26d6b8823ad50ab9d7955fa5d1330b83801293013c56782c442adce",
+          "sha256": "2d2a1d1e7c1e78075df57c5938a76533d981d6cc86d05ce47c3f35b461b7288f",
+          "bytes": 2143231,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 14.000 Mean: 0.041 RMS: 0.229 PSNR: 60.941 dB"
+          ],
+          "encoderRgbPsnr": 60.941
+        },
+        {
+          "sourceImageSha256": "82739637eab760cc77227e24c60565a9ad8e047affd7e6f9ae2a977867f4c8e5",
+          "sha256": "664aba74dd42ccaa5d17a0073d2356696ed8aa2d9979a8edfd4d5ec9945009aa",
+          "bytes": 2227031,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 55.000 Mean: 0.183 RMS: 0.845 PSNR: 49.596 dB"
+          ],
+          "encoderRgbPsnr": 49.596
+        }
+      ],
+      "parts": [
+        {
+          "name": "Moving",
+          "min": [
+            -0.49774169921875,
+            0.021327972412109375,
+            -0.499908447265625
+          ],
+          "max": [
+            0.497802734375,
+            0.2487945556640625,
+            0.5
+          ],
+          "walkY": 0.18805143554751572,
+          "triangles": 15797
+        },
+        {
+          "name": "Stationary",
+          "min": [
+            -0.2149658203125,
+            -0.2489166259765625,
+            -0.2147064208984375
+          ],
+          "max": [
+            0.2149658203125,
+            0.06551361083984375,
+            0.21441650390625
+          ],
+          "walkY": -0.1334994791886045,
+          "triangles": 4203
+        }
+      ]
+    },
+    {
+      "name": "Safety.Barrier.Kit.glb",
+      "runtime": "safety-barrier-kit.glb",
+      "sourceSha256": "9784549e184cc317871a004f89c814ea7d5e6d144c91027bad0210c041741f86",
+      "runtimeSha256": "440c9d5eaf3cbfa173dffe730763290e60403ad916573be0655f114d712faf8e",
+      "sourceBytes": 6592652,
+      "runtimeBytes": 9826820,
+      "sourceVertices": 358648,
+      "sourceTriangles": 691012,
+      "runtimeVertices": 13328,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.00065339490538463,
+      "objectError": 0.00065339490538463,
+      "bounds": {
+        "min": [
+          -0.403350830078125,
+          -0.08881378173828125,
+          -0.5
+        ],
+        "max": [
+          0.403350830078125,
+          0.08881378173828125,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.80670166015625,
+        0.1776275634765625,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_666c55f9-6156-4e15-bd2f-27a579f1e104",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_666c55f9-6156-4e15-bd2f-27a579f1e104",
+          "mimeType": "image/jpeg",
+          "bytes": 806760,
+          "sha256": "7a269b2a19ece128250e455167b376127660879eac6db9f8dd0295801e0a6cc0",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_666c55f9-6156-4e15-bd2f-27a579f1e104",
+          "mimeType": "image/jpeg",
+          "bytes": 333095,
+          "sha256": "96eda46bc74842d06639b06b60cf0fc02e5392c6d72fa0b7d22ce6ca5a7ef9ef",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_666c55f9-6156-4e15-bd2f-27a579f1e104",
+          "mimeType": "image/png",
+          "bytes": 1662148,
+          "sha256": "e6444f468aeceeb1326832b5827402d10fb5fb3045133fb015fa736b9ff068ae",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 4,
+      "largestComponents": [
+        220252,
+        209372,
+        173218,
+        88170
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "7a269b2a19ece128250e455167b376127660879eac6db9f8dd0295801e0a6cc0",
+          "sha256": "78f9edba4e7ece97acef433d7c4a4dffd771bd36dd8754bbd7f115c04c272419",
+          "bytes": 4657893,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 49.000 Mean: 0.388 RMS: 1.035 PSNR: 47.829 dB"
+          ],
+          "encoderRgbPsnr": 47.829
+        },
+        {
+          "sourceImageSha256": "96eda46bc74842d06639b06b60cf0fc02e5392c6d72fa0b7d22ce6ca5a7ef9ef",
+          "sha256": "10efd4740c75244a6e20fc8c69195b1f1c3272f897c811304f133fe8b1711753",
+          "bytes": 2334533,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 10.000 Mean: 0.033 RMS: 0.190 PSNR: 62.541 dB"
+          ],
+          "encoderRgbPsnr": 62.541
+        },
+        {
+          "sourceImageSha256": "e6444f468aeceeb1326832b5827402d10fb5fb3045133fb015fa736b9ff068ae",
+          "sha256": "b31671528ef8e7876279a5582aa8defbf5bb4841f7d119721ff3319097795c30",
+          "bytes": 2163838,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 90.000 Mean: 0.163 RMS: 0.815 PSNR: 49.907 dB"
+          ],
+          "encoderRgbPsnr": 49.907
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            0.168701171875,
+            -0.08403778076171875,
+            -0.358123779296875
+          ],
+          "max": [
+            0.40313720703125,
+            0.0785064697265625,
+            0.21160888671875
+          ],
+          "walkY": 0.06287787045507473,
+          "triangles": 6434
+        },
+        {
+          "name": "Part1",
+          "min": [
+            -0.339324951171875,
+            -0.0840606689453125,
+            -0.49981689453125
+          ],
+          "max": [
+            -0.05478668212890625,
+            0.0785369873046875,
+            -0.1210174560546875
+          ],
+          "walkY": 0.07148169536234773,
+          "triangles": 4820
+        },
+        {
+          "name": "Part2",
+          "min": [
+            0.164154052734375,
+            -0.08835601806640625,
+            0.2720947265625
+          ],
+          "max": [
+            0.325836181640625,
+            0.07958984375,
+            0.496856689453125
+          ],
+          "walkY": 0.06662603208875247,
+          "triangles": 2606
+        },
+        {
+          "name": "Part3",
+          "min": [
+            -0.40301513671875,
+            -0.08049774169921875,
+            -0.1061859130859375
+          ],
+          "max": [
+            -0.102142333984375,
+            0.08881378173828125,
+            0.4998779296875
+          ],
+          "walkY": 0.06631564175475954,
+          "triangles": 6140
+        }
+      ]
+    },
+    {
+      "name": "Sliding.Bumper.glb",
+      "runtime": "sliding-bumper.glb",
+      "sourceSha256": "f5a291358b831f13407b8c50fe340780ec19cf5f8a32a90f129d9daed81cc247",
+      "runtimeSha256": "be7cbbe5d7f2f72a54d9611dcdab0e97b3117f13cd00f5987d9277bf0b33b272",
+      "sourceBytes": 6469996,
+      "runtimeBytes": 11020268,
+      "sourceVertices": 353944,
+      "sourceTriangles": 680882,
+      "runtimeVertices": 13993,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0005779778002761304,
+      "objectError": 0.0005779778002761304,
+      "bounds": {
+        "min": [
+          -0.1656646728515625,
+          -0.18402099609375,
+          -0.5
+        ],
+        "max": [
+          0.1656646728515625,
+          0.18402099609375,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.331329345703125,
+        0.3680419921875,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_1d65fd74-208f-4dd9-b083-13fb95df6aed",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_1d65fd74-208f-4dd9-b083-13fb95df6aed",
+          "mimeType": "image/jpeg",
+          "bytes": 799875,
+          "sha256": "75bff973201bf27694c6b4e77a631764d5ea1ed6e6ce9f3b0321e7fecb8cdd54",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_1d65fd74-208f-4dd9-b083-13fb95df6aed",
+          "mimeType": "image/jpeg",
+          "bytes": 500680,
+          "sha256": "df7e6121de34342c96e79fce1a91a3e62ec59b40551ea0b5e1d4717cd8efc191",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_1d65fd74-208f-4dd9-b083-13fb95df6aed",
+          "mimeType": "image/png",
+          "bytes": 1490057,
+          "sha256": "0a651e65d6f1ff73539c016dd9b76a1297e8fc4119873351f1ebb02cab7522a7",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        680882
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "75bff973201bf27694c6b4e77a631764d5ea1ed6e6ce9f3b0321e7fecb8cdd54",
+          "sha256": "26d5ae9afb2be6fa6868d07c6168a27643ffd13f02b245ea987c9fc7d399f1ad",
+          "bytes": 4682631,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 34.000 Mean: 0.342 RMS: 0.935 PSNR: 48.710 dB"
+          ],
+          "encoderRgbPsnr": 48.71
+        },
+        {
+          "sourceImageSha256": "df7e6121de34342c96e79fce1a91a3e62ec59b40551ea0b5e1d4717cd8efc191",
+          "sha256": "b9c7c47e78c66dfdccbd0d84446efc39ed5b4306628bbfed2ea486d3443a3b54",
+          "bytes": 3525380,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 28.000 Mean: 0.127 RMS: 0.428 PSNR: 55.503 dB"
+          ],
+          "encoderRgbPsnr": 55.503
+        },
+        {
+          "sourceImageSha256": "0a651e65d6f1ff73539c016dd9b76a1297e8fc4119873351f1ebb02cab7522a7",
+          "sha256": "3371c54f31dcfaf1442372f35cbc33c9f7caddc0cd94f5d1644f5b4f46e50b58",
+          "bytes": 2122608,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 38.000 Mean: 0.092 RMS: 0.492 PSNR: 54.288 dB"
+          ],
+          "encoderRgbPsnr": 54.288
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.1654052734375,
+            -0.1837005615234375,
+            -0.499969482421875
+          ],
+          "max": [
+            0.1656341552734375,
+            0.1838836669921875,
+            0.4998779296875
+          ],
+          "walkY": 0.13495112125769393,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Slope.Ramp.Surface.glb",
+      "runtime": "slope-ramp-surface.glb",
+      "sourceSha256": "13bcb53e268479a25bcd052701aa17f3ad11c2efe4938c253845c0b1d0c9036d",
+      "runtimeSha256": "a787dab038e10b7382949efb9db852f0fbf7e2d45138f99c0a80d6284e0c43e3",
+      "sourceBytes": 6253272,
+      "runtimeBytes": 8724080,
+      "sourceVertices": 332995,
+      "sourceTriangles": 636860,
+      "runtimeVertices": 15010,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0005593948881141841,
+      "objectError": 0.0005593948881141841,
+      "bounds": {
+        "min": [
+          -0.21221923828125,
+          -0.1297149658203125,
+          -0.5
+        ],
+        "max": [
+          0.21221923828125,
+          0.1297149658203125,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.4244384765625,
+        0.259429931640625,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_d0a136aa-1555-4a06-9cf0-ea464c54cb71",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_d0a136aa-1555-4a06-9cf0-ea464c54cb71",
+          "mimeType": "image/jpeg",
+          "bytes": 853290,
+          "sha256": "7ee2870fd0d0e1798665eaa252df17d276e4a57581edb577d51748be9e1f1638",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_d0a136aa-1555-4a06-9cf0-ea464c54cb71",
+          "mimeType": "image/jpeg",
+          "bytes": 266410,
+          "sha256": "69bb8244d069adb9eb20a8569424624ce7a48984c89663952f0fff971811d897",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_d0a136aa-1555-4a06-9cf0-ea464c54cb71",
+          "mimeType": "image/png",
+          "bytes": 1756190,
+          "sha256": "1a6cd9f7827b7dd54d8066ce69c55f0388cab7f7c4578df1a448704635ea29fb",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        636860
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "7ee2870fd0d0e1798665eaa252df17d276e4a57581edb577d51748be9e1f1638",
+          "sha256": "7cd6231a9a30f83e349f5e46cae14204986fd138b29bd3ef1f6310c9cc54b8e2",
+          "bytes": 4101436,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 39.000 Mean: 0.378 RMS: 0.992 PSNR: 48.198 dB"
+          ],
+          "encoderRgbPsnr": 48.198
+        },
+        {
+          "sourceImageSha256": "69bb8244d069adb9eb20a8569424624ce7a48984c89663952f0fff971811d897",
+          "sha256": "2726ed759184cc6dcc88f34f17594c03b1e51661c475d66f1c2b7f701140a110",
+          "bytes": 1753725,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 9.000 Mean: 0.021 RMS: 0.149 PSNR: 64.694 dB"
+          ],
+          "encoderRgbPsnr": 64.694
+        },
+        {
+          "sourceImageSha256": "1a6cd9f7827b7dd54d8066ce69c55f0388cab7f7c4578df1a448704635ea29fb",
+          "sha256": "f1b73f6e17985a15e00aeb42334ff5f1762dd85343868e04c81baea6c1e6a076",
+          "bytes": 2146717,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 63.000 Mean: 0.185 RMS: 0.867 PSNR: 49.372 dB"
+          ],
+          "encoderRgbPsnr": 49.372
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.2120819091796875,
+            -0.1296844482421875,
+            -0.499969482421875
+          ],
+          "max": [
+            0.21209716796875,
+            0.1295623779296875,
+            0.499969482421875
+          ],
+          "walkY": 0.03355763995260402,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Space.Decoration.Kit.glb",
+      "runtime": "space-decoration-kit.glb",
+      "sourceSha256": "f1a39200e8884cb224d703e2b0fd5ba188fb97977a1befb8ca52602bbf2934f8",
+      "runtimeSha256": "3fd08fb5b05c192e92699a1d1acd30d6c4cb08c27b3268b9c875d2847900988c",
+      "sourceBytes": 6219392,
+      "runtimeBytes": 9827596,
+      "sourceVertices": 333943,
+      "sourceTriangles": 641882,
+      "runtimeVertices": 13236,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0008630991214886308,
+      "objectError": 0.0008630991214886308,
+      "bounds": {
+        "min": [
+          -0.169647216796875,
+          -0.310821533203125,
+          -0.5
+        ],
+        "max": [
+          0.169647216796875,
+          0.310821533203125,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.33929443359375,
+        0.62164306640625,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_c7388f17-1e61-49fb-b8f1-34fe658d06c1",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_c7388f17-1e61-49fb-b8f1-34fe658d06c1",
+          "mimeType": "image/jpeg",
+          "bytes": 846163,
+          "sha256": "9d87c7a45856aaae1866f32dff3df0ad8e08c16fb2e6e870351dd111f3b33c32",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_c7388f17-1e61-49fb-b8f1-34fe658d06c1",
+          "mimeType": "image/jpeg",
+          "bytes": 338824,
+          "sha256": "cbaf6cce4f0af94378975d2ace1e305fd2bcb367864d949dafa1c48a53a01087",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_c7388f17-1e61-49fb-b8f1-34fe658d06c1",
+          "mimeType": "image/png",
+          "bytes": 1380335,
+          "sha256": "45a4aa0e295f55b9df9b6376537c0c91c141f41911b497cbada8df464bee127b",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 7,
+      "largestComponents": [
+        138244,
+        109370,
+        95984,
+        94430,
+        83270,
+        63406,
+        57178
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "9d87c7a45856aaae1866f32dff3df0ad8e08c16fb2e6e870351dd111f3b33c32",
+          "sha256": "16e6dca0082cc8542eaee9b8f42726883ed7bd1bd2bc30ab26db2853984c8711",
+          "bytes": 4924839,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 38.000 Mean: 0.399 RMS: 1.006 PSNR: 48.075 dB"
+          ],
+          "encoderRgbPsnr": 48.075
+        },
+        {
+          "sourceImageSha256": "cbaf6cce4f0af94378975d2ace1e305fd2bcb367864d949dafa1c48a53a01087",
+          "sha256": "9364b70871ab8d3e734c887ec7d6a772fb96f2f1d8bb30ad8f1065954bcac57e",
+          "bytes": 2358607,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 16.000 Mean: 0.038 RMS: 0.208 PSNR: 61.765 dB"
+          ],
+          "encoderRgbPsnr": 61.765
+        },
+        {
+          "sourceImageSha256": "45a4aa0e295f55b9df9b6376537c0c91c141f41911b497cbada8df464bee127b",
+          "sha256": "d271d6fa77fd2a806a1f05ead7a98de1f14def2af408561ddfad051b33d1bceb",
+          "bytes": 1874350,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 30.000 Mean: 0.072 RMS: 0.393 PSNR: 56.232 dB"
+          ],
+          "encoderRgbPsnr": 56.232
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.08145904541015625,
+            -0.310638427734375,
+            -0.4796142578125
+          ],
+          "max": [
+            0.147186279296875,
+            0.016191482543945312,
+            -0.2410125732421875
+          ],
+          "walkY": -0.02681263159975198,
+          "triangles": 3232
+        },
+        {
+          "name": "Part1",
+          "min": [
+            -0.0186004638671875,
+            0.04575347900390625,
+            -0.499847412109375
+          ],
+          "max": [
+            0.09058380126953125,
+            0.310821533203125,
+            -0.2305908203125
+          ],
+          "walkY": 0.24073751232198376,
+          "triangles": 1522
+        },
+        {
+          "name": "Part2",
+          "min": [
+            -0.11603546142578125,
+            0.06789398193359375,
+            0.21142578125
+          ],
+          "max": [
+            0.115875244140625,
+            0.290618896484375,
+            0.434814453125
+          ],
+          "walkY": 0.26549964612562327,
+          "triangles": 2822
+        },
+        {
+          "name": "Part3",
+          "min": [
+            -0.16949462890625,
+            0.11617279052734375,
+            0.1572418212890625
+          ],
+          "max": [
+            0.1693267822265625,
+            0.25018310546875,
+            0.49371337890625
+          ],
+          "walkY": 0.25018310546875,
+          "triangles": 1502
+        },
+        {
+          "name": "Part4",
+          "min": [
+            -0.169342041015625,
+            -0.253082275390625,
+            0.1661529541015625
+          ],
+          "max": [
+            0.1694793701171875,
+            -0.04312896728515625,
+            0.499755859375
+          ],
+          "walkY": -0.04619686697575631,
+          "triangles": 4178
+        },
+        {
+          "name": "Part5",
+          "min": [
+            -0.1392974853515625,
+            0.0666351318359375,
+            -0.20037841796875
+          ],
+          "max": [
+            0.1375885009765625,
+            0.293609619140625,
+            0.14373779296875
+          ],
+          "walkY": 0.2422542478521454,
+          "triangles": 2976
+        },
+        {
+          "name": "Part6",
+          "min": [
+            -0.070831298828125,
+            -0.262664794921875,
+            -0.244384765625
+          ],
+          "max": [
+            0.09804534912109375,
+            0.013994216918945312,
+            0.1725311279296875
+          ],
+          "walkY": -0.07707401321512983,
+          "triangles": 3768
+        }
+      ]
+    },
+    {
+      "name": "Star.Finish.Gate.glb",
+      "runtime": "star-finish-gate.glb",
+      "sourceSha256": "59389567e772aa7d88fc33a3c93db36dd99c9d016370ada590d35f2ceddcfc15",
+      "runtimeSha256": "8c54f31eda8a7aab3fc16f3ff603725dee5114126f57f021dda0723259a9343c",
+      "sourceBytes": 6641684,
+      "runtimeBytes": 9732152,
+      "sourceVertices": 340853,
+      "sourceTriangles": 655582,
+      "runtimeVertices": 13893,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0006220199866220355,
+      "objectError": 0.0006220199866220355,
+      "bounds": {
+        "min": [
+          -0.172821044921875,
+          -0.2436981201171875,
+          -0.5
+        ],
+        "max": [
+          0.172821044921875,
+          0.2436981201171875,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.34564208984375,
+        0.487396240234375,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_c127aa7b-f620-471f-a96c-2a15ef6cc42f",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_c127aa7b-f620-471f-a96c-2a15ef6cc42f",
+          "mimeType": "image/jpeg",
+          "bytes": 988289,
+          "sha256": "47aab8652ce7eadb3301d2e8cbe78de0d5e26ccef13d038589d940d8932cce80",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_c127aa7b-f620-471f-a96c-2a15ef6cc42f",
+          "mimeType": "image/jpeg",
+          "bytes": 290757,
+          "sha256": "e771ba3f556d0b283164f538aa7256d1e2337c4e131a816e416def25ed6127ae",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_c127aa7b-f620-471f-a96c-2a15ef6cc42f",
+          "mimeType": "image/png",
+          "bytes": 1763760,
+          "sha256": "4fbd64f5389f07eda6792868c159497486478d1a95b417f4d107a528ab284014",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        655582
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "47aab8652ce7eadb3301d2e8cbe78de0d5e26ccef13d038589d940d8932cce80",
+          "sha256": "afaed2c232e968c10f52fe7f5cd618ba5937e6fc4b3a5c136215824d157b9cfc",
+          "bytes": 4863535,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 43.000 Mean: 0.534 RMS: 1.239 PSNR: 46.268 dB"
+          ],
+          "encoderRgbPsnr": 46.268
+        },
+        {
+          "sourceImageSha256": "e771ba3f556d0b283164f538aa7256d1e2337c4e131a816e416def25ed6127ae",
+          "sha256": "f59bdbf59e6da8198741659ab20dbd9869e29a9d70f534bb4901ca3fb6cb2c07",
+          "bytes": 1989844,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 10.000 Mean: 0.025 RMS: 0.159 PSNR: 64.092 dB"
+          ],
+          "encoderRgbPsnr": 64.092
+        },
+        {
+          "sourceImageSha256": "4fbd64f5389f07eda6792868c159497486478d1a95b417f4d107a528ab284014",
+          "sha256": "5ead52730a376ffd373c4f9ed8add723a5c4107b8c0cb9c54b2ea2d4d617edc5",
+          "bytes": 2192325,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 78.000 Mean: 0.155 RMS: 0.672 PSNR: 51.587 dB"
+          ],
+          "encoderRgbPsnr": 51.587
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.17236328125,
+            -0.2436370849609375,
+            -0.49993896484375
+          ],
+          "max": [
+            0.172454833984375,
+            0.243316650390625,
+            0.499969482421875
+          ],
+          "walkY": 0.17737906988539948,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Turbo.Conveyor.glb",
+      "runtime": "turbo-conveyor.glb",
+      "sourceSha256": "ffda8e2a6ce9537f6a85a421fe0df15322da914e9d3f9a598c0382039851fe92",
+      "runtimeSha256": "9d58ee7210cc65c2798f0dba772b120eec35f73a667e968e2efd19c56c9d6736",
+      "sourceBytes": 7324368,
+      "runtimeBytes": 12346280,
+      "sourceVertices": 344877,
+      "sourceTriangles": 653587,
+      "runtimeVertices": 15153,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0007117587956599891,
+      "objectError": 0.0007117587956599891,
+      "bounds": {
+        "min": [
+          -0.22381591796875,
+          -0.100830078125,
+          -0.5
+        ],
+        "max": [
+          0.22381591796875,
+          0.100830078125,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.4476318359375,
+        0.20166015625,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_c93a69f4-751e-460f-b8a5-20486789f72e",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_c93a69f4-751e-460f-b8a5-20486789f72e",
+          "mimeType": "image/jpeg",
+          "bytes": 1000651,
+          "sha256": "e1dab0b9c3660e8876d62d15067055c82d29889bfd67c7bd93934260ee71536f",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_c93a69f4-751e-460f-b8a5-20486789f72e",
+          "mimeType": "image/jpeg",
+          "bytes": 758277,
+          "sha256": "3cdc0baec84f1cf7117c0b73aa97f223657da7abf15cb451da3fa5d690d77927",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_c93a69f4-751e-460f-b8a5-20486789f72e",
+          "mimeType": "image/png",
+          "bytes": 1938029,
+          "sha256": "653864086ec6160e037d631cace6635b65b4d5c002197ab3d35b87832c92e59b",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        653587
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "e1dab0b9c3660e8876d62d15067055c82d29889bfd67c7bd93934260ee71536f",
+          "sha256": "0947c728e6d663e6cf36abafe30398c63e8ccd3a943e4464d9ac6f4da9d677f4",
+          "bytes": 4915230,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 44.000 Mean: 0.518 RMS: 1.217 PSNR: 46.424 dB"
+          ],
+          "encoderRgbPsnr": 46.424
+        },
+        {
+          "sourceImageSha256": "3cdc0baec84f1cf7117c0b73aa97f223657da7abf15cb451da3fa5d690d77927",
+          "sha256": "786fa8d8672b2d4bb3cb19d32c5d9f4fe213d9ab7ef3b10cacd9471859e83419",
+          "bytes": 4403162,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 27.000 Mean: 0.276 RMS: 0.708 PSNR: 51.128 dB"
+          ],
+          "encoderRgbPsnr": 51.128
+        },
+        {
+          "sourceImageSha256": "653864086ec6160e037d631cace6635b65b4d5c002197ab3d35b87832c92e59b",
+          "sha256": "7c7d76c79929358bd21e44369f1d13ac38dc5e856444315987994cd22fb0363e",
+          "bytes": 2301106,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 55.000 Mean: 0.183 RMS: 0.783 PSNR: 50.261 dB"
+          ],
+          "encoderRgbPsnr": 50.261
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.22381591796875,
+            -0.10079193115234375,
+            -0.499786376953125
+          ],
+          "max": [
+            0.2237091064453125,
+            0.1006927490234375,
+            0.499786376953125
+          ],
+          "walkY": 0.07354271513597506,
+          "triangles": 20000
+        }
+      ]
+    },
+    {
+      "name": "Wide.Floating.Island.glb",
+      "runtime": "wide-floating-island.glb",
+      "sourceSha256": "479b66d6519c18090bb563cd12562a5871ad40772c98ad547968fb7cc4dfc3b6",
+      "runtimeSha256": "b9e7d41424c7a4c419fa8987a61785b973f4a3a18b8805b3590e310752d1582c",
+      "sourceBytes": 6289324,
+      "runtimeBytes": 9456216,
+      "sourceVertices": 314843,
+      "sourceTriangles": 597520,
+      "runtimeVertices": 15204,
+      "runtimeTriangles": 20000,
+      "relativeError": 0.0007910060812719166,
+      "objectError": 0.0007910060812719166,
+      "bounds": {
+        "min": [
+          -0.338348388671875,
+          -0.1438446044921875,
+          -0.5
+        ],
+        "max": [
+          0.338348388671875,
+          0.1438446044921875,
+          0.5
+        ]
+      },
+      "dimensions": [
+        0.67669677734375,
+        0.287689208984375,
+        1
+      ],
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "nodes": [
+        {
+          "name": "tripo_node_f03d0755-7170-49ce-8275-4411cbf380a5",
+          "mesh": 0
+        }
+      ],
+      "meshes": 1,
+      "primitives": 1,
+      "materials": 1,
+      "images": [
+        {
+          "name": "Color_f03d0755-7170-49ce-8275-4411cbf380a5",
+          "mimeType": "image/jpeg",
+          "bytes": 841062,
+          "sha256": "04a41b61c55655c945b3677e5ce818db739c40f8e2a7e55fe1341070710d2299",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "ORM_f03d0755-7170-49ce-8275-4411cbf380a5",
+          "mimeType": "image/jpeg",
+          "bytes": 296945,
+          "sha256": "9b42b3d714ec7b14aa321b42b56dd21611975208f5558ba83ff7dbbbd2a2bf5a",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "name": "NormalGL_f03d0755-7170-49ce-8275-4411cbf380a5",
+          "mimeType": "image/png",
+          "bytes": 1855450,
+          "sha256": "60aee8a7110bc66287a28b2e3fb951a6641ef418508e70768546678e1cd9e20d",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "components": 1,
+      "largestComponents": [
+        597520
+      ],
+      "sourceExtensions": [
+        "KHR_mesh_quantization",
+        "EXT_meshopt_compression"
+      ],
+      "runtimeImages": [
+        {
+          "sourceImageSha256": "04a41b61c55655c945b3677e5ce818db739c40f8e2a7e55fe1341070710d2299",
+          "sha256": "203b4d4bdae5b0f6feec0570c25ba1f4239b6245d8ae68c2e1044ec9470b5ca5",
+          "bytes": 4405453,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "sRGB",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 29.000 Mean: 0.365 RMS: 0.910 PSNR: 48.955 dB"
+          ],
+          "encoderRgbPsnr": 48.955
+        },
+        {
+          "sourceImageSha256": "9b42b3d714ec7b14aa321b42b56dd21611975208f5558ba83ff7dbbbd2a2bf5a",
+          "sha256": "d9282996532fecc847a76feb66b0e649406b72dad0248134a004c74244231b87",
+          "bytes": 1969562,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 15.000 Mean: 0.026 RMS: 0.165 PSNR: 63.787 dB"
+          ],
+          "encoderRgbPsnr": 63.787
+        },
+        {
+          "sourceImageSha256": "60aee8a7110bc66287a28b2e3fb951a6641ef418508e70768546678e1cd9e20d",
+          "sha256": "429e5b10499d9453fa1a22b0bce8bb83d9ad2fa47cc2fd16e08fed31c5790a7e",
+          "bytes": 2352807,
+          "width": 2048,
+          "height": 2048,
+          "levels": 12,
+          "transfer": "linear",
+          "qualityMetrics": [
+            "RGB Avg:          Max: 41.000 Mean: 0.120 RMS: 0.560 PSNR: 53.173 dB"
+          ],
+          "encoderRgbPsnr": 53.173
+        }
+      ],
+      "parts": [
+        {
+          "name": "Part0",
+          "min": [
+            -0.337860107421875,
+            -0.1433868408203125,
+            -0.5
+          ],
+          "max": [
+            0.338165283203125,
+            0.143707275390625,
+            0.499725341796875
+          ],
+          "walkY": 0.13618926835551104,
+          "triangles": 20000
+        }
+      ]
+    }
+  ],
+  "texturePreparation": {
+    "encoder": "BinomialLLC/basis_universal v2_50 @ 9bebe16726b3a61c8c213eeee3b7cffb462ef34e",
+    "mode": "UASTC LDR 4x4, effort 2, no RDO, full-resolution mip chains; base sRGB, data maps linear",
+    "command": "COSMIC_BASISU=/path/to/basisu node tools/cosmic-assets/compress.mjs",
+    "physicalDeviceValidated": false
+  },
+  "splitting": "Disconnected surface components split without triangle deletion. Hammer seam y=-0.095 and carousel seam y=0.045 partition existing faces at the hidden hub/shaft junction; base stays fixed, upper piece rotates. UVs/materials/textures retained. Sliding Bumper is a fused assembly and translates as a whole; no destructive head/housing cut."
+}

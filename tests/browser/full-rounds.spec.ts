@@ -1,3 +1,4 @@
+import { advancePark, capturePark, waitParkAssets } from '../helpers/park-browser';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { RunSegment } from '../helpers/arena-runs';
@@ -14,15 +15,18 @@ test('full racing circuit with ordinary keys, checkpoints, Victory and persisten
  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await page.getByRole('button',{name:'Play Cosmic Sprint',exact:true}).click();
  for(const [id,,checkpoints] of circuit){
+  if(id==='cosmic-sprint')await waitParkAssets(page);
   await page.getByRole('button',{name:'Start race',exact:true}).click();await page.clock.fastForward(3100);
   await expect(canvas).toHaveAttribute('data-phase','racing');await canvas.focus();
-  const held=new Set<string>();let elapsed=0,shot=0;
+  const held=new Set<string>();let elapsed=0,shot=0,turboCaptured=false;
   for(const segment of recordings[id].segments){
    for(const key of held)if(!segment.keys.includes(key)){await page.keyboard.up(key);held.delete(key);}
    for(const key of segment.keys)if(!held.has(key)){await page.keyboard.down(key);held.add(key);}
+   if(id==='cosmic-sprint')await waitParkAssets(page);
    if(segment.jump)await page.keyboard.press('Space');
-   for(let i=0;i<Math.round(segment.seconds*10);i++)await page.clock.fastForward(100);
+   if(id==='cosmic-sprint')await advancePark(page,segment.seconds);else for(let i=0;i<Math.round(segment.seconds*10);i++)await page.clock.fastForward(100);
    elapsed+=segment.seconds;
+   if(id==='cosmic-sprint'&&elapsed>=27&&!turboCaptured){turboCaptured=true;await capturePark(page,info,'turbo-lane');}
    if(elapsed>(shot+1)*9&&shot<7){await page.screenshot({path:`test-results/pr6-${id}-${shot++}-${info.project.name}.png`});}
   }
   for(const key of held)await page.keyboard.up(key);

@@ -5,12 +5,15 @@ export interface Marker extends Point { radius: number }
 export type RaceMode = "race" | "training";
 export interface ArenaSection { id: string; name: string; start: number; end: number; hint: string; cameraDistance?: number; cameraLift?: number; elevation?: number }
 export interface CourseDefinition {
+  navigation?: readonly NavigationRoute[];
   airControl?: number;
   spawn: Point;
   finish: Marker;
   checkpoints: readonly Marker[];
 }
-interface Mechanism extends Point { id: string; period: number; phase?: number }
+export interface NavigationRoute { id: string; stage: number; name: string; skill?: 'easy' | 'hard'; points: readonly Point[] }
+export interface ArenaVisual extends Point { id: string; asset: string; width: number; depth: number; yaw?: number; part?: number; mechanismId?: string; fit?: 'floor' | 'gate' | 'prop'; }
+interface Mechanism extends Point { id: string; period: number; phase?: number; yaw?: number }
 export type ArenaObstacle =
   | (Mechanism & { kind: 'sweeper'; length: number; width: number; height: number })
   | (Mechanism & { kind: 'moving-platform'; width: number; depth: number; axis: 'x' | 'y' | 'z'; amplitude: number })
@@ -24,7 +27,7 @@ export type ArenaObstacle =
   | (Mechanism & { kind: 'conveyor'; width: number; depth: number; velocityX: number; velocityZ: number })
   | (Mechanism & { kind: 'bounce-platform'; width: number; depth: number; amplitude: number; boost: number })
   | (Mechanism & { kind: 'timed-gate'; width: number; depth: number; height: number; warning: number; activeFor: number })
-  | (Mechanism & { kind: 'pusher'; width: number; depth: number; height: number; side: -1 | 1; reach: number; warning: number; activeFor: number })
+  | (Mechanism & { kind: 'pusher'; width: number; depth: number; height: number; side: -1 | 1; reach: number; warning: number; activeFor: number; shaft?: boolean })
   | (Mechanism & { kind: 'collapse-platform'; width: number; depth: number; delay: number; warning: number; resetAfter: number });
 export interface RouteChoice {
   id: string;
@@ -36,6 +39,7 @@ export interface RouteChoice {
   skill: 'easy' | 'hard';
 }
 export interface ArenaConfig extends CourseDefinition {
+  visuals?: readonly ArenaVisual[];
   /** Optional branch target over a shared, ordered checkpoint interval. */
   branches?: readonly RouteChoice[];
   sections?: readonly ArenaSection[];

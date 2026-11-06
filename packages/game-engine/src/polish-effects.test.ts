@@ -32,7 +32,7 @@ it('refreshes contact supports when Race and Training share an arena id',()=>{
  const first={...arenas[0],platforms:[{x:0,y:0,z:0,width:20,depth:20}],mechanisms:[],obstacles:[]};
  const second={...first,platforms:[{x:0,y:.6,z:0,width:20,depth:20}]};
  const effects=createPolishEffects({graphicsDevice:{}} as pc.Application,root,shape), state=createPlayer(first);
- state.grounded=false;state.y=1;
+ state.grounded=false;state.x=0;state.z=0;state.y=1;
  effects.begin(first,0);effects.track('local',state,false,0);
  const shadow=root.children.find(node=>node.name==='Soft character contact shadow')!;
  expect(shadow.getLocalPosition().y).toBeCloseTo(.018);

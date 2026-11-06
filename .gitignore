@@ -14,3 +14,7 @@ __pycache__/
 # Meshy masters live in the assets-v1 Release, never in runtime/Git.
 meshy-model.glb
 texture_0*.png
+
+# Immutable owner release sources are checksum-pinned in the Cosmic asset inventory.
+assets/arenas/cosmic-sprint/source/
+work/
