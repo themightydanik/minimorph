@@ -52,7 +52,7 @@ Preparation creates fresh `PlayerState` and `ArenaRuntime` instances for qualifi
 
 ## Protocol v2 and deployment
 
-`PROTOCOL_VERSION` stays **2**. `WORLD_REVISION` is now **`tournament-v1-advanced-races-v1`**, covering the changed lifecycle contract as well as the unchanged PR #11 collision world. The guard is not relaxed: old/new server and frontend builds must not be mixed. Join/resume reject a revision mismatch before allocating a room or rotating a token. Clients also validate snapshot shape, arena/round coherence, unique bounded participant lists, history and placements before rendering, and discard regressive edition/round/tick/phase snapshots.
+`PROTOCOL_VERSION` stays **2**. `WORLD_REVISION` is now **`tournament-v1-galactic-park-v1`** for PR #13, covering the tournament lifecycle and redesigned Cosmic Sprint collision world. PR #12 used `tournament-v1-advanced-races-v1`. Orbit Chaos and Gravity Mayhem retain their PR #11 content. The guard is not relaxed: old/new server and frontend builds must not be mixed. Join/resume reject a revision mismatch before allocating a room or rotating a token. Clients also validate snapshot shape, arena/round coherence, unique bounded participant lists, history and placements before rendering, and discard regressive edition/round/tick/phase snapshots.
 
 New bounded v2 fields:
 

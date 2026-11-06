@@ -24,14 +24,14 @@ it('recorded ordinary controls complete each full round',()=>{
  for(const arena of arenas){
   const state=createPlayer(arena),run=recordings[arena.id as keyof typeof recordings];
   for(const segment of run.segments)for(let tick=0,n=Math.round(segment.seconds/FIXED_STEP);tick<n;tick++)
-   stepArenaPlayer(state,{x:Number(segment.keys.includes('KeyD'))-Number(segment.keys.includes('KeyA')),z:-Number(segment.keys.includes('KeyW')),jump:segment.jump&&tick===0},FIXED_STEP,arena);
+   stepArenaPlayer(state,{x:Number(segment.keys.includes('KeyD'))-Number(segment.keys.includes('KeyA')),z:Number(segment.keys.includes('KeyS'))-Number(segment.keys.includes('KeyW')),jump:segment.jump&&tick===0},FIXED_STEP,arena);
   expect(state.won,`${arena.id} replay, ${JSON.stringify(state)}`).toBe(true);expect(state.falls).toBe(0);
  }
 });
 it('a late full-round fall restores the latest checkpoint and preserves ordered splits',()=>{
  const arena=arenas[2],state=createPlayer(arena);
  for(const segment of recordings['gravity-mayhem'].segments){
-  for(let tick=0;tick<Math.round(segment.seconds/FIXED_STEP)&&state.checkpoint<5;tick++)stepArenaPlayer(state,{x:Number(segment.keys.includes('KeyD'))-Number(segment.keys.includes('KeyA')),z:-Number(segment.keys.includes('KeyW')),jump:segment.jump&&tick===0},FIXED_STEP,arena);
+  for(let tick=0;tick<Math.round(segment.seconds/FIXED_STEP)&&state.checkpoint<5;tick++)stepArenaPlayer(state,{x:Number(segment.keys.includes('KeyD'))-Number(segment.keys.includes('KeyA')),z:Number(segment.keys.includes('KeyS'))-Number(segment.keys.includes('KeyW')),jump:segment.jump&&tick===0},FIXED_STEP,arena);
   if(state.checkpoint===5)break;
  }
  expect(state.checkpoint).toBe(5);const splits=[...state.splits],elapsed=state.elapsed;

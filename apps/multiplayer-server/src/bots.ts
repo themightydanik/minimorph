@@ -3,6 +3,7 @@ import {
   ArenaRuntime,
   sampleMechanism,
   surfaceContains,
+  navigatePark,
 } from "@minimorph/game-simulation";
 import type { PlayerState, Input } from "@minimorph/game-simulation";
 import type { Skill } from "@minimorph/multiplayer-protocol";
@@ -13,6 +14,7 @@ export function botInput(
   world: ArenaRuntime,
   skill: Skill,
 ): Input {
+  if(arena.navigation)return navigatePark(state,arena,world,skill==='easy'?'easy':'hard');
   if (state.action === "slide" || state.action === "recover") return { x: 0, z: 0, jump: false, dive: false };
   const distance = -state.z,
     surfaces = world.surfaces(

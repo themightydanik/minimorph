@@ -15,7 +15,7 @@ it('new route choices are physical, reconnect before checkpoints, and remain rea
   const main=recordRound(arena), safe=recordRound(arena,'safe'), fast=recordRound(arena,'boost');
   for(const run of [main,safe,fast]){expect(run.state.won,JSON.stringify(run.state)).toBe(true);expect(run.state.falls).toBe(0);expect(run.state.obstacleHits).toBe(0);}
   for(const b of arena.branches!.filter(b=>b.skill==='easy'))expect(safe.branches).toContain(b.id);
-  expect(main.supports.some(id=>id.includes('shuttle'))).toBe(true);
+  expect(main.supports.some(id=>id.includes(arena.navigation?'carousel':'shuttle'))).toBe(true);
  }
  const gravity=arenas[2], run=recordRound(gravity);
  expect(gravity.finish.y).toBeCloseTo(3.6);expect(run.maxY).toBeGreaterThan(gravity.finish.y);

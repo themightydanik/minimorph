@@ -1,4 +1,5 @@
 import { trainingArenas, getTrainingArena } from './arenas';
+import { cosmicSprint } from './cosmic-sprint';
 import type { ArenaConfig, ArenaObstacle, ArenaSection, RaceMode } from './arenas';
 import type { Platform } from './legacy';
 type Theme = 'rotors' | 'pendulums' | 'walls' | 'belts' | 'shuttles' | 'bounce' | 'pulse' | 'collapse' | 'terraces';
@@ -84,7 +85,7 @@ function buildRound(base: ArenaConfig, length: number, themes: Theme[]): ArenaCo
  return {...base,airControl:.8,spawn:{x:0,y:0,z:2},finish:{x:0,y:elevation,z:-(distance+5),radius:1.7},checkpoints,platforms,obstacles:[],mechanisms,sections,routes,branches,expectedSeconds:[60,90],description:`${base.name}: ${themes.length} obstacle sections, branching routes, safe sector checkpoints and a 60–90 second racing round. Follow sector signals, choose your route and keep momentum.`};
 }
 export const arenas: readonly ArenaConfig[] = [
- buildRound(trainingArenas[0],54,['rotors','belts','pendulums','walls','shuttles','bounce','pulse']),
+ cosmicSprint,
  buildRound(trainingArenas[1],58,['belts','pendulums','walls','shuttles','rotors','bounce','pulse']),
  buildRound(trainingArenas[2],54,['collapse','pendulums','terraces','belts','shuttles','bounce','pulse','terraces']),
 ];

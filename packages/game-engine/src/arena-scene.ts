@@ -1,4 +1,6 @@
 import * as pc from 'playcanvas';
+import { createCosmicScene } from './cosmic-scene';
+import type { ArenaLoadStatus } from './cosmic-scene';
 import type { ArenaConfig, ArenaObstacle } from '@minimorph/game-content';
 import type { ShapeFactory } from './character';
 import type { PlayerState } from './physics';
@@ -6,7 +8,9 @@ import { obstaclePosition } from './physics';
 import type { MechanismPhase } from './obstacles';
 import { sampleMechanism } from './obstacles';
 type MaterialFactory = (hex: string, glow?: boolean) => pc.StandardMaterial;
-export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape: ShapeFactory, material: MaterialFactory) {
+export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape: ShapeFactory, material: MaterialFactory, onLoad?:(status:ArenaLoadStatus)=>void) {
+  if(arena.visuals)return createCosmicScene(app,arena,onLoad);
+  onLoad?.({ready:true,loaded:0,total:0,error:null});
   const root = new pc.Entity(`Arena ${arena.id}`), fixed = new pc.Entity('Arena static'), dynamic = new pc.Entity('Arena mechanisms');
   app.root.addChild(root); root.addChild(fixed); root.addChild(dynamic);
   const p = arena.palette;
@@ -137,7 +141,10 @@ export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape:
   const ownedMaterials = [deck, alternate, accent, hazard, white, warning, dark, ghost, planet];
   return {
     root,
-    update(state: Readonly<PlayerState>) {
+    ready:true,
+    setOverview(value:boolean) {void value;},
+    update(state: Readonly<PlayerState>, active=true) {
+      void active;
       legacy.forEach((entity, i) => { const o = arena.obstacles[i], at = obstaclePosition(o, state.elapsed); entity.setLocalPosition(at.x, at.y + o.height / 2, at.z); });
       mechanisms.forEach(entry => {
         const {o,entity,deckEntity,beam,strip,indicators,rod,arm,treads,wallPanels,deckMeshes,pose}=entry;

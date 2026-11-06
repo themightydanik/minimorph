@@ -1,6 +1,8 @@
 export interface Platform {
   id?: string;
   radius?: number;
+  /** Rotation about Y, in radians; omitted on the original arenas. */
+  yaw?: number;
   x: number;
   y: number;
   z: number;

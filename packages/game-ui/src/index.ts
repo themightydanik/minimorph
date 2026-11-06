@@ -16,7 +16,7 @@ export interface MountedGame {
 export function mountGame(root: HTMLElement, target: string): MountedGame {
   root.innerHTML = `<main class="game-shell">
     <canvas aria-label="Minimorph 3D obstacle course" tabindex="0"></canvas>
-    <header><a class="brand" href="#">MINIMORPH<span>ORBIT CIRCUIT / SEASON 01</span></a><span class="target"></span></header>
+    <div class="arena-stream-status" data-arena-stream role="status" hidden></div><header><a class="brand" href="#">MINIMORPH<span>ORBIT CIRCUIT / SEASON 01</span></a><span class="target"></span></header>
     <section class="mission"><span class="eyebrow">CADET TRAINING</span><h1 data-arena-name>Cosmic Sprint</h1><p data-arena-hint>Small paws. Giant leaps.</p><p class="section-hint" data-section-hint></p></section>
     <aside class="telemetry" aria-label="Run statistics"><span>FLIGHT TIME <strong data-time>00.0</strong></span><span>RECOVERIES <strong data-falls>0</strong></span><span>CHECKPOINTS <strong data-checkpoints>0 / 2</strong></span><span>TO BEACON <strong data-distance>34m</strong></span></aside>
     <div class="message" role="status" aria-live="polite">Preparing your orbit…</div>
@@ -25,7 +25,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
       <div class="selection-heading"><span class="eyebrow">THE ORBIT CIRCUIT</span><h2>Small paws.<br> Giant competition.</h2><p>Three arenas. One determined cadet. Choose your next launch.</p></div>
       <div class="mode-tabs" aria-label="Race mode"><button data-mode="race" aria-pressed="true">Racing rounds</button><button data-mode="training" aria-pressed="false">Training tracks</button></div><div class="level-grid"></div><p class="storage-status"></p>
     </section>
-    <section class="screen prepare" aria-label="Race preparation" hidden><div class="panel"><span class="eyebrow">MISSION BRIEFING</span><h2 data-prepare-title></h2><p data-prepare-description></p><div class="route-list"></div><p class="brief-controls">WASD / arrows to move · Space to jump · Shift to dive<br>Analog stick + Jump / Dive on mobile · Q / E to orbit camera</p><button class="primary" data-start>Start race</button><button data-back>Choose arena</button></div></section>
+    <section class="screen prepare" aria-label="Race preparation" hidden><div class="panel"><span class="eyebrow">MISSION BRIEFING</span><h2 data-prepare-title></h2><p data-prepare-description></p><div class="route-list"></div><p class="brief-controls">WASD / arrows to move · Space to jump · Shift to dive<br>Analog stick + Jump / Dive on mobile · Q / E to orbit camera</p><p class="arena-loading" data-arena-loading role="status" hidden></p><button data-course-overview hidden>Course overview</button><button class="primary" data-start>Start race</button><button data-back>Choose arena</button></div></section>
     <div class="countdown" aria-live="polite" hidden><strong>3</strong><span>READY TO LAUNCH</span></div>
     <section class="screen results" aria-label="Race results" hidden><div class="panel"><span class="eyebrow">ORBIT COMPLETE</span><h2>Nice landing,<br> cadet.</h2><p class="result-badge"></p><div class="result-stats"><span>YOUR TIME<strong data-result-time></strong></span><span>BEST TIME<strong data-best-time></strong></span><span>RECOVERIES<strong data-result-falls></strong></span></div><div class="result-splits" aria-label="Checkpoint splits"></div><button class="primary" data-next>Next arena</button><button data-replay>Race again</button><button data-back>Choose arena</button><p class="storage-status"></p></div></section>
     <section class="screen pause" aria-label="Race paused" hidden><div class="panel"><span class="eyebrow">TAKE A BREATHER</span><h2>Flight paused.</h2><p>Your timer is stopped. Resume when you are ready.</p><button class="primary" data-resume>Resume race</button><button data-back>Choose arena</button></div></section>
@@ -83,6 +83,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
     obstacleHits = 0,
     respawns = 0,
     game: Game | undefined;
+  let arenaReady=true,overview=false;
   const allowed = new Set([
     "KeyQ",
     "KeyE",
@@ -156,9 +157,10 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
       root.dataset.phase = snapshot.phase;
       for (const { name, element } of screenElements) element.hidden = snapshot.phase !== (name === "pause" ? "paused" : name === "results" ? "finished" : name);
       if (["selection", "prepare", "paused", "finished"].includes(snapshot.phase)) clearInput();
-      if (snapshot.phase === "selection") renderLevels();
+      if (snapshot.phase === "selection") {renderLevels();root.querySelector<HTMLElement>("[data-arena-stream]")!.hidden=true;}
       if (snapshot.phase === "prepare") {
-        root.querySelector("[data-prepare-title]")!.textContent = arena.name;
+        overview=false;root.classList.remove("arena-overview");root.querySelector<HTMLElement>("[data-arena-loading]")!.hidden=arenaReady;root.querySelector<HTMLButtonElement>("[data-course-overview]")!.hidden=!arena.navigation;root.querySelector("[data-course-overview]")!.textContent="Course overview";
+        root.querySelector("[data-prepare-title]")!.textContent = arena.navigation ? "Galactic Fun Park" : arena.name;
         root.querySelector("[data-prepare-description]")!.textContent = arena.description;
         root.querySelector(".route-list")!.textContent = arena.routes.map(r => r.name).join(" / ");
       }
@@ -270,6 +272,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
   const readControls = () => {
     const jump = jumpQueued, dive = diveQueued || pressed("ShiftLeft") || pressed("ShiftRight");
     jumpQueued = diveQueued = false;
+    if(!arenaReady)return {x:0,z:0,jump:false,dive:false,cameraTurn:0};
     const stick = joystick.read();
     const keyboardX = Number(pressed("KeyD") || pressed("ArrowRight")) - Number(pressed("KeyA") || pressed("ArrowLeft"));
     const keyboardZ = Number(pressed("KeyS") || pressed("ArrowDown")) - Number(pressed("KeyW") || pressed("ArrowUp"));
@@ -280,6 +283,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
       cameraTurn: Number(pressed("KeyE")) - Number(pressed("KeyQ")),
     };
   };
+  root.querySelector<HTMLButtonElement>('[data-course-overview]')!.addEventListener('click',()=>{overview=!overview;game?.setOverview(overview);root.classList.toggle("arena-overview",overview);root.querySelector('[data-course-overview]')!.textContent=overview?'Back to character':'Course overview';});
   const multiplayer = mountMultiplayer(root,()=>game,readControls,clearInput,(phase,countdown)=>audio.scene(phase,countdown),cue=>audio.play(cue));
   try {
     game = createGame(
@@ -333,6 +337,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
         if (!canvas.dataset.ready) canvas.dataset.ready = "true";
       },
       {
+        onArenaLoad: status => { arenaReady=status.ready;for(const label of root.querySelectorAll<HTMLElement>('[data-arena-loading],[data-arena-stream]')){label.hidden=status.ready||(root.dataset.phase==="selection"&&!multiplayer.active);label.textContent=status.error?'Arena assets unavailable. Return to arenas and retry.':`Loading Galactic Fun Park… ${status.loaded} / ${status.total}`;}root.querySelector<HTMLButtonElement>('[data-start]')!.disabled=!status.ready; },
         onPresentation: event => { if(multiplayer.tournament&&(event.kind==='victory'||event.kind==='finish'))return;audio.play(event.kind,event.remote,lastPlayer?Math.hypot(event.x-lastPlayer.x,event.z-lastPlayer.z):0); },
         raceFlow: true,
         onSession: handleSession,

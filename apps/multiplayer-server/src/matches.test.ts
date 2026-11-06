@@ -188,9 +188,9 @@ it("finish order uses simulation time with deterministic ties; timeout produces 
   for (const p of [a.participant!, b.participant!])
     Object.assign(p.state, {
       checkpoint: room.arena.checkpoints.length,
-      x: 0,
+      x: room.arena.finish.x,
       z: room.arena.finish.z,
-      y: 0,
+      y: room.arena.finish.y,
     });
   for (let i = 0; i < 4; i++) s.tick(3002 + (i * 1000) / 30);
   expect(room.phase).toBe("finished");
@@ -285,7 +285,7 @@ it.each(['cosmic-sprint','orbit-chaos','gravity-mayhem'])('prediction matches an
  const service=new MatchService(),human=peer();
  service.handle(human,{v:2,type:'join',experience:'race',worldRevision:WORLD_REVISION,mode:'create',name:'Human',arenaId},0);
  service.handle(human,{v:2,type:'start'},0);service.tick(3000);
- const room=human.room!, participant=human.participant!, mechanism=room.arena.mechanisms.find(o=>o.kind==='moving-platform')!;
+ const room=human.room!, participant=human.participant!, mechanism=room.arena.mechanisms.find(o=>o.kind===(arenaId==='cosmic-sprint'?'rotating-disc':'moving-platform'))!;
  // Boundary fixture starts on an authored support; all subsequent movement is ordinary protocol input.
  Object.assign(participant.state,sampleMechanism(mechanism,.73),{elapsed:.73,grounded:true,supportId:mechanism.id});
  const prediction=new Prediction();prediction.receive(participant.state,participant.ack,arenaId,true);

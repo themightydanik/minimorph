@@ -1,5 +1,6 @@
+import type { ArenaConfig } from '@minimorph/game-content';
 import { getArena } from "@minimorph/game-content";
-import { createPlayer, ArenaRuntime } from "@minimorph/game-simulation";
+import { createPlayer, ArenaRuntime, courseProgress } from "@minimorph/game-simulation";
 import { TOURNAMENT_ROUNDS } from "@minimorph/multiplayer-protocol";
 import type {
   RoundResult,
@@ -15,14 +16,14 @@ export const ROUND_RESULTS_MS = 3000,
   PODIUM_MS = 12000;
 /** Only server state participates in ordering. UUID lexical order resolves exact simulation ties. */
 export function rankParticipants(
-  players: readonly Participant[],
+  players: readonly Participant[], arena?: ArenaConfig,
 ): Participant[] {
   return [...players].sort((a, b) =>
     a.finishTime !== null || b.finishTime !== null
       ? (a.finishTime ?? Infinity) - (b.finishTime ?? Infinity) ||
         a.id.localeCompare(b.id)
       : b.state.checkpoint - a.state.checkpoint ||
-        a.state.z - b.state.z ||
+        (arena?.navigation ? courseProgress(arena,b.state)-courseProgress(arena,a.state) : a.state.z - b.state.z) ||
         a.id.localeCompare(b.id),
   );
 }
@@ -76,7 +77,7 @@ export class TournamentRoom extends Room {
   }
   private finishers() {
     return rankParticipants(
-      this.active().filter((p) => p.finishTime !== null && !p.withdrawn),
+      this.active().filter((p) => p.finishTime !== null && !p.withdrawn), this.arena,
     );
   }
   override snapshot(now: number) {
@@ -87,7 +88,7 @@ export class TournamentRoom extends Room {
       activeIds: this.activeIds,
       orderIds: (
         this.history.find((r) => r.round === this.round)?.rows ??
-        rankParticipants(this.active())
+        rankParticipants(this.active(), this.arena)
       ).map((p) => p.id),
       qualifiedIds:
         this.phase === "racing" && this.round < 3
@@ -110,7 +111,7 @@ export class TournamentRoom extends Room {
     super.simulate();
     if (this.round === 3) {
       const first = rankParticipants(
-        this.active().filter((p) => p.finishTime !== null),
+        this.active().filter((p) => p.finishTime !== null), this.arena,
       )[0];
       // Derive the live leader from the same total order as final results.
       // A later observed finish can tie an earlier one in simulation time.
@@ -119,7 +120,7 @@ export class TournamentRoom extends Room {
   }
   override finish(now: number) {
     if (this.phase !== "racing") return;
-    const ordered = rankParticipants(this.active());
+    const ordered = rankParticipants(this.active(), this.arena);
     for (const p of ordered) if (p.status === "racing") p.status = "dnf";
     const target = TOURNAMENT_ROUNDS[this.round - 1].qualify;
     this.qualifiedIds =
@@ -218,8 +219,8 @@ export class TournamentRoom extends Room {
     for (const [i, p] of this.active().entries()) {
       p.state = createPlayer(this.arena);
       p.state.collapseTimes = this.collapseTimes;
-      p.state.x = [-1.8, -0.6, 0.6, 1.8][i % 4];
-      p.state.z = 2 + Math.floor(i / 4) * 2;
+      p.state.x = this.arena.spawn.x + [-1.8, -0.6, 0.6, 1.8][i % 4];
+      p.state.z = this.arena.spawn.z + Math.floor(i / 4) * 2;
       p.world = new ArenaRuntime(this.arena);
       p.status = "racing";
       p.finishTime = null;
@@ -295,8 +296,8 @@ export class TournamentRoom extends Room {
     for (const [i, p] of this.participants.entries()) {
       p.state = createPlayer(this.arena);
       p.state.collapseTimes = this.collapseTimes;
-      p.state.x = [-1.8, -0.6, 0.6, 1.8][i % 4];
-      p.state.z = 2 + Math.floor(i / 4) * 2;
+      p.state.x = this.arena.spawn.x + [-1.8, -0.6, 0.6, 1.8][i % 4];
+      p.state.z = this.arena.spawn.z + Math.floor(i / 4) * 2;
       p.world = new ArenaRuntime(this.arena);
       p.status = "racing";
       p.finishTime = null;

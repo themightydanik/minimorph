@@ -1,9 +1,11 @@
+import { recordPark } from './park-pilot';
 /** Test-only driver: emits ordinary digital controls, never writes player state or changes hazards. */
 import type { ArenaConfig } from '@minimorph/game-content';
 import { createPlayer, stepArenaPlayer, FIXED_STEP } from '../../packages/game-engine/src/physics';
 import { ArenaRuntime, sampleMechanism, surfaceContains } from '../../packages/game-engine/src/obstacles';
 import type { RunSegment } from './arena-runs';
 export function recordRound(arena:ArenaConfig, strategy:'main'|'boost'|'outer'|'safe'='main') {
+ if(arena.navigation)return recordPark(arena,strategy==='safe'?'easy':'hard');
  const state=createPlayer(arena), world=new ArenaRuntime(arena), segments:RunSegment[]=[], events=new Set<string>();
  let lastSupport:string|null=null, maxY=state.y;
  const supports=new Set<string>(), branches=new Set<string>();

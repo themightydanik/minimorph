@@ -77,3 +77,5 @@ PR #11 upgrades full-round routes, moving supports, alternating crossings and Gr
 ## Tournament review
 
 PR #12 adds the authoritative Cosmic Sprint → Orbit Chaos → Gravity Mayhem elimination tournament (8 → 6 → 4), qualification, reconnect-safe round transitions and spectating. Quick Match and private rooms default to Tournament; Single race and Solo/training remain available. See [rules, protocol/deployment and known limits](docs/tournament.md) and [actual desktop/mobile evidence](docs/evidence/tournament/README.md). Matching WORLD_REVISION builds and owner approval are required before production activation.
+
+PR #13 rebuilds Cosmic Sprint as **Galactic Fun Park**, using the supplied 3D asset pack, wide plazas, two competing branches and rotating passenger-carry platforms. See [gameplay and deployment](docs/cosmic-sprint.md), [asset audit](docs/cosmic-sprint-assets.md) and [actual desktop/mobile before/after evidence](docs/evidence/cosmic-sprint/README.md).

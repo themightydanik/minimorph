@@ -91,8 +91,8 @@ export class Room {
     const state = createPlayer(this.arena);
     state.collapseTimes = this.collapseTimes;
     // Two safe rows entirely on the existing start deck. Participants are non-solid to one another.
-    state.x = [-1.8, -0.6, 0.6, 1.8][i % 4];
-    state.z = 2 + Math.floor(i / 4) * 2;
+    state.x = this.arena.spawn.x + [-1.8, -0.6, 0.6, 1.8][i % 4];
+    state.z = this.arena.spawn.z + Math.floor(i / 4) * 2;
     const p: Participant = {
       id: randomUUID(),
       name,

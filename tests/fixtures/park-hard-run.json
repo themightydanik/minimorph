@@ -1,0 +1,1051 @@
+{
+  "segments": [
+    {
+      "seconds": 5.6,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 1.7,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 2.2,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.5,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.6,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.5,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.5,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.5,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 4.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 2.5,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.6,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.6,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.6,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.6,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 2,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 1.5,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": true
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.5,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.5,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 1.9,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": true
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.3,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 1.1,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.5,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 2.1,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.7,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.1,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyW"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 1.4,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": true
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.5,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.5,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.2,
+      "keys": [
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 0.4,
+      "keys": [
+        "KeyW",
+        "KeyD"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 1.6,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": false
+    },
+    {
+      "seconds": 2.2,
+      "keys": [
+        "KeyW",
+        "KeyA"
+      ],
+      "jump": true
+    }
+  ],
+  "state": {
+    "x": 91.73940695117543,
+    "y": 0.2,
+    "z": -212.70156802770651,
+    "action": "normal",
+    "actionTime": 0,
+    "diveCooldown": 0,
+    "diveUsed": false,
+    "jumpHeld": false,
+    "diveHeld": false,
+    "collapseTimes": {},
+    "splits": [
+      7.216666666666815,
+      18.09166666666628,
+      37.383333333331855,
+      39.974999999998374,
+      49.05833333333119,
+      53.966666666664246
+    ],
+    "supportId": "finish-island",
+    "lastHazard": null,
+    "knockTime": 0,
+    "knockX": 0,
+    "knockZ": 0,
+    "eventSerial": 8,
+    "lastEvent": "land",
+    "vx": 0,
+    "vy": 0,
+    "vz": 0,
+    "heading": 0.7853981633974474,
+    "grounded": true,
+    "won": true,
+    "elapsed": 60.44166666666388,
+    "falls": 0,
+    "checkpoint": 6,
+    "checkpointFlash": 0,
+    "coyote": 0.1,
+    "jumpBuffer": 0,
+    "respawnTimer": 0,
+    "protection": 0,
+    "respawns": 0,
+    "recovery": null,
+    "obstacleHits": 0,
+    "landingTime": 0,
+    "landingImpact": 0.965000000000002
+  },
+  "maxY": 2.7716666666666634,
+  "supports": [
+    "launch-island",
+    "launch-fan",
+    "hammer-plaza",
+    "branch-crossroads",
+    "turbo-east",
+    "turbo-lane-2",
+    "turbo-lane-3",
+    "turbo-north",
+    "turbo-lane-4",
+    "bounce-garden-5",
+    "carousel-entry-island",
+    "carousel-a",
+    "carousel-b",
+    "carousel-exit-island",
+    "finish-promenade",
+    "finish-turn",
+    "final-rise",
+    "star-step",
+    "final-descent",
+    "finish-island"
+  ],
+  "events": [
+    "jump",
+    "land"
+  ],
+  "lastSupport": "finish-island",
+  "branches": [
+    "turbo-lane"
+  ]
+}

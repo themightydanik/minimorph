@@ -24,7 +24,11 @@ export function sampleMechanism(o:ArenaObstacle,time:number,out:MechanismPose={x
  return p;
 }
 function hasSurface(o:ArenaObstacle){return ['moving-platform','disappearing-platform','rotating-disc','conveyor','bounce-platform','collapse-platform'].includes(o.kind);}
-export function surfaceContains(p:Platform,x:number,z:number):boolean{return p.radius!==undefined?Math.hypot(x-p.x,z-p.z)<=p.radius:Math.abs(x-p.x)<=p.width/2&&Math.abs(z-p.z)<=p.depth/2;}
+export function surfaceContains(p:Platform,x:number,z:number):boolean{
+ if(p.radius!==undefined)return Math.hypot(x-p.x,z-p.z)<=p.radius;
+ if(p.yaw){const dx=x-p.x,dz=z-p.z,c=Math.cos(p.yaw),s=Math.sin(p.yaw);return Math.abs(dx*c-dz*s)<=p.width/2&&Math.abs(dx*s+dz*c)<=p.depth/2;}
+ return Math.abs(x-p.x)<=p.width/2&&Math.abs(z-p.z)<=p.depth/2;
+}
 /** Owned by a player/run; surfaces, sample outputs and active lists are reused every tick. */
 export class ArenaRuntime {
  readonly active:CollisionSurface[]=[];
@@ -33,13 +37,13 @@ export class ArenaRuntime {
  readonly byId:Map<string,typeof this.entries[number]>;
  readonly delta={x:0,y:0,z:0};
  constructor(readonly arena:ArenaConfig){
-  this.staticSurfaces=arena.platforms.map((p,i)=>({...p,id:`deck-${i}`}));
-  this.entries=arena.mechanisms.map(o=>({o,now:{x:0,y:0,z:0,angle:0,phase:'safe'},before:{x:0,y:0,z:0,angle:0,phase:'safe'},surface:hasSurface(o)?{id:o.id,x:o.x,y:o.y,z:o.z,width:o.kind==='rotating-disc'?o.radius*2:'width'in o?o.width:0,depth:o.kind==='rotating-disc'?o.radius*2:'depth'in o?o.depth:0,radius:o.kind==='rotating-disc'?o.radius:undefined,priority:o.kind==='conveyor'?2:1}:undefined}));
+  this.staticSurfaces=arena.platforms.map((p,i)=>({...p,id:p.id??`deck-${i}`}));
+  this.entries=arena.mechanisms.map(o=>({o,now:{x:0,y:0,z:0,angle:0,phase:'safe'},before:{x:0,y:0,z:0,angle:0,phase:'safe'},surface:hasSurface(o)?{id:o.id,x:o.x,y:o.y,z:o.z,width:o.kind==='rotating-disc'?o.radius*2:'width'in o?o.width:0,depth:o.kind==='rotating-disc'?o.radius*2:'depth'in o?o.depth:0,radius:o.kind==='rotating-disc'?o.radius:undefined,yaw:o.yaw,priority:o.kind==='conveyor'?2:1}:undefined}));
   this.byId=new Map(this.entries.map(e=>[e.o.id,e]));
  }
  surfaces(time:number,previousTime=time,collapseTimes:Record<string,number>={},nearZ?:number):CollisionSurface[]{
   const result=this.active;result.length=0;
-  for(const s of this.staticSurfaces)if(nearZ===undefined||Math.abs(s.z-nearZ)<s.depth/2+20)result.push(s);
+  for(const s of this.staticSurfaces)if(nearZ===undefined||Math.abs(s.z-nearZ)<(Math.abs(Math.cos(s.yaw??0))*s.depth+Math.abs(Math.sin(s.yaw??0))*s.width)/2+20)result.push(s);
   for(const e of this.entries){
    if(!e.surface||(nearZ!==undefined&&Math.abs(e.o.z-nearZ)>32))continue;
    const p=sampleMechanism(e.o,time,e.now,collapseTimes[e.o.id]);if(p.phase==='hidden')continue;
@@ -66,7 +70,7 @@ export function mechanismContact(o:ArenaObstacle,time:number,player:{x:number;y:
  if(player.y>=p.y+o.height||player.y+1.7<=p.y)return false;
  const dx=player.x-p.x,dz=player.z-p.z;
  if(o.kind==='sweeper'){const along=dx*Math.cos(p.angle)+dz*Math.sin(p.angle),across=-dx*Math.sin(p.angle)+dz*Math.cos(p.angle);return Math.hypot(Math.max(0,Math.abs(along)-o.length/2),across)<o.width/2+radius;}
- if(o.kind==='pusher'&&Math.abs(dz)<.25+radius&&player.x>=Math.min(p.x,o.x)-radius&&player.x<=Math.max(p.x,o.x)+radius)return true;
+ if(o.kind==='pusher'&&o.shaft!==false&&Math.abs(dz)<.25+radius&&player.x>=Math.min(p.x,o.x)-radius&&player.x<=Math.max(p.x,o.x)+radius)return true;
  if(o.kind==='moving-wall'&&Math.abs(dx)<o.gap/2-radius)return false;
  return Math.abs(dx)<o.width/2+radius&&Math.abs(dz)<o.depth/2+radius;
 }
