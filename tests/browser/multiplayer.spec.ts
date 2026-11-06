@@ -42,7 +42,9 @@ test("two actual browsers share eight authoritative participants, movement, anim
   page,
   browser,
 }, info) => {
-  test.setTimeout(360000);
+  // Two complete mobile software-WebGL scenes can spend >3 minutes on cold
+  // preparation; keep action/reconnect assertion and server deadlines unchanged.
+  test.setTimeout(600000);
   const other = await browser.newContext(
       info.project.name === "mobile"
         ? devices["Pixel 7"]
