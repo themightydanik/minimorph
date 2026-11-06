@@ -315,3 +315,15 @@ it('rejects missing or mismatched level revisions before allocating a room or ro
  service.handle(resumed,{v:2,type:'resume',token:initial.token,worldRevision:WORLD_REVISION},3);
  expect(resumed.participant!.id).toBe(id);expect(welcome(resumed).snapshot.worldRevision).toBe(WORLD_REVISION);
 });
+it("single-race DNF results use branch distance when world Z is equal, without inventing finish times", () => {
+ const service=new MatchService(),a=peer(),b=peer("b");
+ service.handle(a,join("create"),0);service.handle(b,join("private",a.room!.code!),1);
+ service.handle(a,{v:2,type:"start"},2);service.tick(3002);
+ const room=a.room!,[back,front]=[a.participant!,b.participant!].sort((p,q)=>p.id.localeCompare(q.id));
+ // Internal boundary fixture: the client protocol still has no position/checkpoint fields.
+ Object.assign(back.state,{checkpoint:2,x:40,z:-54});Object.assign(front.state,{checkpoint:2,x:50,z:-54});
+ room.finish(3003);
+ expect(room.result!.rows.slice(0,2).map(p=>p.id)).toEqual([front.id,back.id]);
+ expect(room.result!.rows.every(p=>p.time===null&&p.status==="dnf")).toBe(true);
+ expect(room.result!.rows.slice(0,2).map(p=>p.place)).toEqual([1,2]);
+});

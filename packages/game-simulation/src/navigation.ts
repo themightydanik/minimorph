@@ -60,6 +60,33 @@ export function courseProgress(
       (course.checkpoints.length + 1),
   );
 }
+/** Identical live/result ordering for server races, tournaments and client standings. */
+export function compareRaceParticipants(
+  a: {
+    id: string;
+    finishTime: number | null;
+    state: Pick<PlayerState, "checkpoint" | "x" | "z" | "won">;
+  },
+  b: {
+    id: string;
+    finishTime: number | null;
+    state: Pick<PlayerState, "checkpoint" | "x" | "z" | "won">;
+  },
+  course?: CourseDefinition,
+): number {
+  if (a.finishTime !== null || b.finishTime !== null)
+    return (
+      (a.finishTime ?? Infinity) - (b.finishTime ?? Infinity) ||
+      a.id.localeCompare(b.id)
+    );
+  return (
+    b.state.checkpoint - a.state.checkpoint ||
+    (course?.navigation
+      ? courseProgress(course, b.state) - courseProgress(course, a.state)
+      : a.state.z - b.state.z) ||
+    a.id.localeCompare(b.id)
+  );
+}
 /** Stateless 2D path follower. Outputs only legal movement; never changes physics, checkpoints or position. */
 export function navigatePark(
   state: Readonly<PlayerState>,

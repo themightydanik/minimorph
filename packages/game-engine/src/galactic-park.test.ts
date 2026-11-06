@@ -179,3 +179,34 @@ it("spatial progress distinguishes branches and cannot skip ordered checkpoints 
   stepArenaPlayer(state, { x: 0, z: 0, jump: false }, FIXED_STEP, arena);
   expect(state.won).toBe(false);
 });
+it("spatial standings advance along an eastbound branch and equal finish times retain the authoritative ID tie-break", async () => {
+  const { compareRaceParticipants } = await import(
+    "@minimorph/game-simulation"
+  );
+  const back = {
+    id: "a-back",
+    finishTime: null as number | null,
+    state: { ...createPlayer(arena), checkpoint: 2, x: 40, z: -54 },
+  };
+  const front = {
+    id: "z-front",
+    finishTime: null as number | null,
+    state: { ...createPlayer(arena), checkpoint: 2, x: 50, z: -54 },
+  };
+  expect(courseProgress(arena, front.state)).toBeGreaterThan(
+    courseProgress(arena, back.state),
+  );
+  expect(
+    [back, front]
+      .sort((a, b) => compareRaceParticipants(a, b, arena))
+      .map((p) => p.id),
+  ).toEqual(["z-front", "a-back"]);
+  front.finishTime = 12;
+  back.finishTime = 12;
+  expect(
+    [front, back]
+      .sort((a, b) => compareRaceParticipants(a, b, arena))
+      .map((p) => p.id),
+  ).toEqual(["a-back", "z-front"]);
+  expect([back, front].every((p) => p.finishTime === 12)).toBe(true);
+});

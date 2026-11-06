@@ -1,6 +1,6 @@
 import type { ArenaConfig } from '@minimorph/game-content';
 import { getArena } from "@minimorph/game-content";
-import { createPlayer, ArenaRuntime, courseProgress } from "@minimorph/game-simulation";
+import { createPlayer, ArenaRuntime, compareRaceParticipants } from "@minimorph/game-simulation";
 import { TOURNAMENT_ROUNDS } from "@minimorph/multiplayer-protocol";
 import type {
   RoundResult,
@@ -18,14 +18,7 @@ export const ROUND_RESULTS_MS = 3000,
 export function rankParticipants(
   players: readonly Participant[], arena?: ArenaConfig,
 ): Participant[] {
-  return [...players].sort((a, b) =>
-    a.finishTime !== null || b.finishTime !== null
-      ? (a.finishTime ?? Infinity) - (b.finishTime ?? Infinity) ||
-        a.id.localeCompare(b.id)
-      : b.state.checkpoint - a.state.checkpoint ||
-        (arena?.navigation ? courseProgress(arena,b.state)-courseProgress(arena,a.state) : a.state.z - b.state.z) ||
-        a.id.localeCompare(b.id),
-  );
+  return [...players].sort((a, b) => compareRaceParticipants(a, b, arena));
 }
 export class TournamentRoom extends Room {
   edition = 1;
