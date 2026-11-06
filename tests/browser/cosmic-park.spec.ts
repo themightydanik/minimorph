@@ -193,3 +193,54 @@ test("missing GLB fails visibly without primitive substitution; delayed loads ca
   await expect(canvas).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test("a failed Cosmic scene can retry the same arena without switching modes or reloading the page", async ({
+  page,
+}) => {
+  test.setTimeout(180000);
+  let missing = true;
+  let release = () => {};
+  const delayedGate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/cosmic-start-gate-*.glb", async (route) => {
+    await delayedGate;
+    await route.continue();
+  });
+  await page.route("**/wide-floating-island-*.glb", (route) =>
+    missing ? route.abort() : route.continue(),
+  );
+  await page.route("https://telegram.org/**", (route) => route.abort());
+  await page.goto("http://127.0.0.1:5173");
+  const canvas = page.locator("canvas");
+  await expect(canvas).toHaveAttribute(
+    "data-character",
+    "minimorph-optimized-v1",
+    { timeout: 60000 },
+  );
+  await page
+    .getByRole("button", { name: "Play Cosmic Sprint", exact: true })
+    .click();
+  await expect(canvas).toHaveAttribute("data-arena-assets", "error", {
+    timeout: 60000,
+  });
+  await expect(
+    page.getByRole("button", { name: "Start race", exact: true }),
+  ).toBeDisabled();
+  missing = false;
+  await page.getByRole("button", { name: "Choose arena", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Play Cosmic Sprint", exact: true })
+    .click();
+  release(); // A healthy request started before the failure must survive the same-arena retry.
+  await expect(canvas).toHaveAttribute("data-arena-assets", "ready", {
+    timeout: 90000,
+  });
+  await expect(
+    page.getByRole("button", { name: "Start race", exact: true }),
+  ).toBeEnabled();
+  await page.getByRole("button", { name: "Start race", exact: true }).click();
+  await expect(canvas).toHaveAttribute("data-phase", "racing", {
+    timeout: 15000,
+  });
+});

@@ -50,6 +50,11 @@ it("missing assets fail closed, and late completions after disposal cannot insta
   floor.fire("error", "asset missing");
   expect(f.scene.ready).toBe(false);
   expect(f.canvas.dataset.arenaAssets).toBe("error");
+  const healthyPending = f.pending.find((asset) => asset !== floor)!;
+  f.scene.retry();
+  expect(f.canvas.dataset.arenaAssets).toBe("loading");
+  expect(f.remove).toHaveBeenCalledWith(floor);
+  expect(f.remove).not.toHaveBeenCalledWith(healthyPending);
   const instantiate = vi.fn(() => {
     throw Error("Resurrected disposed scene");
   });

@@ -322,7 +322,7 @@ export function createGame(
       const oldArena=levels.current;levels.load(id, mode);
       overview=false;
       if(levels.current!==oldArena){arenaScene.destroy();arenaScene = createArenaScene(app, levels.current, shape, makeMaterial, options.onArenaLoad);}
-      else arenaScene.setOverview(false);
+      else {arenaScene.setOverview(false);arenaScene.retry();}
       camera.camera!.clearColor = new pc.Color().fromString(levels.current.palette.sky);
       canvas.dataset.arena = id;
       app.batcher!.generate();

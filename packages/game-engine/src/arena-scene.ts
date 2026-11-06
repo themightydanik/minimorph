@@ -142,6 +142,7 @@ export function createArenaScene(app: pc.Application, arena: ArenaConfig, shape:
   return {
     root,
     ready:true,
+    retry() {},
     setOverview(value:boolean) {void value;},
     update(state: Readonly<PlayerState>, active=true) {
       void active;

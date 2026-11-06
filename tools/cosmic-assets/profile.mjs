@@ -52,9 +52,12 @@ try {
     await page
       .getByRole("button", { name: "Create Room", exact: true })
       .click();
-    await expect(canvas).toHaveAttribute("data-remote-count", "7", {
-      timeout: 90000,
-    });
+    await expect(page.locator("#app")).toHaveAttribute(
+      "data-online-phase",
+      "waiting",
+      { timeout: 15000 },
+    );
+    await expect(page.locator("[data-mp-players] li")).toHaveCount(8);
     await expect(canvas).toHaveAttribute("data-arena-assets", "ready", {
       timeout: 180000,
     });
@@ -77,6 +80,9 @@ try {
       "data-online-phase",
       "racing",
     );
+    await expect(canvas).toHaveAttribute("data-remote-count", "7", {
+      timeout: 90000,
+    });
     await page.waitForTimeout(2000);
     const result = await page.evaluate(async () => {
       const deltas = [];
@@ -118,6 +124,7 @@ try {
       JSON.stringify(
         {
           profile,
+          browserVersion: browser.version(),
           physicalDevice: false,
           method:
             "Native requestAnimationFrame clock, 60 frames after loading and warmup; actual integrated multiplayer race scene with 8 animated approved characters and real WebSocket snapshots. Ordinary owner Start and bounded review-clock advance reach racing; the existing local review server then holds physics between commands. Software Chromium rendering; not a Redmi Note 8 FPS claim.",

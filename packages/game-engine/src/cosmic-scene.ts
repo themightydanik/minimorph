@@ -371,6 +371,18 @@ export function createCosmicScene(
     get ready() {
       return ready;
     },
+    retry() {
+      if (disposed) return;
+      let retried = false;
+      for (const [key, entry] of entries)
+        if (entry.error) {
+          entries.delete(key);
+          remove(entry);
+          retried = true;
+        }
+      // Keep healthy and in-flight containers owned by this scene: the loader shares pending URLs.
+      if (retried) scene.update(lastState);
+    },
     setOverview(value: boolean) {
       if (value === overview) return;
       overview = value;

@@ -13,13 +13,13 @@
     "width": 23,
     "length": 394,
     "sections": [
-      "01 · Rotor runway",
-      "02 · Cross-current belts",
-      "03 · Pendulum crossing",
-      "04 · Sliding windows",
-      "05 · Shuttle junction",
-      "06 · Bounce gardens",
-      "07 · Pulse gauntlet"
+      "01 \u00b7 Rotor runway",
+      "02 \u00b7 Cross-current belts",
+      "03 \u00b7 Pendulum crossing",
+      "04 \u00b7 Sliding windows",
+      "05 \u00b7 Shuttle junction",
+      "06 \u00b7 Bounce gardens",
+      "07 \u00b7 Pulse gauntlet"
     ],
     "platforms": 32,
     "mechanisms": 26
@@ -36,11 +36,11 @@
     "width": 139.1640048431011,
     "length": 261,
     "sections": [
-      "01 · Star Launch",
-      "02 · Hammer Plaza",
-      "03 · Turbo Lane / Bounce Garden",
-      "04 · Orbit Carousel",
-      "05 · Star Finish"
+      "01 \u00b7 Star Launch",
+      "02 \u00b7 Hammer Plaza",
+      "03 \u00b7 Turbo Lane / Bounce Garden",
+      "04 \u00b7 Orbit Carousel",
+      "05 \u00b7 Star Finish"
     ],
     "platforms": 25,
     "mechanisms": 11
@@ -68,10 +68,13 @@
     "packages/game-engine/src/polish-lighting.ts",
     "packages/game-ui/src/joystick.ts",
     "packages/game-ui/src/audio.ts",
-    "packages/game-simulation/src/physics.ts",
-    ".github/workflows/ci.yml"
+    "packages/game-simulation/src/physics.ts"
   ],
   "protectedSourceDiff": [],
   "approvedCharacterSha256": "cd566c9024676775e3efe8d751de3605a035eca3ca4bc3c00082d7b5d283d6b6",
-  "physicalDeviceTested": false
+  "physicalDeviceTested": false,
+  "ciChange": {
+    "workflow": ".github/workflows/ci.yml",
+    "change": "Browser job timeout 40 \u2192 60 minutes for full real-GLB desktop/mobile regressions and explicit asset-retry coverage. All jobs, test assertions and required gates retained."
+  }
 }
