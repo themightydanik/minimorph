@@ -42,7 +42,7 @@ test("two actual browsers share eight authoritative participants, movement, anim
   page,
   browser,
 }, info) => {
-  test.setTimeout(240000);
+  test.setTimeout(360000);
   const other = await browser.newContext(
       info.project.name === "mobile"
         ? devices["Pixel 7"]
@@ -90,11 +90,36 @@ test("two actual browsers share eight authoritative participants, movement, anim
   page.on("pageerror", (e) => errors.push(e.message));
   second.on("pageerror", (e) => errors.push(e.message));
   try {
+    const prepare = async (client: Page) => {
+      // Compile/upload the full authored scene before opening sockets: two software
+      // GPUs doing cold imports must not consume the unchanged peer/reconnect limits.
+      await client
+        .getByRole("button", { name: "Play Cosmic Sprint", exact: true })
+        .click();
+      await expect(client.locator("canvas")).toHaveAttribute(
+        "data-arena-assets",
+        "ready",
+        { timeout: 120000 },
+      );
+      await client
+        .getByRole("button", { name: "Course overview", exact: true })
+        .click();
+      await expect(client.locator("canvas")).toHaveAttribute(
+        "data-arena-asset-count",
+        "14/14",
+        { timeout: 120000 },
+      );
+      await client
+        .getByRole("button", { name: "Back to character", exact: true })
+        .click();
+      await client
+        .getByRole("button", { name: "Choose arena", exact: true })
+        .click();
+    };
     await menu(page, "Alice");
-    // Import both real models before the lobby starts rendering eight racers.
-    // This keeps the second page's unchanged asset deadline independent of
-    // software-rendering contention from the first page on CI.
+    await prepare(page);
     await menu(second, "Bob");
+    await prepare(second);
     await page
       .getByRole("button", { name: "Create Room", exact: true })
       .click();
@@ -115,6 +140,31 @@ test("two actual browsers share eight authoritative participants, movement, anim
       .poll(() => b.snapshot?.roomId, { timeout: 20000 })
       .toBe(a.snapshot!.roomId);
     await expect(page.locator("[data-mp-players]")).toContainText("Bob");
+    // GLB import and the first eight-character frames are preparation, not race time.
+    // Wait before Start so software-rendering uploads cannot consume the interaction window.
+    await Promise.all(
+      [page, second].map((client) =>
+        expect(client.locator("canvas")).toHaveAttribute(
+          "data-arena-assets",
+          "ready",
+          { timeout: 90000 },
+        ),
+      ),
+    );
+    await expect
+      .poll(
+        () =>
+          page.locator(`.participant-labels [data-player="${b.id}"]`).count(),
+        { timeout: 20000 },
+      )
+      .toBe(1);
+    await expect
+      .poll(
+        () =>
+          second.locator(`.participant-labels [data-player="${a.id}"]`).count(),
+        { timeout: 20000 },
+      )
+      .toBe(1);
     await page
       .getByRole("button", { name: "Start match", exact: true })
       .click();
@@ -183,16 +233,19 @@ test("two actual browsers share eight authoritative participants, movement, anim
       .toBeLessThan(initial - 0.6);
     await release();
     await expect
-      .poll(() =>
-        page.locator(`.participant-labels [data-player="${b.id}"]`).count(),
+      .poll(
+        () =>
+          page.locator(`.participant-labels [data-player="${b.id}"]`).count(),
+        { timeout: 20000 },
       )
       .toBe(1);
     // Software rendering may still be uploading seven remote character instances.
     await expect
-      .poll(() =>
-        second
-          .locator(`.participant-labels [data-player="${a.id}"]`)
-          .getAttribute("data-z"),
+      .poll(
+        () =>
+          second
+            .locator(`.participant-labels [data-player="${a.id}"]`)
+            .getAttribute("data-z"),
         { timeout: 20000 },
       )
       .not.toBe(String(initial));
