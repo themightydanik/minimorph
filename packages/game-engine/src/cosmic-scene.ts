@@ -117,6 +117,7 @@ export function createCosmicScene(
   arena: ArenaConfig,
   onLoad?: (status: ArenaLoadStatus) => void,
   editor = false,
+  editorUrls: { [key: string]: string } = {},
 ) {
   const root = new pc.Entity(
     "Galactic Fun Park — authored GLB environment",
@@ -125,7 +126,7 @@ export function createCosmicScene(
   app.root.addChild(root);
   const entries = new Map<string, Entry>();
   let placements = arena.visuals!;
-  const keys = [...new Set(placements.map((v) => v.asset))];
+  let keys = [...new Set(placements.map((v) => v.asset))];
   const canvas = app.graphicsDevice.canvas as HTMLCanvasElement;
   let disposed = false,
     overview = false,
@@ -208,7 +209,7 @@ export function createCosmicScene(
   }
   function load(key: string) {
     const asset = new pc.Asset(`Cosmic environment ${key}`, "container", {
-      url: urls[key],
+      url: editorUrls[key] ?? urls[key],
     });
     const entry: Entry = {
       key,
@@ -348,7 +349,7 @@ export function createCosmicScene(
       } else if (o.kind === "pusher") {
         x = pose.x;
         z = pose.z;
-        sx = sy = sz = 2.8 / Math.max(dims[0], dims[2]);
+        sx = sy = sz = v.width / Math.max(dims[0], dims[2]);
         pivotY = bounds.min[1];
       }
     }
@@ -373,6 +374,7 @@ export function createCosmicScene(
     setLayout(next: ArenaConfig) {
       arena = next;
       placements = next.visuals!;
+      keys = [...new Set(placements.map((v) => v.asset))];
       for (const [key, entry] of entries) {
         const record = inventory.find((a) => a.runtime === `${key}.glb`)!;
         if (

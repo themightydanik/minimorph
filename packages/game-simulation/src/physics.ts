@@ -324,6 +324,9 @@ export function stepArenaPlayer(state:PlayerState,input:Input,dt:number,arena:Ar
  const surfaces=world.surfaces(state.elapsed+dt,state.elapsed,state.collapseTimes,state.z);
  if(state.grounded)for(const s of surfaces)if(s.id===state.supportId)s.previousY=s.y;
  const oldZ=state.z;
+ // Reuse the serialized lastHazard latch: no extra client/server-only contact state.
+ const previousHazard = state.lastHazard ? world.byId.get(state.lastHazard)?.o : undefined;
+ if (previousHazard?.impactStrength !== undefined && !mechanismContact(previousHazard, state.elapsed, state, PLAYER_RADIUS)) state.lastHazard = null;
  stepPlayer(state,input,dt,surfaces,arena.obstacles,arena,false);
  if(state.recovery||state.won)return;
  for(const e of world.entries){
@@ -337,12 +340,22 @@ export function stepArenaPlayer(state:PlayerState,input:Input,dt:number,arena:Ar
   // Solid barriers never become permeable during knockback/recovery grace.
   const barrier=o.kind==='moving-wall'||o.kind==='timed-gate';
   if(barrier){const side=oldZ>=p.z?1:-1;state.z=p.z+side*(o.depth/2+PLAYER_RADIUS+.01);if(state.vz*side<0)state.vz=0;}
-  if(state.protection>0)continue;
+  if(state.protection>0 || o.impactStrength !== undefined && state.lastHazard === o.id)continue;
   let dx=state.x-p.x,dz=state.z-p.z;
   if(o.kind==='pusher'){dx=-o.side;dz=0;}
   if(barrier){dx=0;dz=oldZ>=p.z?1:-1;}
   if(Math.hypot(dx,dz)<.05){dx=Math.cos(p.angle+Math.PI/2);dz=Math.sin(p.angle+Math.PI/2);}
-  const l=Math.hypot(dx,dz);state.lastHazard=o.id;state.knockX=dx/l*8;state.knockZ=dz/l*8;
+  if (o.impactStrength !== undefined) {
+    if (o.kind === 'sweeper') {
+      const side = (state.x-p.x)*Math.cos(p.angle)+(state.z-p.z)*Math.sin(p.angle) >= 0 ? 1 : -1;
+      dx = -Math.sin(p.angle)*side; dz = Math.cos(p.angle)*side;
+    } else if (o.kind === 'pusher') {
+      const before = sampleMechanism(o, state.elapsed-dt);
+      if (Math.abs(p.x-before.x) > 1e-8) dx = Math.sign(p.x-before.x);
+    }
+  }
+  const strength = o.impactStrength === undefined ? 8 : Math.max(2,Math.min(24,o.impactStrength));
+  const l=Math.hypot(dx,dz);state.lastHazard=o.id;state.knockX=dx/l*strength;state.knockZ=dz/l*strength;
   state.vy=Math.max(state.vy,barrier?2.5:4.8);state.grounded=false;state.supportId=null;
   state.action='normal';state.actionTime=0;state.knockTime=.55;state.protection=.8;state.obstacleHits++;state.coyote=state.jumpBuffer=0;state.lastEvent='hit';state.eventSerial++;
   break;

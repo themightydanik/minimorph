@@ -117,3 +117,18 @@ body,
 .editor-viewport {
   overflow: hidden;
 }
+.level-editor header {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.level-editor {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.level-editor select {
+  width: 100%;
+  max-width: 100%;
+  min-height: 36px;
+  color: inherit;
+  background: #263858;
+  margin: 8px 0;
+}

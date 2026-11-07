@@ -5,15 +5,19 @@ import {
   editableVisuals,
   canRotateLayoutObject,
   validateLayout,
+  editorCatalog,
+  layoutSource,
 } from "@minimorph/game-content";
-import type { LayoutObject } from "@minimorph/game-content";
+import type { LayoutObject, LayoutOverride } from "@minimorph/game-content";
 import { createCosmicScene } from "./cosmic-scene";
 import { createPolishLighting } from "./polish-lighting";
 import { createPlayer } from "./physics";
 import "./editor.css";
+import { EditorHistory } from "./editor-history";
+import { editorAssetUrls } from "./editor-assets";
 /** Preview-only authoring mode: no player, sockets or persisted production overrides. */
 export function mountLevelEditor(host: HTMLElement) {
-  host.innerHTML = `<main class="level-editor"><header><b>Minimorph · Level Editor v0.1</b><button data-export>Save / Export JSON</button><button data-import>Import JSON</button><input data-file type="file" accept=".json,application/json" hidden><button data-reset>Reset layout</button><a href="/">Back to game</a></header><aside><h3>Cosmic Sprint</h3><p>Draft only · export never changes the published game.</p><div data-hierarchy></div></aside><section class="editor-viewport"><canvas aria-label="Cosmic Sprint editor viewport"></canvas><nav><button data-top>Top-down</button><button data-focus>Focus selection</button><span>Click: select · right drag: orbit · middle / Shift drag: pan · wheel: zoom · arrows: move gizmo on X/Z</span></nav><output data-status role="status">Loading actual GLB scene…</output></section><aside><h3>Selected object</h3><div data-inspector></div><p>Spawn, finish, checkpoints, decoration and bot routes are read-only. Moving platforms does not regenerate routes. Export and review before use in gameplay.</p></aside></main>`;
+  host.innerHTML = `<main class="level-editor"><header><b>Minimorph · Level Editor v0.2</b><button data-undo disabled>Undo</button><button data-redo disabled>Redo</button><button data-export>Save / Export JSON</button><button data-import>Import JSON</button><input data-file type="file" accept=".json,application/json" hidden><button data-reset>Reset layout</button><a href="/">Back to game</a></header><aside><h3>Cosmic Sprint</h3><p>Draft only · export never changes the published game.</p><h3>Asset catalog · 23 GLBs</h3><input data-asset-search aria-label="Search assets" placeholder="Search prepared assets"><select data-catalog aria-label="Asset catalog"></select><select data-add-at aria-label="Placement location"><option value="target">At camera target</option><option value="selection">At selected object</option></select><button data-add>Add selected asset</button><p data-catalog-note></p><h3>Scene objects</h3><div data-hierarchy></div></aside><section class="editor-viewport"><canvas aria-label="Cosmic Sprint editor viewport"></canvas><nav><button data-top>Top-down</button><button data-focus>Focus selection</button><span>Click: select · right drag: orbit · middle / Shift drag: pan · wheel: zoom · arrows: move gizmo on X/Z</span></nav><output data-status role="status">Loading actual GLB scene…</output></section><aside><h3>Selected object</h3><div data-inspector></div><p>Spawn, finish, checkpoints, decoration and bot routes are read-only. Moving platforms does not regenerate routes. Export and review before use in gameplay.</p></aside></main>`;
   const q = <T extends HTMLElement>(s: string) => host.querySelector<T>(s)!;
   const canvas = q<HTMLCanvasElement>("canvas"),
     status = q<HTMLOutputElement>("[data-status]");
@@ -57,6 +61,7 @@ export function mountLevelEditor(host: HTMLElement) {
           : `Loading GLBs ${s.loaded}/${s.total}…`;
     },
     true,
+    editorAssetUrls,
   );
   const state = createPlayer(arena);
   const anchor = new pc.Entity("Editor transform anchor");
@@ -107,20 +112,52 @@ export function mountLevelEditor(host: HTMLElement) {
       yaw: v.yaw ?? 0,
     };
   }
-  function setObject(o: LayoutObject) {
-    const next = structuredClone(layout),
-      i = next.objects.findIndex((v) => v.id === o.id);
-    if (i >= 0) next.objects[i] = o;
-    else next.objects.push(o);
+  const history = new EditorHistory();
+  function updateHistoryButtons() {
+    q<HTMLButtonElement>("[data-undo]").disabled = !history.canUndo;
+    q<HTMLButtonElement>("[data-redo]").disabled = !history.canRedo;
+  }
+  function applyDraft(next: LayoutOverride, remember = true) {
     const validated = validateLayout(next),
       nextArena = applyLayout(validated);
+    if (remember) history.record(layout, validated);
     layout = validated;
     arena = nextArena;
     scene.setLayout(arena);
     scene.update(state, true);
     canvas.dataset.layout = JSON.stringify(layout);
     canvas.dataset.editorSelected = selected;
+    updateHistoryButtons();
   }
+  function traverseHistory(redo: boolean) {
+    if (dragging) return;
+    const next = redo ? history.redo(layout) : history.undo(layout);
+    if (!next) return;
+    applyDraft(next, false);
+    if (!arena.visuals!.some((v) => v.id === selected)) selected = "";
+    refresh();
+  }
+  q("[data-undo]").addEventListener("click", () => traverseHistory(false));
+  q("[data-redo]").addEventListener("click", () => traverseHistory(true));
+  window.addEventListener("keydown", historyShortcut);
+  function historyShortcut(e: KeyboardEvent) {
+    if (
+      !(e.ctrlKey || e.metaKey) ||
+      e.altKey ||
+      !["z", "y"].includes(e.key.toLowerCase())
+    )
+      return;
+    e.preventDefault();
+    traverseHistory(e.key.toLowerCase() === "y" || e.shiftKey);
+  }
+  function setObject(o: LayoutObject) {
+    const next = structuredClone(layout),
+      i = next.objects.findIndex((v) => v.id === o.id);
+    if (i >= 0) next.objects[i] = o;
+    else next.objects.push(o);
+    applyDraft(next);
+  }
+
   function inspector() {
     const box = q("[data-inspector]");
     box.replaceChildren();
@@ -137,16 +174,59 @@ export function mountLevelEditor(host: HTMLElement) {
     }
     anchor.setPosition(o.x, o.y, o.z);
     gizmo.attach([anchor]);
-    for (const key of ["x", "y", "z", "yaw"] as const) {
+    for (const key of [
+      "x",
+      "y",
+      "z",
+      "yaw",
+      "width",
+      "depth",
+      "scale",
+      "impactStrength",
+    ] as const) {
       const label = document.createElement("label");
+      const source = layoutSource(o.sourceId)!;
       label.textContent =
-        key === "yaw" ? "Rotation Y (degrees)" : key.toUpperCase();
+        key === "yaw"
+          ? "Rotation Y (degrees)"
+          : key === "impactStrength"
+            ? "Impact Strength"
+            : key === "width" || key === "depth"
+              ? `Base ${key} (m)`
+              : key === "scale"
+                ? "Uniform scale"
+                : key.toUpperCase();
       const input = document.createElement("input");
       input.type = "number";
       input.step = key === "yaw" ? "1" : "0.25";
       input.dataset.property = key;
-      input.value = String(key === "yaw" ? (o.yaw * 180) / Math.PI : o[key]);
-      input.disabled = key === "yaw" && !canRotateLayoutObject(o.sourceId);
+      const current =
+        key === "width" || key === "depth"
+          ? (o[key] ?? source.visual[key])
+          : key === "scale"
+            ? (o.scale ?? 1)
+            : key === "impactStrength"
+              ? (o.impactStrength ?? source.mechanism?.impactStrength ?? 8)
+              : key === "yaw"
+                ? (o.yaw * 180) / Math.PI
+                : o[key];
+      input.value = String(current);
+      input.disabled =
+        (key === "yaw" && !canRotateLayoutObject(o.sourceId)) ||
+        ((key === "width" || key === "depth") &&
+          (!source.platform || source.platform.radius !== undefined)) ||
+        (key === "impactStrength" &&
+          !["sweeper", "pusher"].includes(source.mechanism?.kind ?? ""));
+      if (key === "scale") {
+        input.min = ".1";
+        input.max = source.mechanism ? "2" : "4";
+        input.step = ".1";
+      }
+      if (key === "impactStrength") {
+        input.min = "2";
+        input.max = "24";
+        input.step = "1";
+      }
       input.addEventListener("change", () => {
         try {
           const n = Number(input.value);
@@ -158,18 +238,20 @@ export function mountLevelEditor(host: HTMLElement) {
           inspector();
         } catch (e) {
           status.textContent = String(e);
-          input.value = String(
-            key === "yaw" ? (o.yaw * 180) / Math.PI : o[key],
-          );
+          input.value = String(current);
         }
       });
       label.append(input);
       box.append(label);
     }
     const info = document.createElement("p");
-    info.textContent = canRotateLayoutObject(o.sourceId)
-      ? "Linked: visual + platform collision surface."
-      : "Linked: visual + mechanism / trigger. Rotation locked: this mechanism has no arbitrary yaw support in shared physics.";
+    const source = layoutSource(o.sourceId)!;
+    info.textContent =
+      source.category === "decoration"
+        ? "NON-COLLIDABLE decoration. No walkable surface, barrier or trigger. Uniform scale only."
+        : source.platform
+          ? "Linked collision surface. Width/depth and uniform scale affect art + collision. Circular floors: uniform scale only. Surface elevation: Y; thickness is not supported by the planar physics."
+          : "Linked mechanism/trigger. Uniform scale (0.1–2) updates collision dimensions. Rotation and individual dimensions are locked to preserve supported collision rules.";
     box.append(info);
     for (const [text, action] of [
       [
@@ -219,13 +301,16 @@ export function mountLevelEditor(host: HTMLElement) {
     for (const v of arena.visuals!) {
       const b = document.createElement("button");
       b.dataset.object = v.id;
-      b.textContent = `${editableVisuals().some((s) => s.id === v.id) || layout.objects.some((o) => o.id === v.id) ? "" : "🔒 "}${v.id}`;
+      const override = layout.objects.find((o) => o.id === v.id);
+      const source = layoutSource(override?.sourceId ?? v.id);
+      b.textContent = `${source ? (source.category === "decoration" ? "[DECOR · no collision] " : "") : "🔒 "}${v.id.startsWith("editor-") ? `${v.asset}${v.part === undefined ? "" : ` / part ${v.part}`} · ${v.id}` : v.id}`;
       b.addEventListener("click", () => select(v.id));
       list.append(b);
     }
     select(selected);
   }
   gizmo.on(pc.TransformGizmo.EVENT_TRANSFORMSTART, () => {
+    history.begin(layout);
     dragging = true;
     gizmoGesture = true;
   });
@@ -244,6 +329,8 @@ export function mountLevelEditor(host: HTMLElement) {
   });
   gizmo.on(pc.TransformGizmo.EVENT_TRANSFORMEND, () => {
     dragging = false;
+    history.end(layout);
+    updateHistoryButtons();
     inspector();
   });
   let pointer:
@@ -251,6 +338,20 @@ export function mountLevelEditor(host: HTMLElement) {
     | undefined;
   const listeners = new AbortController(),
     opts = { signal: listeners.signal };
+  canvas.addEventListener(
+    "pointerdown",
+    (e) => {
+      gizmo.mouseButtons[0] = !e.shiftKey;
+    },
+    { ...opts, capture: true },
+  );
+  canvas.addEventListener(
+    "pointerup",
+    () => {
+      gizmo.mouseButtons[0] = true;
+    },
+    { ...opts, capture: true },
+  );
   canvas.addEventListener("contextmenu", (e) => e.preventDefault(), opts);
   canvas.addEventListener(
     "pointerdown",
@@ -279,8 +380,8 @@ export function mountLevelEditor(host: HTMLElement) {
         );
       } else if (pointer.button === 1 || pointer.shift) {
         const s = distance * 0.0015;
-        target.x += (-dx * Math.cos(azimuth) + dy * Math.sin(azimuth)) * s;
-        target.z += (dx * Math.sin(azimuth) + dy * Math.cos(azimuth)) * s;
+        target.x += (-dx * Math.cos(azimuth) - dy * Math.sin(azimuth)) * s;
+        target.z += (dx * Math.sin(azimuth) - dy * Math.cos(azimuth)) * s;
       } else return;
       pointer.x = e.clientX;
       pointer.y = e.clientY;
@@ -381,7 +482,7 @@ export function mountLevelEditor(host: HTMLElement) {
       ),
       a = document.createElement("a");
     a.href = url;
-    a.download = "minimorph-cosmic-sprint-layout-v1.json";
+    a.download = "minimorph-cosmic-sprint-layout-v2.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
@@ -394,13 +495,9 @@ export function mountLevelEditor(host: HTMLElement) {
       const file = input.files?.[0];
       if (!file) return;
       if (file.size > 256 * 1024) throw Error("JSON exceeds 256 KiB.");
-      const next = validateLayout(JSON.parse(await file.text())),
-        nextArena = applyLayout(next);
-      layout = next;
-      arena = nextArena;
+      const next = validateLayout(JSON.parse(await file.text()));
+      applyDraft(next);
       selected = "";
-      scene.setLayout(arena);
-      canvas.dataset.layout = JSON.stringify(layout);
       refresh();
       status.textContent = "Imported local draft. Gameplay links preserved.";
     } catch (error) {
@@ -410,14 +507,67 @@ export function mountLevelEditor(host: HTMLElement) {
     }
   });
   q("[data-reset]").addEventListener("click", () => {
-    layout = emptyLayout();
-    arena = applyLayout(layout);
+    applyDraft(emptyLayout());
     selected = "";
-    scene.setLayout(arena);
-    canvas.dataset.layout = JSON.stringify(layout);
     refresh();
     status.textContent = "Original PR #13 layout restored.";
   });
+  function catalogNote() {
+    const source = editorCatalog.find(
+      (s) => s.visual.id === q<HTMLSelectElement>("[data-catalog]").value,
+    );
+    q("[data-catalog-note]").textContent =
+      source?.category === "decoration"
+        ? "NON-COLLIDABLE: decoration only. Unsupported ramps, barriers and kit shapes have no gameplay collision."
+        : source?.category === "platform"
+          ? "Walkable platform with linked collision surface."
+          : "Functional mechanism with linked collision / trigger; new bounce pads include a landing surface.";
+  }
+  function filterCatalog() {
+    const needle = q<HTMLInputElement>(
+      "[data-asset-search]",
+    ).value.toLowerCase();
+    const select = q<HTMLSelectElement>("[data-catalog]");
+    select.replaceChildren();
+    for (const source of editorCatalog.filter((s) =>
+      s.name.toLowerCase().includes(needle),
+    )) {
+      const option = document.createElement("option");
+      option.value = source.visual.id;
+      option.textContent = source.name;
+      select.append(option);
+    }
+    q<HTMLButtonElement>("[data-add]").disabled = !select.options.length;
+    catalogNote();
+  }
+  q("[data-asset-search]").addEventListener("input", filterCatalog);
+  q("[data-catalog]").addEventListener("change", catalogNote);
+  q("[data-add]").addEventListener("click", () => {
+    const source = editorCatalog.find(
+      (s) => s.visual.id === q<HTMLSelectElement>("[data-catalog]").value,
+    );
+    if (!source) return;
+    const at =
+      q<HTMLSelectElement>("[data-add-at]").value === "selection"
+        ? (arena.visuals!.find((v) => v.id === selected) ?? target)
+        : target;
+    try {
+      const o: LayoutObject = {
+        id: `editor-${crypto.randomUUID()}`,
+        sourceId: source.visual.id,
+        x: at.x,
+        y: at.y,
+        z: at.z,
+        yaw: source.visual.yaw ?? 0,
+      };
+      setObject(o);
+      selected = o.id;
+      refresh();
+    } catch (e) {
+      status.textContent = String(e);
+    }
+  });
+  filterCatalog();
   const resize = new ResizeObserver(() =>
     app.resizeCanvas(
       canvas.parentElement!.clientWidth,
@@ -451,6 +601,7 @@ export function mountLevelEditor(host: HTMLElement) {
   app.start();
   return {
     destroy() {
+      window.removeEventListener("keydown", historyShortcut);
       listeners.abort();
       resize.disconnect();
       gizmo.destroy();

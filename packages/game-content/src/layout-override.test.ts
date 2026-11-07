@@ -91,7 +91,7 @@ describe("editor layout overrides", () => {
     for (const input of [
       null,
       {},
-      { ...emptyLayout(), version: 2 },
+      { ...emptyLayout(), version: 3 },
       { ...emptyLayout(), arenaId: "orbit-chaos" },
       { ...emptyLayout(), objects: [{ ...o, x: Infinity }] },
       { ...emptyLayout(), objects: [o, o] },
@@ -101,4 +101,120 @@ describe("editor layout overrides", () => {
     ])
       expect(() => validateLayout(input)).toThrow();
   });
+});
+
+it("migrates v0.1 exports and round trips catalog instances and gameplay properties", () => {
+  const old = {
+    version: 1,
+    arenaId: "cosmic-sprint",
+    objects: [move("launch-island")],
+  };
+  expect(validateLayout(old).version).toBe(2);
+  const object = {
+    id: "editor-new",
+    sourceId: "catalog:giant-padded-hammer",
+    x: 4,
+    y: 0,
+    z: 2,
+    yaw: Math.PI / 2,
+    scale: 1.5,
+    impactStrength: 20,
+  };
+  const layout = { ...emptyLayout(), objects: [object] };
+  expect(validateLayout(JSON.parse(JSON.stringify(layout)))).toEqual(layout);
+  const arena = applyLayout(layout);
+  expect(arena.mechanisms.find((m) => m.id === object.id)).toMatchObject({
+    impactStrength: 20,
+    length: 7.6 * 1.5,
+  });
+  expect(() =>
+    validateLayout({
+      ...emptyLayout(),
+      objects: [
+        {
+          id: "editor-pad",
+          sourceId: "catalog:inflatable-bounce-pad",
+          x: 0,
+          y: 0,
+          z: 0,
+          yaw: 0,
+        },
+        {
+          id: "editor-pad-support",
+          sourceId: "catalog:main-floor-tile",
+          x: 0,
+          y: 0,
+          z: 0,
+          yaw: 0,
+        },
+      ],
+    }),
+  ).toThrow();
+  for (const patch of [
+    { scale: 0 },
+    { scale: 3 },
+    { impactStrength: 25 },
+    { sourceId: "catalog:unknown" },
+    { width: 14 },
+  ])
+    expect(() =>
+      validateLayout({ ...layout, objects: [{ ...object, ...patch }] }),
+    ).toThrow();
+});
+it("scales visual and collision dimensions together, preserving separate decoration and pad support", () => {
+  const arena = applyLayout({
+    ...emptyLayout(),
+    objects: [
+      { ...move("launch-island"), width: 16, depth: 10, scale: 1.5 },
+      {
+        id: "editor-disc",
+        sourceId: "catalog:rotating-carousel",
+        x: 4,
+        y: 2,
+        z: 3,
+        yaw: 0,
+        scale: 2,
+      },
+      {
+        id: "editor-pad",
+        sourceId: "catalog:inflatable-bounce-pad",
+        x: 1,
+        y: 0,
+        z: 0,
+        yaw: 0,
+      },
+      {
+        id: "editor-decor",
+        sourceId: "catalog:curved-platform-ramp-kit:0",
+        x: 0,
+        y: 0,
+        z: 0,
+        yaw: 0.2,
+        scale: 2,
+      },
+    ],
+  });
+  for (const id of ["launch-island", "editor-disc"]) {
+    const visual = arena.visuals!.find((v) => v.id === id)!;
+    const body =
+      arena.platforms.find((p) => p.id === id) ??
+      arena.mechanisms.find((m) => m.id === id)!;
+    expect(body.x).toBe(visual.x);
+    expect(body.y).toBe(visual.y);
+    if ("radius" in body) expect(body.radius! * 2).toBe(visual.width);
+    else
+      expect(body).toMatchObject({ width: visual.width, depth: visual.depth });
+  }
+  expect(arena.platforms.find((p) => p.id === "launch-island")).toMatchObject({
+    width: 24,
+    depth: 15,
+  });
+  expect(
+    arena.platforms.find((p) => p.id === "editor-pad-support"),
+  ).toMatchObject({ x: 1, y: 0, width: 5, depth: 5 });
+  expect(
+    [...arena.platforms, ...arena.mechanisms].some(
+      (p) => p.id === "editor-decor",
+    ),
+  ).toBe(false);
 });
