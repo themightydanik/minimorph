@@ -23,7 +23,7 @@ export function sampleMechanism(o:ArenaObstacle,time:number,out:MechanismPose={x
  if(o.kind==='collapse-platform'&&triggerTime!==undefined){const age=time-triggerTime;if(age<o.delay)p.phase=age>=o.delay-o.warning?'warning':'safe';else if(age<o.delay+o.resetAfter){p.phase='hidden';p.y-=Math.min(8,(age-o.delay)*5);}}
  return p;
 }
-function hasSurface(o:ArenaObstacle){return ['moving-platform','disappearing-platform','rotating-disc','conveyor','bounce-platform','collapse-platform'].includes(o.kind);}
+function hasSurface(o:ArenaObstacle){if(o.kind==='conveyor'&&o.surface===false)return false;return ['moving-platform','disappearing-platform','rotating-disc','conveyor','bounce-platform','collapse-platform','jump-pad'].includes(o.kind);}
 export function surfaceContains(p:Platform,x:number,z:number):boolean{
  if(p.radius!==undefined)return Math.hypot(x-p.x,z-p.z)<=p.radius;
  if(p.yaw){const dx=x-p.x,dz=z-p.z,c=Math.cos(p.yaw),s=Math.sin(p.yaw);return Math.abs(dx*c-dz*s)<=p.width/2&&Math.abs(dx*s+dz*c)<=p.depth/2;}
@@ -45,7 +45,7 @@ export class ArenaRuntime {
   const result=this.active;result.length=0;
   for(const s of this.staticSurfaces)if(nearZ===undefined||Math.abs(s.z-nearZ)<(Math.abs(Math.cos(s.yaw??0))*s.depth+Math.abs(Math.sin(s.yaw??0))*s.width)/2+20)result.push(s);
   for(const e of this.entries){
-   if(!e.surface||(nearZ!==undefined&&Math.abs(e.o.z-nearZ)>32))continue;
+   if(!e.surface||(nearZ!==undefined&&Math.abs(e.o.z-nearZ)>(e.surface.depth+e.surface.width)/2+20))continue;
    const p=sampleMechanism(e.o,time,e.now,collapseTimes[e.o.id]);if(p.phase==='hidden')continue;
    const b=sampleMechanism(e.o,previousTime,e.before,collapseTimes[e.o.id]),s=e.surface;
    s.x=p.x;s.y=p.y;s.z=p.z;s.previousY=b.y;result.push(s);
@@ -65,12 +65,12 @@ export function supportDisplacement(o:ArenaObstacle,time:number,dt:number,x:numb
 export function mechanismContact(o:ArenaObstacle,time:number,player:{x:number;y:number;z:number},radius=.25,pose?:MechanismPose):boolean{
  const p=pose??sampleMechanism(o,time);
  if(o.kind==='pendulum')return Math.hypot(player.x-p.x,player.z-p.z)<radius+o.radius&&player.y<p.y+o.radius&&player.y+1.7>p.y-o.radius;
- if(o.kind!=='sweeper'&&o.kind!=='sliding-block'&&o.kind!=='laser'&&o.kind!=='moving-wall'&&o.kind!=='timed-gate'&&o.kind!=='pusher')return false;
+ if(o.kind!=='sweeper'&&o.kind!=='sliding-block'&&o.kind!=='laser'&&o.kind!=='moving-wall'&&o.kind!=='timed-gate'&&o.kind!=='pusher'&&o.kind!=='solid-box')return false;
  if((o.kind==='laser'||o.kind==='timed-gate'||o.kind==='pusher')&&p.phase!=='active')return false;
  if(player.y>=p.y+o.height||player.y+1.7<=p.y)return false;
  const dx=player.x-p.x,dz=player.z-p.z;
- if(o.kind==='sweeper'){const along=dx*Math.cos(p.angle)+dz*Math.sin(p.angle),across=-dx*Math.sin(p.angle)+dz*Math.cos(p.angle);return Math.hypot(Math.max(0,Math.abs(along)-o.length/2),across)<o.width/2+radius;}
+ if(o.kind==='sweeper'){const along=dx*Math.cos(p.angle+(o.yaw??0))+dz*Math.sin(p.angle+(o.yaw??0)),across=-dx*Math.sin(p.angle+(o.yaw??0))+dz*Math.cos(p.angle+(o.yaw??0));return Math.hypot(Math.max(0,Math.abs(along)-o.length/2),across)<o.width/2+radius;}
  if(o.kind==='pusher'&&o.shaft!==false&&Math.abs(dz)<.25+radius&&player.x>=Math.min(p.x,o.x)-radius&&player.x<=Math.max(p.x,o.x)+radius)return true;
  if(o.kind==='moving-wall'&&Math.abs(dx)<o.gap/2-radius)return false;
- return Math.abs(dx)<o.width/2+radius&&Math.abs(dz)<o.depth/2+radius;
+ const c=Math.cos(o.yaw??0),s=Math.sin(o.yaw??0);return Math.abs(dx*c-dz*s)<o.width/2+radius&&Math.abs(dx*s+dz*c)<o.depth/2+radius;
 }

@@ -15,13 +15,13 @@ for (const target of ['telegram', 'minima']) {
   assert.equal(characters.length, 1, `${target}: exactly one production character GLB`);
   assert.equal(sha(await readFile(new URL(characters[0], directory))), approval.candidateSha256);
   const environment = models.filter(name => !characters.includes(name));
-  assert.equal(environment.length, 14, `${target}: only the 14 referenced Cosmic models are bundled`);
+  assert.equal(environment.length, cosmic.assets.length, `${target}: the complete prepared Cosmic library is publishable`);
   for (const filename of environment) {
     const entry = cosmic.assets.find(asset => filename.startsWith(asset.runtime.replace('.glb', '-') ));
     assert.ok(entry, `${target}: unknown environment model ${filename}`);
     assert.equal(sha(await readFile(new URL(filename, directory))), entry.runtimeSha256);
   }
-  console.log(`${target}: 14 local Cosmic GLBs verified against pinned runtime hashes`);
+  console.log(`${target}: ${cosmic.assets.length} local Cosmic GLBs verified against pinned runtime hashes`);
   const files = await readdir(directory);
   for (const [name, info] of Object.entries(audio.assets)) {
     const filename = files.find(file => file.startsWith(name + '-') && file.endsWith('.wav'));

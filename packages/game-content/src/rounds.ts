@@ -1,5 +1,5 @@
 import { trainingArenas, getTrainingArena } from './arenas';
-import { cosmicSprint } from './cosmic-sprint';
+import { publishedCosmicSprint as cosmicSprint } from './published-cosmic';
 import type { ArenaConfig, ArenaObstacle, ArenaSection, RaceMode } from './arenas';
 import type { Platform } from './legacy';
 type Theme = 'rotors' | 'pendulums' | 'walls' | 'belts' | 'shuttles' | 'bounce' | 'pulse' | 'collapse' | 'terraces';

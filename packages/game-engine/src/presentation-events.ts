@@ -1,7 +1,7 @@
 import type { PlayerState } from './physics';
 export type PresentationCue = 'jump' | 'land' | 'dive' | 'slide' | 'collision' | 'checkpoint' | 'finish' | 'victory';
 export interface PresentationEvent { kind: PresentationCue; playerId: string; remote: boolean; x: number; y: number; z: number; }
-interface Cursor { serial: number; checkpoint: number; respawns: number; elapsed: number; action: PlayerState['action']; diveAt: number; slideAt: number; won: boolean; }
+interface Cursor { checkpointSerial:number; serial: number; checkpoint: number; respawns: number; elapsed: number; action: PlayerState['action']; diveAt: number; slideAt: number; won: boolean; }
 /** Session-scoped high-water marks survive reconciliation and visual reconnects. No wire changes. */
 export class PresentationEvents {
   private readonly players = new Map<string, Cursor>();
@@ -14,7 +14,7 @@ export class PresentationEvents {
     let cursor = this.players.get(id);
     if (!cursor) {
       // Joining/reconnecting mid-action must not replay old sounds or explosions.
-      cursor = { serial: state.eventSerial, checkpoint: state.checkpoint, respawns: state.respawns, elapsed: state.elapsed, action: state.action, diveAt: state.action === 'dive' || state.action === 'slide' ? state.elapsed : -Infinity, slideAt: state.action === 'slide' ? state.elapsed : -Infinity, won: state.won };
+      cursor = { checkpointSerial:state.checkpointSerial??0, serial: state.eventSerial, checkpoint: state.checkpoint, respawns: state.respawns, elapsed: state.elapsed, action: state.action, diveAt: state.action === 'dive' || state.action === 'slide' ? state.elapsed : -Infinity, slideAt: state.action === 'slide' ? state.elapsed : -Infinity, won: state.won };
       if (this.players.size >= 16) this.players.delete(this.players.keys().next().value!);
       this.players.set(id, cursor); return;
     }
@@ -25,7 +25,8 @@ export class PresentationEvents {
       if (state.lastEvent === 'land') this.send('land', id, state, remote);
       if (state.lastEvent === 'hit') this.send('collision', id, state, remote);
     }
-    if (state.checkpoint > cursor.checkpoint) { cursor.checkpoint = state.checkpoint; this.send('checkpoint', id, state, remote); }
+    if((state.checkpointSerial??0)>cursor.checkpointSerial){cursor.checkpointSerial=state.checkpointSerial??0;this.send("checkpoint",id,state,remote);}
+    cursor.checkpoint = state.checkpoint;
     if (forward && state.action !== cursor.action) {
       if ((state.action === 'dive' || state.action === 'slide' && cursor.action === 'normal') && state.elapsed - cursor.diveAt >= 1) { cursor.diveAt = state.elapsed; this.send('dive', id, state, remote); }
       if (state.action === 'slide' && state.elapsed - cursor.slideAt >= 1) { cursor.slideAt = state.elapsed; this.send('slide', id, state, remote); }
