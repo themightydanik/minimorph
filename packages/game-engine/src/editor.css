@@ -179,3 +179,13 @@ body,
     display: flex;
   }
 }
+.level-editor header label {
+  display: inline-flex;
+  gap: 4px;
+  margin: 0;
+  align-items: center;
+  font-size: 12px;
+}
+.level-editor header input[type="checkbox"] {
+  width: auto;
+}

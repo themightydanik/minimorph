@@ -4,6 +4,7 @@ import { createPlayer } from "./physics";
 import type { PlayerState } from "./physics";
 import { sampleMechanism } from "./obstacles";
 import { instancedNormalChunk } from "./instanced-normals";
+import { editorAssetUrls as preparedAssetUrls } from "./editor-assets";
 import rawInventory from "../../../assets/arenas/cosmic-sprint/runtime-manifest.json";
 export interface ArenaLoadStatus {
   ready: boolean;
@@ -127,6 +128,33 @@ export function createCosmicScene(
   const entries = new Map<string, Entry>();
   let placements = arena.visuals!;
   let keys = [...new Set(placements.map((v) => v.asset))];
+  let turboVisuals = placements.filter((v) => v.asset === "turbo-conveyor");
+  const bandMaterial = new pc.StandardMaterial();
+  bandMaterial.diffuse = new pc.Color(0.2, 0.95, 0.8);
+  bandMaterial.emissive.copy(bandMaterial.diffuse);
+  bandMaterial.useLighting = false;
+  bandMaterial.opacity = 0.45;
+  bandMaterial.blendType = pc.BLEND_ADDITIVEALPHA;
+  bandMaterial.depthWrite = false;
+  bandMaterial.update();
+  const bands = new pc.Entity("Instanced turbo direction light bands", app);
+  root.addChild(bands);
+  bands.addComponent("render", {
+    type: "box",
+    castShadows: false,
+    receiveShadows: false,
+  });
+  const bandMesh = bands.render!.meshInstances[0];
+  bandMesh.material = bandMaterial;
+  bandMesh.cull = false;
+  let bandBuffer = new pc.VertexBuffer(
+      app.graphicsDevice,
+      pc.VertexFormat.getDefaultInstancingFormat(app.graphicsDevice),
+      1,
+      { usage: pc.BUFFER_DYNAMIC },
+    ),
+    bandData = new Float32Array(16);
+  bandMesh.setInstancing(bandBuffer, false);
   const canvas = app.graphicsDevice.canvas as HTMLCanvasElement;
   let disposed = false,
     overview = false,
@@ -173,7 +201,8 @@ export function createCosmicScene(
         sy = Math.min(sx, sz, 8);
       if (v.fit === "gate" || v.fit === "prop")
         sx = sy = sz = v.width / Math.max(d[0], d[2]);
-      const o = arena.mechanisms.find((o) => o.id === v.mechanismId);
+      const o =
+        v.animation ?? arena.mechanisms.find((o) => o.id === v.mechanismId);
       if (o?.kind === "rotating-disc") sy = Math.min(sy, 2);
       const pivot = v.fit === "floor" ? part.walkY : b.min[1],
         cy = v.y + ((b.min[1] + b.max[1]) / 2 - pivot) * sy;
@@ -209,7 +238,7 @@ export function createCosmicScene(
   }
   function load(key: string) {
     const asset = new pc.Asset(`Cosmic environment ${key}`, "container", {
-      url: editorUrls[key] ?? urls[key],
+      url: editorUrls[key] ?? urls[key] ?? preparedAssetUrls[key],
     });
     const entry: Entry = {
       key,
@@ -335,7 +364,8 @@ export function createCosmicScene(
       sx = sy = sz = v.width / Math.max(dims[0], dims[2]);
     let pivotY = v.fit === "floor" ? part.walkY : bounds.min[1];
     if (v.mechanismId) {
-      const o = arena.mechanisms.find((o) => o.id === v.mechanismId)!;
+      const o =
+        v.animation ?? arena.mechanisms.find((o) => o.id === v.mechanismId)!;
       const pose = sampleMechanism(o, state.elapsed);
       if (o.kind === "sweeper") {
         sx = sy = sz = v.width / Math.max(dims[0], dims[2]);
@@ -375,6 +405,7 @@ export function createCosmicScene(
       arena = next;
       placements = next.visuals!;
       keys = [...new Set(placements.map((v) => v.asset))];
+      turboVisuals = placements.filter((v) => v.asset === "turbo-conveyor");
       for (const [key, entry] of entries) {
         const record = inventory.find((a) => a.runtime === `${key}.glb`)!;
         if (
@@ -537,6 +568,48 @@ export function createCosmicScene(
             if (count) group.buffer.setData(group.data);
           }
         }
+      const capacity = Math.max(1, turboVisuals.length * 3);
+      if (capacity > bandBuffer.numVertices) {
+        bandMesh.setInstancing(null);
+        bandBuffer.destroy();
+        bandBuffer = new pc.VertexBuffer(
+          app.graphicsDevice,
+          pc.VertexFormat.getDefaultInstancingFormat(app.graphicsDevice),
+          capacity,
+          { usage: pc.BUFFER_DYNAMIC },
+        );
+        bandData = new Float32Array(capacity * 16);
+        bandMesh.setInstancing(bandBuffer, false);
+      }
+      let bandCount = 0;
+      for (const v of turboVisuals) {
+        if (!entries.get(v.asset)?.loaded) continue;
+        const yaw = v.yaw ?? 0,
+          m =
+            v.animation ?? arena.mechanisms.find((m) => m.id === v.mechanismId),
+          direction =
+            m?.kind === "conveyor"
+              ? Math.sign(
+                  m.velocityX * Math.sin(yaw) + m.velocityZ * Math.cos(yaw),
+                ) || -1
+              : -1;
+        for (let i = 0; i < 3; i++) {
+          const along =
+            (((state.elapsed * 0.7 + i / 3) % 1) - 0.5) * v.depth * direction;
+          position.set(
+            v.x + Math.sin(yaw) * along,
+            v.y + 0.065,
+            v.z + Math.cos(yaw) * along,
+          );
+          rotation.setFromEulerAngles(0, (yaw * 180) / Math.PI, 0);
+          scale.set(v.width * 0.72, 0.025, 0.16);
+          matrix.setTRS(position, rotation, scale);
+          bandData.set(matrix.data, bandCount++ * 16);
+        }
+      }
+      bands.enabled = bandCount > 0;
+      bandMesh.instancingCount = bandCount;
+      if (bandCount) bandBuffer.setData(bandData);
       publish();
       canvas.dataset.arenaInstances = String(
         [...entries.values()].reduce(
@@ -562,7 +635,10 @@ export function createCosmicScene(
       disposed = true;
       for (const entry of entries.values()) remove(entry);
       entries.clear();
+      bandMesh.setInstancing(null);
+      bandBuffer.destroy();
       root.destroy();
+      bandMaterial.destroy();
       delete canvas.dataset.arenaAssets;
       delete canvas.dataset.arenaAssetCount;
       delete canvas.dataset.arenaInstances;

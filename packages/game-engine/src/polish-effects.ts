@@ -38,6 +38,8 @@ export function createPolishEffects(app: pc.Application, root: pc.Entity, shape:
     const entity=new pc.Entity('Pooled impact pulse');entity.addComponent('render',{type:'plane',castShadows:false});entity.render!.meshInstances[0].material=material;root.addChild(entity);entity.enabled=false;
     return {entity,material,life:0};
   });
+  const checkpointMaterial=rings[0].material.clone();checkpointMaterial.opacity=.4;checkpointMaterial.update();
+  const checkpointRing=new pc.Entity('Active respawn checkpoint glow');checkpointRing.addComponent('render',{type:'plane',castShadows:false});checkpointRing.render!.meshInstances[0].material=checkpointMaterial;root.addChild(checkpointRing);checkpointRing.enabled=false;
   let ringCursor=0;
   let cursor = 0, currentArena: ArenaConfig | undefined, world: ArenaRuntime | undefined, disposed = false;
   function burst(x:number,y:number,z:number,count:number,kind:string,heading=0) {
@@ -87,12 +89,14 @@ export function createPolishEffects(app: pc.Application, root: pc.Entity, shape:
       const height=state.y-ground;
       slot.entity.enabled=POLISH_EFFECT_LIMITS.contactShadows&&!state.recovery&&Number.isFinite(ground)&&height<4;
       if(slot.entity.enabled){slot.entity.setLocalPosition(state.x,ground+.018,state.z);const size=1.05+Math.max(0,height)*.12;slot.entity.setLocalScale(size,1,size*.78);}
+      if(!remote){const cp=currentArena?.checkpoints[state.checkpoint-1];checkpointRing.enabled=!!cp;if(cp){checkpointRing.setLocalPosition(cp.x,cp.y+.04,cp.z);const size=cp.radius*2.6*(1+.06*Math.sin(state.checkpointFlash*12));checkpointRing.setLocalScale(size,1,size);checkpointMaterial.opacity=state.checkpointFlash>0?.55:.3;checkpointMaterial.update();}}
       slot.trail+=dt;
+      if((state.turboTime??0)>0&&!state.recovery&&slot.trail>.12){slot.trail=0;burst(state.x,state.y,state.z,remote?1:2,'turbo',state.heading);}
       if(state.action==='slide'&&!state.recovery&&slot.trail>(remote?POLISH_EFFECT_LIMITS.remoteTrailInterval:POLISH_EFFECT_LIMITS.localTrailInterval)){slot.trail=0;burst(state.x,state.y,state.z,remote?1:2,'slide',state.heading);}
     },
     end(){if(disposed)return;for(const slot of slots)if(!slot.seen){slot.id='';slot.trail=0;slot.entity.enabled=false;}},
-    reset(){if(disposed)return;for(const ring of rings){ring.life=0;ring.entity.enabled=false;}for(const p of particles){p.life=0;p.entity.enabled=false;}for(const s of slots){s.id='';s.entity.enabled=false;s.trail=0;}},
+    reset(){if(disposed)return;checkpointRing.enabled=false;for(const ring of rings){ring.life=0;ring.entity.enabled=false;}for(const p of particles){p.life=0;p.entity.enabled=false;}for(const s of slots){s.id='';s.entity.enabled=false;s.trail=0;}},
     get active(){let count=0;for(const p of particles)if(p.life>0)count++;return count;},
-    destroy(){if(disposed)return;disposed=true;for(const p of particles){p.life=0;p.entity.enabled=false;p.entity.destroy();}for(const s of slots){s.entity.enabled=false;s.entity.destroy();}for(const m of materials)m.destroy();for(const ring of rings){ring.entity.destroy();ring.material.destroy();}ringTexture.destroy();shadowMaterial.destroy();texture.destroy();},
+    destroy(){if(disposed)return;disposed=true;checkpointRing.destroy();checkpointMaterial.destroy();for(const p of particles){p.life=0;p.entity.enabled=false;p.entity.destroy();}for(const s of slots){s.entity.enabled=false;s.entity.destroy();}for(const m of materials)m.destroy();for(const ring of rings){ring.entity.destroy();ring.material.destroy();}ringTexture.destroy();shadowMaterial.destroy();texture.destroy();},
   };
 }
