@@ -13,7 +13,7 @@ export interface CourseDefinition {
 }
 export interface NavigationRoute { id: string; stage: number; name: string; skill?: 'easy' | 'hard'; points: readonly Point[] }
 export interface ArenaVisual extends Point { id: string; asset: string; width: number; depth: number; yaw?: number; part?: number; mechanismId?: string; fit?: 'floor' | 'gate' | 'prop'; }
-interface Mechanism extends Point { id: string; period: number; phase?: number; yaw?: number }
+interface Mechanism extends Point { impactStrength?: number; id: string; period: number; phase?: number; yaw?: number }
 export type ArenaObstacle =
   | (Mechanism & { kind: 'sweeper'; length: number; width: number; height: number })
   | (Mechanism & { kind: 'moving-platform'; width: number; depth: number; axis: 'x' | 'y' | 'z'; amplitude: number })

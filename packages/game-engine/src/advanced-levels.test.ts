@@ -58,11 +58,11 @@ it('authoritative sampling repeats across cycles and all sector respawns stand o
   }
  }
 });
-it('branch arrival cannot skip ordered progression or claim an elevated finish from below', () => {
+it('trusted finish contact needs no checkpoint sequence but elevated finishes still reject contact from below', () => {
  for(const arena of arenas){
   const state=createPlayer(arena);Object.assign(state,arena.finish);
   stepArenaPlayer(state,idleInput,FIXED_STEP,arena);
-  expect(state.won).toBe(false);expect(state.checkpoint).toBe(0);
+  expect(state.won).toBe(true);expect(state.checkpoint).toBe(0);
  }
  const arena=arenas[2], state=createPlayer(arena);
  Object.assign(state,{x:arena.finish.x,z:arena.finish.z,y:0,checkpoint:arena.checkpoints.length});

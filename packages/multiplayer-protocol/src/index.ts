@@ -1,7 +1,7 @@
 import type { PlayerState, Input } from "@minimorph/game-simulation";
 export const PROTOCOL_VERSION = 2;
 /** Bump when collision-relevant course/sampling data changes, independently of wire v2. */
-export const WORLD_REVISION = "tournament-v1-galactic-park-v1";
+export const WORLD_REVISION = "tournament-v1-galactic-park-v2";
 export const SERVER_HZ = 30,
   SNAPSHOT_HZ = 10,
   CAPACITY = 8,

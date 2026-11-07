@@ -316,7 +316,7 @@ export function mountGame(root: HTMLElement, target: string): MountedGame {
               : "Back on the launch pad. Try again!",
           );
         respawns = state.respawns;
-        if (state.checkpoint > checkpoint) {
+        if (state.checkpoint !== checkpoint) {
           checkpoint = state.checkpoint;
           message.textContent = `Checkpoint ${checkpoint} secured!` + (mode === "race" ? ` ${checkpoint} / ${arena.checkpoints.length} · ${formatTime(state.elapsed)}` : "");
         }

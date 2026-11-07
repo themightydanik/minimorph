@@ -205,18 +205,18 @@ describe("responsive deterministic controller", () => {
   });
 });
 describe("checkpoints and hazards", () => {
-  it("activates checkpoints only on their surfaces and in order", () => {
+  it("activates checkpoints only on their surfaces in any order", () => {
     const s = createPlayer();
     Object.assign(s, checkpoints[1]);
     stepPlayer(s, idle, FIXED_STEP);
-    expect(s.checkpoint).toBe(0);
+    expect(s.checkpoint).toBe(2);
     Object.assign(s, checkpoints[0], {
       y: checkpoints[0].y + 0.4,
       grounded: false,
       coyote: 0,
     });
     stepPlayer(s, idle, FIXED_STEP);
-    expect(s.checkpoint).toBe(0);
+    expect(s.checkpoint).toBe(2);
     Object.assign(s, checkpoints[0], { grounded: true });
     stepPlayer(s, idle, FIXED_STEP);
     expect(s.checkpoint).toBe(1);
