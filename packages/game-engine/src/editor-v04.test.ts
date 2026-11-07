@@ -253,6 +253,7 @@ it("round trips collider/trigger config, blocks unreviewed publication and binds
   expect(layoutFingerprint({ b: 1, a: 2 })).toBe(
     layoutFingerprint({ a: 2, b: 1 }),
   );
+  expect(layoutFingerprint({n:.1+.2})).toBe(layoutFingerprint({n:.3}));
   expect(validRoomSnapshot(room.snapshot(0))).toBe(true);
   const messages: ServerMessage[] = [];
   const peer = {

@@ -6,7 +6,7 @@ import type { ArenaConfig, NavigationRoute } from "./arenas";
 export function layoutFingerprint(value: unknown): string {
   const canonical = (v: unknown): string =>
     v === null || typeof v !== "object"
-      ? JSON.stringify(v)
+      ? JSON.stringify(typeof v==='number'&&Number.isFinite(v)?Math.round(v*1e9)/1e9:v)
       : Array.isArray(v)
         ? `[${v.map(canonical).join(",")}]`
         : `{${Object.keys(v)

@@ -39,7 +39,8 @@ All 23 prepared GLBs are packageable for published catalog placements; the brows
 still loads scene resources on demand. No GLB source/texture was reprocessed.
 The wire format remains v2. `WORLD_REVISION` includes the v0.4 simulation epoch and
 a stable 64-bit fingerprint of the validated layout, compiled world and navigation
-(compatibility, not authentication). Deploy
+(canonical key order and 1e-9 numeric precision to avoid cross-runtime roundoff;
+compatibility, not authentication). Deploy
 frontend and the existing Render server from the **same commit**, including the
 published JSON; mixed revisions must continue to reject join/resume/snapshots.
 The default repository JSON contains no geometry overrides. Other arenas are unchanged.
