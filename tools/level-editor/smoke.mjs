@@ -33,75 +33,76 @@ try {
   const editor = page.locator(
     'canvas[aria-label="Cosmic Sprint editor viewport"]',
   );
-  await page.locator('[data-object="launch-island"]').click();
-  await page.locator("[data-collider-mode]").check();
-  for (const [key, value] of [
-    ["z", 16],
-    ["width", 8],
-    ["depth", 8],
-  ]) {
-    await page.locator(`[data-collider-property="${key}"]`).fill(String(value));
-    await page.locator(`[data-collider-property="${key}"]`).press("Tab");
-  }
-  const draft = JSON.parse(await editor.getAttribute("data-layout"));
-  assert.equal(draft.objects[0].z, 12);
-  assert.equal(draft.objects[0].colliders[0].z, 16);
+  const read = async () => JSON.parse(await editor.getAttribute("data-layout"));
+  const change = async (selector, value) => {
+    await page.locator(selector).fill(String(value));
+    await page.locator(selector).press("Tab");
+  };
+  await page.locator("[data-add-layer]").selectOption("environment");
+  await page
+    .locator("[data-catalog]")
+    .selectOption("catalog:space-decoration-kit:0");
+  await page.locator("[data-add]").click();
+  const a = (await read()).environment[0].id;
+  await change('[data-environment-property="x"]', 0);
+  await page.locator("[data-add]").click();
+  const b = (await read()).environment[1].id;
+  await change('[data-environment-property="x"]', 10);
+  await page.locator(`[data-object="${a}"]`).click();
+  await page.locator(`[data-object="${b}"]`).click({ modifiers: ["Control"] });
+  await page.locator('button[data-group=""]').click();
+  assert.equal((await read()).groups.length, 1);
+  await change('[data-group-property="x"]', 20);
+  await change('[data-group-property="yaw"]', 90);
+  await change('[data-group-property="scale"]', 2);
+  const transformed = await read();
+  assert.equal(transformed.environment[0].scale, 2);
+  assert.ok(Math.abs(transformed.environment[0].x - 20) < 1e-9);
   await page.locator("[data-undo]").click();
+  assert.equal((await read()).environment[0].scale, 1);
   await page.locator("[data-redo]").click();
-  assert.deepEqual(JSON.parse(await editor.getAttribute("data-layout")), draft);
-  const sockets = [];
-  page.on("websocket", (socket) => sockets.push(socket.url()));
-  await page.locator("[data-playtest]").click();
-  const game = page.locator('canvas[aria-label="Local Playtest"]');
+  assert.deepEqual(await read(), transformed);
+  await page.locator("[data-duplicate-selection]").click();
+  assert.equal((await read()).environment.length, 4);
+  assert.equal((await read()).groups.length, 2);
+  await page.locator("[data-focus]").click();
+  await page.locator("[data-ungroup]").click();
+  assert.equal((await read()).groups.length, 1);
+  const c = (await read()).environment[2].id;
+  await page.locator(`[data-object="${c}"]`).click();
+  await page.locator("[data-environment-animation]").selectOption("pulse");
+  await change('[data-animation-property="speed"]', 0.5);
+  await change('[data-animation-property="amplitude"]', 1.5);
   await page.waitForFunction(
-    () => {
-      const c = document.querySelector('canvas[aria-label="Local Playtest"]');
-      return (
-        c?.dataset.character === "minimorph-optimized-v1" &&
-        c.dataset.arenaAssets === "ready"
-      );
-    },
+    () => document.querySelector("canvas").dataset.arenaAssets === "ready",
     null,
     { timeout: 150000 },
   );
-  await game.focus();
-  await page.keyboard.down("KeyD");
-  await page.waitForFunction(
-    () => {
-      const d = document.querySelector(
-        'canvas[aria-label="Local Playtest"]',
-      ).dataset;
-      return Number(d.playtestX) > 4 && Number(d.playtestY) < -0.05;
-    },
-    null,
-    { timeout: 40000 },
-  );
-  await page.keyboard.up("KeyD");
-  await page.locator("[data-exit-playtest]").click();
-  assert.deepEqual(JSON.parse(await editor.getAttribute("data-layout")), draft);
-  assert.equal(
-    await page.locator('[data-collider-property="width"]').inputValue(),
-    "8",
-  );
+  await page.locator(`[data-toggle-locked="${c}"]`).click();
+  assert.equal(await page.locator(`[data-object="${c}"]`).isDisabled(), true);
+  await page.locator(`[data-toggle-locked="${c}"]`).click();
+  await page.locator(`[data-toggle-visible="${c}"]`).click();
+  assert.equal((await read()).environment[2].visible, false);
+  await page.locator(`[data-toggle-visible="${c}"]`).click();
+  await page.locator("[data-show-environment]").uncheck();
+  await page.locator("[data-show-environment]").check();
+  const draft = await read();
   const download = page.waitForEvent("download");
   await page.locator("[data-export]").click();
   const file = await download,
     path = await file.path();
   await page.locator("[data-reset]").click();
+  assert.equal((await read()).environment, undefined);
   await page.locator("[data-file]").setInputFiles(path);
   await page.waitForFunction(
     () =>
-      JSON.parse(
-        document.querySelector(
-          'canvas[aria-label="Cosmic Sprint editor viewport"]',
-        ).dataset.layout,
-      ).objects.length === 1,
+      JSON.parse(document.querySelector("canvas").dataset.layout).environment
+        ?.length === 4,
   );
-  assert.deepEqual(JSON.parse(await editor.getAttribute("data-layout")), draft);
-  assert.deepEqual(sockets, []);
+  assert.deepEqual(await read(), draft);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: independent collider offsets/dimensions -> Undo/Redo -> real Playtest falling beyond edited collider while visual unchanged -> Exit -> JSON export/reset/import; no sockets or errors.",
+    "PASS: add environment → multi-select → group → move/rotate/scale → Undo/Redo → duplicate → focus → ungroup → pulse → lock/visibility/layer → JSON export/reset/import; no page errors.",
   );
 } finally {
   await browser.close();

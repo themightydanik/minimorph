@@ -1,3 +1,5 @@
+import { validateEnvironment, validateGroups } from "./environment";
+import type { EnvironmentObject, EnvironmentGroup } from "./environment";
 import type { ArenaConfig, ArenaVisual } from "./arenas";
 import { cosmicSprint } from "./cosmic-sprint";
 import { applyColliderOverrides, validateColliders } from "./colliders";
@@ -11,6 +13,8 @@ export interface LayoutObject {
   z: number;
   yaw: number;
   deleted?: boolean;
+  visible?: boolean;
+  locked?: boolean;
   width?: number;
   depth?: number;
   scale?: number;
@@ -18,9 +22,11 @@ export interface LayoutObject {
   colliders?: LayoutCollider[];
 }
 export interface LayoutOverride {
-  version: 3;
+  version: 4;
   arenaId: "cosmic-sprint";
   objects: LayoutObject[];
+  environment?: EnvironmentObject[];
+  groups?: EnvironmentGroup[];
   checkpoints?: { index: number; radius: number; enabled: boolean }[];
 }
 export function editableVisuals(): ArenaVisual[] {
@@ -36,7 +42,7 @@ export function canRotateLayoutObject(sourceId: string): boolean {
   return !!s && s.category !== "mechanism";
 }
 export function emptyLayout(): LayoutOverride {
-  return { version: 3, arenaId: "cosmic-sprint", objects: [] };
+  return { version: 4, arenaId: "cosmic-sprint", objects: [] };
 }
 export function validateLayout(value: unknown): LayoutOverride {
   const fail = (): never => {
@@ -53,10 +59,11 @@ export function validateLayout(value: unknown): LayoutOverride {
           "version",
           "arenaId",
           "objects",
-          ...(v.version === 3 ? ["checkpoints"] : []),
+          ...(Number(v.version) >= 3 ? ["checkpoints"] : []),
+          ...(v.version === 4 ? ["environment", "groups"] : []),
         ].includes(k),
     ) ||
-    ![1, 2, 3].includes(v.version as number) ||
+    ![1, 2, 3, 4].includes(v.version as number) ||
     v.arenaId !== "cosmic-sprint" ||
     !Array.isArray(v.objects) ||
     v.objects.length > 200
@@ -79,7 +86,8 @@ export function validateLayout(value: unknown): LayoutOverride {
                   "depth",
                   "scale",
                   "impactStrength",
-                  ...(v.version === 3 ? ["colliders"] : []),
+                  ...(Number(v.version) >= 3 ? ["colliders"] : []),
+                  ...(v.version === 4 ? ["visible", "locked"] : []),
                 ]
           ).includes(k),
       )
@@ -143,6 +151,11 @@ export function validateLayout(value: unknown): LayoutOverride {
     )
       return fail();
     if (o.colliders !== undefined) o.colliders = validateColliders(o.colliders);
+    if (
+      (o.visible !== undefined && typeof o.visible !== "boolean") ||
+      (o.locked !== undefined && typeof o.locked !== "boolean")
+    )
+      return fail();
     ids.add(o.id);
     return { ...o } as unknown as LayoutObject;
   });
@@ -185,12 +198,40 @@ export function validateLayout(value: unknown): LayoutOverride {
       return { ...c };
     });
   }
+  const environment =
+    v.environment === undefined
+      ? undefined
+      : validateEnvironment(v.environment);
+  const groups =
+    v.groups === undefined
+      ? undefined
+      : validateGroups(v.groups, objects, environment ?? []);
   return {
-    version: 3,
+    version: 4,
     arenaId: "cosmic-sprint",
     objects,
     ...(checkpoints ? { checkpoints } : {}),
+    ...(environment ? { environment } : {}),
+    ...(groups ? { groups } : {}),
   };
+}
+/** Editor metadata must not reorder or recreate otherwise untouched gameplay bodies. */
+export function isDefaultPlacement(o: LayoutObject) {
+  const s = layoutSource(o.sourceId)?.visual;
+  return (
+    !!s &&
+    o.id === o.sourceId &&
+    !o.deleted &&
+    o.x === s.x &&
+    o.y === s.y &&
+    o.z === s.z &&
+    o.yaw === (s.yaw ?? 0) &&
+    (o.scale === undefined || o.scale === 1) &&
+    (o.width === undefined || o.width === s.width) &&
+    (o.depth === undefined || o.depth === s.depth) &&
+    o.impactStrength === undefined &&
+    o.colliders === undefined
+  );
 }
 /** Trusted templates own visual/collision associations; imports can never supply arbitrary colliders. */
 export function applyLayout(value: unknown): ArenaConfig {
@@ -200,6 +241,7 @@ export function applyLayout(value: unknown): ArenaConfig {
     platforms = [...arena.platforms],
     mechanisms = [...arena.mechanisms];
   for (const o of layout.objects) {
+    if (isDefaultPlacement(o)) continue;
     const s = layoutSource(o.sourceId)!,
       source = s.visual,
       original = o.id === source.id,
@@ -288,8 +330,29 @@ export function applyLayout(value: unknown): ArenaConfig {
       ? { ...cp, radius: override.radius, enabled: override.enabled }
       : cp;
   });
-  return applyColliderOverrides(
+  const environment = layout.environment?.map((o) => {
+    const v = layoutSource(o.sourceId)!.visual;
+    return {
+      id: o.id,
+      asset: v.asset,
+      part: v.part,
+      x: o.x,
+      y: o.y,
+      z: o.z,
+      yaw: o.yaw,
+      width: v.width * o.scale,
+      depth: v.depth * o.scale,
+      fit: "prop" as const,
+      environment: {
+        ...o.animation,
+        viewDistance: o.viewDistance,
+        visible: o.visible !== false,
+      },
+    };
+  });
+  const result = applyColliderOverrides(
     { ...arena, visuals, platforms, mechanisms, checkpoints },
     layout.objects,
   );
+  return environment?.length ? { ...result, environment } : result;
 }

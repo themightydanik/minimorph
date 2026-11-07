@@ -12,7 +12,7 @@ export interface CourseDefinition {
   checkpoints: readonly Marker[];
 }
 export interface NavigationRoute { id: string; stage: number; name: string; skill?: 'easy' | 'hard'; points: readonly Point[] }
-export interface ArenaVisual extends Point { id: string; asset: string; width: number; depth: number; yaw?: number; part?: number; mechanismId?: string; animation?: ArenaObstacle; fit?: 'floor' | 'gate' | 'prop'; }
+export interface ArenaVisual extends Point { id: string; asset: string; width: number; depth: number; yaw?: number; part?: number; environment?: { type: 'none' | 'rotate' | 'bob' | 'orbit' | 'pulse'; speed: number; amplitude: number; viewDistance: number; visible: boolean }; mechanismId?: string; animation?: ArenaObstacle; fit?: 'floor' | 'gate' | 'prop'; }
 interface Mechanism extends Point { impactStrength?: number; id: string; period: number; phase?: number; yaw?: number }
 export type ArenaObstacle =
   | (Mechanism & { kind: 'solid-box'; width:number;depth:number;height:number })
@@ -40,6 +40,7 @@ export interface RouteChoice {
   skill: 'easy' | 'hard';
 }
 export interface ArenaConfig extends CourseDefinition {
+  environment?: readonly ArenaVisual[];
   colliderOwners?: Record<string,{ownerId:string;localId:string}>;
   visuals?: readonly ArenaVisual[];
   /** Optional branch target over a shared, ordered checkpoint interval. */

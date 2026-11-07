@@ -189,3 +189,21 @@ body,
 .level-editor header input[type="checkbox"] {
   width: auto;
 }
+.level-editor .editor-object-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 2px;
+  align-items: center;
+}
+.level-editor .editor-object-row > button {
+  padding: 5px 3px;
+  font-size: 10px;
+}
+.level-editor input[type="checkbox"] {
+  width: auto;
+}
+.level-editor h4 {
+  color: #77dace;
+  margin: 10px 0 6px;
+  font-size: 11px;
+}

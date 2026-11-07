@@ -10,12 +10,23 @@ import {
   defaultColliders,
   colliderTransform,
   publishedLayoutOverride,
+  authoringObject,
+  decorativeObject,
+  selectionPivot,
+  transformSelection,
+  groupSelection,
+  ungroupSelection,
+  duplicateSelection,
+  deleteSelection,
+  setAuthoringMetadata,
 } from "@minimorph/game-content";
 import type {
   ArenaConfig,
   LayoutObject,
   LayoutOverride,
   LayoutCollider,
+  EnvironmentObject,
+  EnvironmentAnimationType,
 } from "@minimorph/game-content";
 import { createCosmicScene } from "./cosmic-scene";
 import { createPolishLighting } from "./polish-lighting";
@@ -34,7 +45,7 @@ export function mountLevelEditor(
     onExit: () => void,
   ) => { destroy(): void },
 ) {
-  host.innerHTML = `<main class="level-editor"><header><b>Minimorph · Level Editor v0.4</b><button data-playtest class="editor-playtest-button">▶ Playtest</button><label><input type="checkbox" data-show-colliders>Show Colliders</label><label><input type="checkbox" data-collider-mode>Collider Edit Mode</label><button data-undo disabled>Undo</button><button data-redo disabled>Redo</button><button data-export>Save / Export JSON</button><button data-import>Import JSON</button><input data-file type="file" accept=".json,application/json" hidden><button data-reset>Reset layout</button><a href="/">Back to game</a></header><aside><h3>Cosmic Sprint</h3><p>Draft only · export never changes the published game.</p><h3>Asset catalog · 23 GLBs</h3><input data-asset-search aria-label="Search assets" placeholder="Search prepared assets"><select data-catalog aria-label="Asset catalog"></select><select data-add-at aria-label="Placement location"><option value="target">At camera target</option><option value="selection">At selected object</option></select><button data-add>Add selected asset</button><p data-catalog-note></p><h3>Scene objects</h3><div data-hierarchy></div></aside><section class="editor-viewport"><canvas aria-label="Cosmic Sprint editor viewport"></canvas><nav><button data-top>Top-down</button><button data-focus>Focus selection</button><span>Click: select · right drag: orbit · middle / Shift drag: pan · wheel: zoom · arrows: move gizmo on X/Z</span></nav><output data-status role="status">Loading actual GLB scene…</output></section><aside><h3>Selected object</h3><div data-inspector></div><p>Spawn, finish, checkpoints, decoration and bot routes are read-only. Moving platforms does not regenerate routes. Export and review before use in gameplay.</p></aside></main>`;
+  host.innerHTML = `<main class="level-editor"><header><b>Minimorph · Galactic Fun Park · Environment Tools</b><button data-playtest class="editor-playtest-button">▶ Playtest</button><label><input type="checkbox" data-show-colliders>Show Colliders</label><label><input type="checkbox" data-collider-mode>Collider Edit Mode</label><label><input type="checkbox" data-show-environment checked>Environment layer</label><button data-group>Group</button><button data-ungroup>Ungroup</button><button data-duplicate-selection>Duplicate selection</button><button data-delete-selection>Delete selection</button><button data-undo disabled>Undo</button><button data-redo disabled>Redo</button><button data-export>Save / Export JSON</button><button data-import>Import JSON</button><input data-file type="file" accept=".json,application/json" hidden><button data-reset>Reset layout</button><a href="/">Back to game</a></header><aside><h3>Cosmic Sprint</h3><p>Draft only · export never changes the published game.</p><h3>Asset catalog · 23 GLBs</h3><input data-asset-search aria-label="Search assets" placeholder="Search prepared assets"><select data-catalog aria-label="Asset catalog"></select><select data-add-at aria-label="Placement location"><option value="target">At camera target</option><option value="selection">At selected object</option></select><select data-add-layer aria-label="Object layer"><option value="gameplay">Gameplay / colliders</option><option value="environment">Environment · NON-COLLIDABLE</option></select><select data-environment-category aria-label="Environment category"><option>planet</option><option>island</option><option>cloud</option><option>satellite</option><option>star</option><option>rocket</option><option>structure</option></select><button data-add>Add selected asset</button><p data-catalog-note></p><h3>Scene objects</h3><div data-hierarchy></div></aside><section class="editor-viewport"><canvas aria-label="Cosmic Sprint editor viewport"></canvas><nav><button data-top>Top-down</button><button data-focus>Focus selection</button><span>Click: select · right drag: orbit · middle / Shift drag: pan · wheel: zoom · arrows: move gizmo on X/Z</span></nav><output data-status role="status">Loading actual GLB scene…</output></section><aside><h3>Selected object</h3><div data-inspector></div><p>Spawn, finish, checkpoints, decoration and bot routes are read-only. Moving platforms does not regenerate routes. Export and review before use in gameplay.</p></aside></main>`;
   let playtestSession: { destroy(): void } | undefined;
   const editorElement = host.querySelector<HTMLElement>(".level-editor")!;
   const playtestHost = document.createElement("div");
@@ -61,7 +72,7 @@ export function mountLevelEditor(
   const camera = new pc.Entity("Follow camera");
   camera.addComponent("camera", {
     clearColor: new pc.Color().fromString("#101a38"),
-    farClip: 1500,
+    farClip: 8000,
     nearClip: 0.1,
     fov: 58,
   });
@@ -114,14 +125,24 @@ export function mountLevelEditor(
     );
     camera.lookAt(target);
   }
+  let selection = new Set<string>(),
+    environmentTime = 0;
   positionCamera();
   function focus() {
-    const v = arena.visuals!.find((v) => v.id === selected);
-    if (v) {
-      target.set(v.x, v.y, v.z);
-      distance = Math.max(18, Math.max(v.width, v.depth) * 2.2);
-      positionCamera();
-    }
+    const ids = selection.size ? [...selection] : selected ? [selected] : [];
+    scene.setEditorFocus(ids);
+    const bounds = ids
+      .map((id) => scene.placementBounds(id))
+      .filter((b): b is pc.BoundingBox => !!b);
+    if (!bounds.length) return;
+    const box = bounds[0].clone();
+    for (const b of bounds.slice(1)) box.add(b);
+    target.copy(box.center);
+    const radius = Math.max(5, box.halfExtents.length());
+    const aspect = canvas.clientWidth / Math.max(1, canvas.clientHeight),
+      half = Math.atan(Math.tan((29 * Math.PI) / 180) * Math.min(1, aspect));
+    distance = Math.min(6000, Math.max(18, (radius / Math.sin(half)) * 1.2));
+    positionCamera();
   }
   function object(): LayoutObject | undefined {
     const v = arena.visuals!.find((v) => v.id === selected);
@@ -152,6 +173,9 @@ export function mountLevelEditor(
     scene.setLayout(arena);
     overlays.build(arena);
     scene.update(state, true);
+    scene.setEditorHidden(
+      layout.objects.filter((o) => o.visible === false).map((o) => o.id),
+    );
     canvas.dataset.layout = JSON.stringify(layout);
     canvas.dataset.editorSelected = selected;
     updateHistoryButtons();
@@ -161,7 +185,11 @@ export function mountLevelEditor(
     const next = redo ? history.redo(layout) : history.undo(layout);
     if (!next) return;
     applyDraft(next, false);
-    if (!arena.visuals!.some((v) => v.id === selected)) selected = "";
+    selection = new Set(
+      [...selection].filter((id) => authoringObject(layout, id)),
+    );
+    if (!authoringObject(layout, selected)) selected = "";
+    scene.setEditorFocus([]);
     refresh();
   }
   q("[data-undo]").addEventListener("click", () => traverseHistory(false));
@@ -179,6 +207,17 @@ export function mountLevelEditor(
     traverseHistory(e.key.toLowerCase() === "y" || e.shiftKey);
   }
   function setObject(o: LayoutObject) {
+    const old = authoringObject(layout, o.id);
+    if (old?.locked) {
+      const before = { ...old },
+        after = { ...o };
+      delete before.locked;
+      delete after.locked;
+      delete before.visible;
+      delete after.visible;
+      if (JSON.stringify(before) !== JSON.stringify(after))
+        throw Error("Unlock the object before editing.");
+    }
     const next = structuredClone(layout),
       i = next.objects.findIndex((v) => v.id === o.id);
     if (i >= 0) next.objects[i] = o;
@@ -328,6 +367,203 @@ export function mountLevelEditor(
     });
     box.append(remove);
   }
+  function selectionIds() {
+    return selection.size ? [...selection] : selected ? [selected] : [];
+  }
+  function notifyError(action: () => void) {
+    try {
+      action();
+    } catch (e) {
+      status.textContent = String(e);
+    }
+  }
+  function transformChosen(change: Parameters<typeof transformSelection>[2]) {
+    applyDraft(transformSelection(layout, selectionIds(), change));
+    inspector();
+  }
+  function groupInspector(box: HTMLElement) {
+    const ids = selectionIds(),
+      pivot = selectionPivot(layout, ids),
+      locked = ids.some((id) => authoringObject(layout, id)?.locked);
+    const p = document.createElement("p");
+    p.textContent = `${ids.length} decorations/environment objects selected. Group transforms preserve parent-local colliders.${locked ? " Unlock members to transform." : ""}`;
+    box.append(p);
+    if (!locked) {
+      anchor.setPosition(pivot.x, pivot.y, pivot.z);
+      gizmo.attach([anchor]);
+    }
+    for (const key of ["x", "y", "z", "yaw", "scale"] as const) {
+      const label = document.createElement("label");
+      label.textContent =
+        key === "yaw"
+          ? "Rotate selection Y (degrees)"
+          : key === "scale"
+            ? "Scale selection (factor)"
+            : `Selection ${key}`;
+      const input = document.createElement("input");
+      input.type = "number";
+      input.step = key === "scale" ? ".1" : "1";
+      input.disabled = locked;
+      input.dataset.groupProperty = key;
+      input.value = String(
+        key === "yaw" ? 0 : key === "scale" ? 1 : pivot[key],
+      );
+      input.addEventListener("change", () =>
+        notifyError(() => {
+          const value = Number(input.value);
+          if (!input.value.trim()) throw Error("Enter a number");
+          transformChosen({
+            [key]:
+              key === "yaw"
+                ? (value * Math.PI) / 180
+                : key === "scale"
+                  ? value
+                  : value - pivot[key],
+          });
+        }),
+      );
+      label.append(input);
+      box.append(label);
+    }
+  }
+  function setEnvironment(o: EnvironmentObject) {
+    const before = layout.environment?.find((e) => e.id === o.id);
+    if (before?.locked) {
+      const a = { ...before },
+        b = { ...o };
+      delete a.locked;
+      delete b.locked;
+      delete a.visible;
+      delete b.visible;
+      if (JSON.stringify(a) !== JSON.stringify(b))
+        throw Error("Unlock the object before editing.");
+    }
+    applyDraft({
+      ...layout,
+      environment: layout.environment!.map((e) => (e.id === o.id ? o : e)),
+    });
+  }
+  function metadataControls(box: HTMLElement, id: string) {
+    const o = authoringObject(layout, id);
+    if (!o) return;
+    for (const key of ["visible", "locked"] as const) {
+      const label = document.createElement("label");
+      label.textContent =
+        key === "visible"
+          ? "Visible (gameplay objects: editor only)"
+          : "Locked against editing";
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.checked = key === "visible" ? o.visible !== false : !!o.locked;
+      input.dataset.metadata = key;
+      input.addEventListener("change", () =>
+        notifyError(() => {
+          applyDraft(
+            setAuthoringMetadata(layout, id, { [key]: input.checked }),
+          );
+          refresh();
+        }),
+      );
+      label.append(input);
+      box.append(label);
+    }
+  }
+  function environmentInspector(box: HTMLElement, o: EnvironmentObject) {
+    metadataControls(box, o.id);
+    const note = document.createElement("p");
+    note.textContent =
+      "Environment layer: presentation only, never collidable. Categories label reused GLB parts; no physics bodies or gameplay animation.";
+    box.append(note);
+    if (!o.locked && scene.isVisible(o.id)) {
+      anchor.setPosition(o.x, o.y, o.z);
+      gizmo.attach([anchor]);
+    }
+    for (const key of [
+      "x",
+      "y",
+      "z",
+      "yaw",
+      "scale",
+      "viewDistance",
+    ] as const) {
+      const label = document.createElement("label");
+      label.textContent = key === "yaw" ? "Rotation Y (degrees)" : key;
+      const input = document.createElement("input");
+      input.type = "number";
+      input.step = ".1";
+      input.disabled = !!o.locked;
+      input.dataset.environmentProperty = key;
+      input.value = String(key === "yaw" ? (o.yaw * 180) / Math.PI : o[key]);
+      input.addEventListener("change", () =>
+        notifyError(() => {
+          if (!input.value.trim()) throw Error("Enter a number");
+          setEnvironment({
+            ...o,
+            [key]: Number(input.value) * (key === "yaw" ? Math.PI / 180 : 1),
+          });
+          inspector();
+        }),
+      );
+      label.append(input);
+      box.append(label);
+    }
+    const type = document.createElement("select");
+    type.dataset.environmentAnimation = "";
+    type.setAttribute("aria-label", "Environment animation");
+    type.disabled = !!o.locked;
+    for (const [value, label] of [
+      ["none", "No animation"],
+      ["rotate", "Slow rotation"],
+      ["bob", "Gentle floating"],
+      ["orbit", "Orbital movement"],
+      ["pulse", "Emissive pulsing"],
+    ]) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      type.append(option);
+    }
+    type.value = o.animation.type;
+    type.addEventListener("change", () =>
+      notifyError(() => {
+        setEnvironment({
+          ...o,
+          animation: {
+            ...o.animation,
+            type: type.value as EnvironmentAnimationType,
+            amplitude: Math.min(
+              o.animation.amplitude,
+              type.value === "pulse" ? 2 : 100,
+            ),
+          },
+        });
+        inspector();
+      }),
+    );
+    box.append(type);
+    for (const key of ["speed", "amplitude"] as const) {
+      const label = document.createElement("label");
+      label.textContent = `Animation ${key}`;
+      const input = document.createElement("input");
+      input.type = "number";
+      input.step = ".1";
+      input.disabled = !!o.locked;
+      input.dataset.animationProperty = key;
+      input.value = String(o.animation[key]);
+      input.addEventListener("change", () =>
+        notifyError(() => {
+          if (!input.value.trim()) throw Error("Enter a number");
+          setEnvironment({
+            ...o,
+            animation: { ...o.animation, [key]: Number(input.value) },
+          });
+          inspector();
+        }),
+      );
+      label.append(input);
+      box.append(label);
+    }
+  }
   function inspector() {
     const box = q("[data-inspector]");
     box.replaceChildren();
@@ -336,6 +572,24 @@ export function mountLevelEditor(
     box.append(name);
     const o = object();
     gizmo.detach();
+    if (selection.size > 1) {
+      groupInspector(box);
+      return;
+    }
+    const env = layout.environment?.find((o) => o.id === selected);
+    if (env) {
+      environmentInspector(box, env);
+      return;
+    }
+    if (o) {
+      metadataControls(box, o.id);
+      if (o.locked) {
+        const locked = document.createElement("p");
+        locked.textContent = "Locked. Unlock to move or edit colliders.";
+        box.append(locked);
+        return;
+      }
+    }
     if (!o && colliderMode && /^checkpoint-\d+$/.test(selected)) {
       const index = Number(selected.slice("checkpoint-".length)),
         cp = arena.checkpoints[index];
@@ -480,20 +734,18 @@ export function mountLevelEditor(
       [
         "Duplicate",
         () => {
-          const copy = {
-            ...object()!,
-            id: `editor-${crypto.randomUUID()}`,
-            x: object()!.x + 5,
-          };
-          setObject(copy);
-          selected = copy.id;
+          const copy = duplicateSelection(layout, [object()!.id]);
+          applyDraft(copy.layout);
+          selection = new Set(copy.ids);
+          selected = copy.ids[0];
           refresh();
         },
       ],
       [
         "Delete",
         () => {
-          setObject({ ...object()!, deleted: true });
+          applyDraft(deleteSelection(layout, [object()!.id]));
+          selection.clear();
           selected = "";
           refresh();
         },
@@ -511,34 +763,168 @@ export function mountLevelEditor(
       box.append(button);
     }
   }
-  function select(id: string) {
-    if (selected !== id) selectedCollider = "";
-    selected = id;
-    canvas.dataset.editorSelected = id;
+  function select(id: string, additive = false, preserve = false) {
+    if (!preserve) {
+      scene.setEditorFocus([]);
+      if (additive && !colliderMode && decorativeObject(layout, id)) {
+        if ([...selection].some((v) => !decorativeObject(layout, v)))
+          selection.clear();
+        if (selection.has(id)) selection.delete(id);
+        else selection.add(id);
+      } else {
+        const group = !colliderMode
+          ? layout.groups?.find((g) => g.members.includes(id))
+          : undefined;
+        selection = new Set(group?.members ?? (id ? [id] : []));
+      }
+    }
+    const primary = selection.has(id) ? id : ([...selection][0] ?? "");
+    if (selected !== primary) selectedCollider = "";
+    selected = primary;
+    canvas.dataset.editorSelected = selected;
+    canvas.dataset.editorSelection = JSON.stringify([...selection]);
     inspector();
-    for (const b of q("[data-hierarchy]").querySelectorAll("button"))
-      b.setAttribute("aria-pressed", String(b.dataset.object === id));
+    for (const button of q(
+      "[data-hierarchy]",
+    ).querySelectorAll<HTMLButtonElement>("[data-object]"))
+      button.setAttribute(
+        "aria-pressed",
+        String(selection.has(button.dataset.object!)),
+      );
   }
   function refresh() {
     const list = q("[data-hierarchy]");
     list.replaceChildren();
-    for (const v of arena.visuals!) {
+    for (const group of layout.groups ?? []) {
       const b = document.createElement("button");
-      b.dataset.object = v.id;
-      const override = layout.objects.find((o) => o.id === v.id);
-      const source = layoutSource(override?.sourceId ?? v.id);
-      b.textContent = `${source ? (source.category === "decoration" ? (override?.colliders?.length ? "[custom colliders] " : "[DECOR · no collision] ") : "") : "🔒 "}${v.id.startsWith("editor-") ? `${v.asset}${v.part === undefined ? "" : ` / part ${v.part}`} · ${v.id}` : v.id}`;
-      b.addEventListener("click", () => select(v.id));
+      b.dataset.group = group.id;
+      b.textContent = `▣ ${group.name} (${group.members.length})`;
+      b.addEventListener("click", () => {
+        selection = new Set(group.members);
+        select(group.members[0], false, true);
+      });
       list.append(b);
     }
-    select(selected);
+    for (const [layer, visuals] of [
+      ["Gameplay / decorative geometry", arena.visuals ?? []],
+      ["Environment · no collisions", arena.environment ?? []],
+    ] as const) {
+      const label = document.createElement("h4");
+      label.textContent = layer;
+      list.append(label);
+      for (const v of visuals) {
+        const row = document.createElement("div");
+        row.className = "editor-object-row";
+        const b = document.createElement("button");
+        b.dataset.object = v.id;
+        const o = authoringObject(layout, v.id),
+          source = o ? layoutSource(o.sourceId) : undefined;
+        b.textContent = `${v.environment ? "☄ " : source?.category === "decoration" ? (o && "colliders" in o && o.colliders?.length ? "[colliders] " : "[decor] ") : source ? "" : "🔒 "}${v.id.startsWith("editor-") || v.id.startsWith("environment-") ? `${v.asset}${v.part === undefined ? "" : ` / ${v.part}`} · ${v.id.slice(-8)}` : v.id}`;
+        b.disabled = !!o?.locked;
+        b.addEventListener("click", (e) =>
+          select(v.id, e.ctrlKey || e.metaKey),
+        );
+        row.append(b);
+        if (o)
+          for (const key of ["visible", "locked"] as const) {
+            const toggle = document.createElement("button");
+            toggle.dataset[
+              key === "visible" ? "toggleVisible" : "toggleLocked"
+            ] = v.id;
+            toggle.textContent =
+              key === "visible"
+                ? o.visible === false
+                  ? "Show"
+                  : "Hide"
+                : o.locked
+                  ? "Unlock"
+                  : "Lock";
+            toggle.setAttribute("aria-label", `${toggle.textContent} ${v.id}`);
+            toggle.addEventListener("click", () =>
+              notifyError(() => {
+                applyDraft(
+                  setAuthoringMetadata(layout, v.id, {
+                    [key]: key === "visible" ? o.visible === false : !o.locked,
+                  }),
+                );
+                refresh();
+              }),
+            );
+            row.append(toggle);
+          }
+        list.append(row);
+      }
+    }
+    const ids = new Set(
+      [...(arena.visuals ?? []), ...(arena.environment ?? [])].map((v) => v.id),
+    );
+    selection = new Set([...selection].filter((id) => ids.has(id)));
+    if (!ids.has(selected)) selected = [...selection][0] ?? "";
+    select(selected, false, true);
   }
+  q("[data-group]").addEventListener("click", () =>
+    notifyError(() => {
+      applyDraft(
+        groupSelection(layout, selectionIds(), `group-${crypto.randomUUID()}`),
+      );
+      refresh();
+    }),
+  );
+  q("[data-ungroup]").addEventListener("click", () =>
+    notifyError(() => {
+      applyDraft(ungroupSelection(layout, selectionIds()));
+      refresh();
+    }),
+  );
+  q("[data-duplicate-selection]").addEventListener("click", () =>
+    notifyError(() => {
+      const copy = duplicateSelection(layout, selectionIds());
+      applyDraft(copy.layout);
+      selection = new Set(copy.ids);
+      selected = copy.ids[0] ?? "";
+      refresh();
+    }),
+  );
+  q("[data-delete-selection]").addEventListener("click", () =>
+    notifyError(() => {
+      applyDraft(deleteSelection(layout, selectionIds()));
+      selection.clear();
+      selected = "";
+      refresh();
+    }),
+  );
+  q<HTMLInputElement>("[data-show-environment]").addEventListener(
+    "change",
+    (e) => {
+      scene.setEnvironmentVisible((e.target as HTMLInputElement).checked);
+      inspector();
+    },
+  );
+  let dragLayout: LayoutOverride | undefined,
+    dragPivot: { x: number; y: number; z: number } | undefined;
   gizmo.on(pc.TransformGizmo.EVENT_TRANSFORMSTART, () => {
     history.begin(layout);
+    if (selection.size > 1 || selected.startsWith("environment-")) {
+      dragLayout = structuredClone(layout);
+      dragPivot = selectionPivot(layout, selectionIds());
+    }
     dragging = true;
     gizmoGesture = true;
   });
   gizmo.on(pc.TransformGizmo.EVENT_TRANSFORMMOVE, () => {
+    if (dragLayout && dragPivot) {
+      const at = anchor.getPosition();
+      notifyError(() =>
+        applyDraft(
+          transformSelection(dragLayout!, selectionIds(), {
+            x: at.x - dragPivot!.x,
+            y: at.y - dragPivot!.y,
+            z: at.z - dragPivot!.z,
+          }),
+        ),
+      );
+      return;
+    }
     const o = object();
     if (!o) return;
     const p = anchor.getPosition();
@@ -583,6 +969,8 @@ export function mountLevelEditor(
   });
   gizmo.on(pc.TransformGizmo.EVENT_TRANSFORMEND, () => {
     dragging = false;
+    dragLayout = undefined;
+    dragPivot = undefined;
     history.end(layout);
     updateHistoryButtons();
     inspector();
@@ -669,7 +1057,7 @@ export function mountLevelEditor(
         to = camera.camera!.screenToWorld(
           e.clientX - rect.left,
           e.clientY - rect.top,
-          1500,
+          8000,
         ),
         ray = new pc.Ray(from, to.sub(from).normalize()),
         hit = new pc.Vec3();
@@ -684,7 +1072,9 @@ export function mountLevelEditor(
       }
       let best = Infinity,
         id = "";
-      for (const v of arena.visuals!) {
+      for (const v of [...arena.visuals!, ...(arena.environment ?? [])]) {
+        if (authoringObject(layout, v.id)?.locked || !scene.isVisible(v.id))
+          continue;
         const bounds = scene.placementBounds(v.id);
         if (bounds?.intersectsRay(ray, hit)) {
           const d = from.distance(hit);
@@ -694,16 +1084,30 @@ export function mountLevelEditor(
           }
         }
       }
-      if (id) select(id);
+      if (id) select(id, e.ctrlKey || e.metaKey);
     },
     opts,
   );
   canvas.addEventListener(
     "keydown",
     (e) => {
+      if (
+        (selection.size > 1 || selected.startsWith("environment-")) &&
+        ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)
+      ) {
+        e.preventDefault();
+        notifyError(() =>
+          transformChosen({
+            x: e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0,
+            z: e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0,
+          }),
+        );
+        return;
+      }
       const o = object();
       if (
         !o ||
+        o.locked ||
         !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)
       )
         return;
@@ -736,7 +1140,7 @@ export function mountLevelEditor(
       e.preventDefault();
       distance = Math.max(
         8,
-        Math.min(700, distance * Math.exp(e.deltaY * 0.001)),
+        Math.min(6000, distance * Math.exp(e.deltaY * 0.001)),
       );
       positionCamera();
     },
@@ -758,7 +1162,7 @@ export function mountLevelEditor(
       ),
       a = document.createElement("a");
     a.href = url;
-    a.download = "minimorph-cosmic-sprint-layout-v3.json";
+    a.download = "minimorph-cosmic-sprint-layout-v4.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
@@ -774,6 +1178,8 @@ export function mountLevelEditor(
       const next = validateLayout(JSON.parse(await file.text()));
       applyDraft(next);
       selected = "";
+      selection.clear();
+      scene.setEditorFocus([]);
       refresh();
       status.textContent = "Imported local draft. Gameplay links preserved.";
     } catch (error) {
@@ -785,6 +1191,8 @@ export function mountLevelEditor(
   q("[data-reset]").addEventListener("click", () => {
     applyDraft(emptyLayout());
     selected = "";
+    selection.clear();
+    scene.setEditorFocus([]);
     refresh();
     status.textContent = "Original PR #13 layout restored.";
   });
@@ -793,11 +1201,13 @@ export function mountLevelEditor(
       (s) => s.visual.id === q<HTMLSelectElement>("[data-catalog]").value,
     );
     q("[data-catalog-note]").textContent =
-      source?.category === "decoration"
-        ? "NON-COLLIDABLE: decoration only. Unsupported ramps, barriers and kit shapes have no gameplay collision."
-        : source?.category === "platform"
-          ? "Walkable platform with linked collision surface."
-          : "Functional mechanism with linked collision / trigger; new bounce pads include a landing surface.";
+      q<HTMLSelectElement>("[data-add-layer]").value === "environment"
+        ? "Environment instance: presentation only, NON-COLLIDABLE regardless of source asset."
+        : source?.category === "decoration"
+          ? "NON-COLLIDABLE: decoration only. Unsupported ramps, barriers and kit shapes have no gameplay collision."
+          : source?.category === "platform"
+            ? "Walkable platform with linked collision surface."
+            : "Functional mechanism with linked collision / trigger; new bounce pads include a landing surface.";
   }
   function filterCatalog() {
     const needle = q<HTMLInputElement>(
@@ -818,6 +1228,7 @@ export function mountLevelEditor(
   }
   q("[data-asset-search]").addEventListener("input", filterCatalog);
   q("[data-catalog]").addEventListener("change", catalogNote);
+  q("[data-add-layer]").addEventListener("change", catalogNote);
   q("[data-add]").addEventListener("click", () => {
     const source = editorCatalog.find(
       (s) => s.visual.id === q<HTMLSelectElement>("[data-catalog]").value,
@@ -825,9 +1236,32 @@ export function mountLevelEditor(
     if (!source) return;
     const at =
       q<HTMLSelectElement>("[data-add-at]").value === "selection"
-        ? (arena.visuals!.find((v) => v.id === selected) ?? target)
+        ? (authoringObject(layout, selected) ?? target)
         : target;
     try {
+      if (q<HTMLSelectElement>("[data-add-layer]").value === "environment") {
+        const o: EnvironmentObject = {
+          id: `environment-${crypto.randomUUID()}`,
+          sourceId: source.visual.id,
+          category: q<HTMLSelectElement>("[data-environment-category]")
+            .value as EnvironmentObject["category"],
+          x: at.x,
+          y: at.y,
+          z: at.z,
+          yaw: 0,
+          scale: 1,
+          viewDistance: 600,
+          animation: { type: "none", speed: 0.25, amplitude: 1 },
+        };
+        applyDraft({
+          ...layout,
+          environment: [...(layout.environment ?? []), o],
+        });
+        selection = new Set([o.id]);
+        selected = o.id;
+        refresh();
+        return;
+      }
       const o: LayoutObject = {
         id: `editor-${crypto.randomUUID()}`,
         sourceId: source.visual.id,
@@ -837,6 +1271,7 @@ export function mountLevelEditor(
         yaw: source.visual.yaw ?? 0,
       };
       setObject(o);
+      selection = new Set([o.id]);
       selected = o.id;
       refresh();
     } catch (e) {
@@ -852,9 +1287,10 @@ export function mountLevelEditor(
       );
   });
   resize.observe(canvas.parentElement!);
-  app.on("update", () => {
+  app.on("update", (dt: number) => {
     if (playtestSession) return;
-    scene.update(state, true);
+    environmentTime += Math.min(dt, 0.1);
+    scene.update(state, true, environmentTime);
     overlays.draw();
     const bounds = scene.placementBounds(selected);
     if (bounds && !colliderMode) {

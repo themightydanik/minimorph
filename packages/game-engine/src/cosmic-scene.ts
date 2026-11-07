@@ -5,6 +5,7 @@ import type { PlayerState } from "./physics";
 import { sampleMechanism } from "./obstacles";
 import { instancedNormalChunk } from "./instanced-normals";
 import { editorAssetUrls as preparedAssetUrls } from "./editor-assets";
+import { sampleEnvironmentMotion } from "./environment-motion";
 import rawInventory from "../../../assets/arenas/cosmic-sprint/runtime-manifest.json";
 export interface ArenaLoadStatus {
   ready: boolean;
@@ -96,6 +97,9 @@ pc.basisInitialize({
   numWorkers: 1,
 });
 interface DrawGroup {
+  variant: string;
+  ownedMaterial?: pc.StandardMaterial;
+  pulse?: { speed: number; amplitude: number };
   entity: pc.Entity;
   mesh: pc.MeshInstance;
   buffer: pc.VertexBuffer;
@@ -126,9 +130,9 @@ export function createCosmicScene(
   );
   app.root.addChild(root);
   const entries = new Map<string, Entry>();
-  let placements = arena.visuals!;
+  let placements = [...arena.visuals!, ...(arena.environment ?? [])];
   let keys = [...new Set(placements.map((v) => v.asset))];
-  let turboVisuals = placements.filter((v) => v.asset === "turbo-conveyor");
+  let turboVisuals = placements.filter((v) => !v.environment && v.asset === "turbo-conveyor");
   const bandMaterial = new pc.StandardMaterial();
   bandMaterial.diffuse = new pc.Color(0.2, 0.95, 0.8);
   bandMaterial.emissive.copy(bandMaterial.diffuse);
@@ -155,6 +159,15 @@ export function createCosmicScene(
     ),
     bandData = new Float32Array(16);
   bandMesh.setInstancing(bandBuffer, false);
+  let showEnvironment = true,
+    lastPresentationTime = 0;
+  const hiddenInEditor = new Set<string>(),
+    focusedInEditor = new Set<string>();
+  const pulseKey = (v: ArenaVisual) =>
+    v.environment?.type === "pulse"
+      ? `${v.environment.speed}:${v.environment.amplitude}`
+      : "";
+  const motion = { x: 0, y: 0, z: 0, yaw: 0, pulse: 0 };
   const canvas = app.graphicsDevice.canvas as HTMLCanvasElement;
   let disposed = false,
     overview = false,
@@ -170,13 +183,24 @@ export function createCosmicScene(
     if (disposed) return;
     const loaded = wanted.filter((k) => entries.get(k)?.loaded).length,
       error = wanted.map((k) => entries.get(k)?.error).find(Boolean) ?? null;
-    ready = required.every((k) => entries.get(k)?.loaded) && !error;
-    canvas.dataset.arenaAssets = error ? "error" : ready ? "ready" : "loading";
+    const requiredError = required.some((k) => !!entries.get(k)?.error);
+    ready = required.every((k) => entries.get(k)?.loaded) && !requiredError;
+    canvas.dataset.environmentError = error && !requiredError ? error : "";
+    canvas.dataset.arenaAssets = requiredError
+      ? "error"
+      : ready
+        ? "ready"
+        : "loading";
     canvas.dataset.arenaAssetCount = `${loaded}/${wanted.length}`;
     const status = `${ready}:${loaded}:${wanted.length}:${error}`;
     if (status !== lastStatus) {
       lastStatus = status;
-      onLoad?.({ ready, loaded, total: wanted.length, error });
+      onLoad?.({
+        ready,
+        loaded,
+        total: wanted.length,
+        error: requiredError ? error : null,
+      });
     }
   }
   function pump() {
@@ -190,36 +214,69 @@ export function createCosmicScene(
     }
   }
   const camera = app.root.findByName("Follow camera") as pc.Entity;
-  const visibility = new Map(
-    placements.map((v) => {
-      const record = inventory.find((a) => a.runtime === `${v.asset}.glb`)!,
-        part = record.parts[v.part ?? 0],
-        b = v.part === undefined ? record.bounds : part;
-      const d = b.max.map((x, i) => Math.max(0.0001, x - b.min[i]));
-      let sx = v.width / d[0],
-        sz = v.depth / d[2],
-        sy = Math.min(sx, sz, 8);
-      if (v.fit === "gate" || v.fit === "prop")
-        sx = sy = sz = v.width / Math.max(d[0], d[2]);
-      const o =
-        v.animation ?? arena.mechanisms.find((o) => o.id === v.mechanismId);
-      if (o?.kind === "rotating-disc") sy = Math.min(sy, 2);
-      const pivot = v.fit === "floor" ? part.walkY : b.min[1],
-        cy = v.y + ((b.min[1] + b.max[1]) / 2 - pivot) * sy;
-      const reach = o?.kind === "pusher" ? o.reach : 0,
-        cx = v.x - (o?.kind === "pusher" ? (o.side * reach) / 2 : 0);
-      return [
-        v,
-        new pc.BoundingSphere(
-          new pc.Vec3(cx, cy, v.z),
-          Math.hypot(d[0] * sx, d[1] * sy, d[2] * sz) / 2 + reach / 2,
-        ),
-      ] as const;
-    }),
-  );
-  const inView = (v: ArenaVisual) =>
-    !!camera?.camera &&
-    camera.camera.frustum.containsSphere(visibility.get(v)!);
+  function makeVisibility() {
+    return new Map(
+      placements.map((v) => {
+        const record = inventory.find((a) => a.runtime === `${v.asset}.glb`)!,
+          part = record.parts[v.part ?? 0],
+          b = v.part === undefined ? record.bounds : part;
+        const d = b.max.map((x, i) => Math.max(0.0001, x - b.min[i]));
+        let sx = v.width / d[0],
+          sz = v.depth / d[2],
+          sy = Math.min(sx, sz, 8);
+        if (v.fit === "gate" || v.fit === "prop")
+          sx = sy = sz = v.width / Math.max(d[0], d[2]);
+        const o =
+          v.animation ?? arena.mechanisms.find((o) => o.id === v.mechanismId);
+        if (o?.kind === "rotating-disc") sy = Math.min(sy, 2);
+        const pivot = v.fit === "floor" ? part.walkY : b.min[1],
+          cy = v.y + ((b.min[1] + b.max[1]) / 2 - pivot) * sy;
+        const reach = o?.kind === "pusher" ? o.reach : 0,
+          cx = v.x - (o?.kind === "pusher" ? (o.side * reach) / 2 : 0);
+        return [
+          v,
+          new pc.BoundingSphere(
+            new pc.Vec3(cx, cy, v.z),
+            Math.hypot(d[0] * sx, d[1] * sy, d[2] * sz) / 2 +
+              reach / 2 +
+              (v.environment?.amplitude ?? 0) * 2,
+          ),
+        ] as const;
+      }),
+    );
+  }
+  let visibility = makeVisibility();
+  const inView = (v: ArenaVisual) => {
+    if (!camera?.camera) return false;
+    const sphere = visibility.get(v)!,
+      p = camera.getPosition(),
+      f = camera.forward;
+    // Background far planes must not expand the original gameplay streaming budget.
+    if (
+      !overview &&
+      !v.environment &&
+      (sphere.center.x - p.x) * f.x +
+        (sphere.center.y - p.y) * f.y +
+        (sphere.center.z - p.z) * f.z >
+        180 + sphere.radius
+    )
+      return false;
+    return !!camera.camera.frustum.containsSphere(sphere);
+  };
+  const visible = (v: ArenaVisual) =>
+    !hiddenInEditor.has(v.id) &&
+    (!v.environment || (showEnvironment && v.environment.visible));
+  const environmentNear = (v: ArenaVisual) => {
+    const p = camera.getPosition();
+    return (
+      visible(v) &&
+      (focusedInEditor.has(v.id) ||
+        Math.hypot(v.x - p.x, v.y - p.y, v.z - p.z) <
+          (v.environment?.viewDistance ?? 600) +
+            (v.environment?.amplitude ?? 0) * 2 +
+            Math.max(v.width, v.depth))
+    );
+  };
   const matrix = new pc.Mat4(),
     rotation = new pc.Quat(),
     position = new pc.Vec3(),
@@ -229,6 +286,7 @@ export function createCosmicScene(
       group.mesh.setInstancing(null);
       group.entity.destroy();
       group.buffer.destroy();
+      group.ownedMaterial?.destroy();
     }
     entry.groups = [];
     entry.template?.destroy();
@@ -288,60 +346,103 @@ export function createCosmicScene(
               v.asset === key && (v.part === undefined || v.part === partIndex),
           ).length;
           if (!count) continue;
+          const variants = [
+            ...new Set(
+              placements
+                .filter(
+                  (v) =>
+                    v.asset === key &&
+                    (v.part === undefined || v.part === partIndex),
+                )
+                .map(pulseKey),
+            ),
+          ];
           for (const source of component.meshInstances) {
-            const entity = new pc.Entity(`${key}/${part.name} instances`, app);
-            root.addChild(entity);
-            if (!source.mesh || !source.material) continue;
-            source.material
-              .getShaderChunks(pc.SHADERLANGUAGE_GLSL)
-              .set("normalCoreVS", instancedNormalChunk);
-            source.material.update();
-            const mesh = new pc.MeshInstance(
-              source.mesh,
-              source.material,
-              entity,
-            );
-            const buffer = new pc.VertexBuffer(
-              app.graphicsDevice,
-              pc.VertexFormat.getDefaultInstancingFormat(app.graphicsDevice),
-              count,
-              { usage: pc.BUFFER_DYNAMIC },
-            );
-            mesh.setInstancing(buffer, false);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            const items = placements.filter((v) => v.asset === key),
-              min = [Infinity, Infinity, Infinity],
-              max = [-Infinity, -Infinity, -Infinity];
-            for (const v of items) {
-              const r = Math.max(v.width, v.depth);
-              for (const [i, c] of [v.x, v.y, v.z].entries()) {
-                min[i] = Math.min(min[i], c - r * 2);
-                max[i] = Math.max(max[i], c + r * 2);
+            for (const variant of variants) {
+              const instanceCount = placements.filter(
+                (v) =>
+                  v.asset === key &&
+                  (v.part === undefined || v.part === partIndex) &&
+                  pulseKey(v) === variant,
+              ).length;
+              const entity = new pc.Entity(
+                `${key}/${part.name} instances`,
+                app,
+              );
+              root.addChild(entity);
+              if (!source.mesh || !source.material) continue;
+              source.material
+                .getShaderChunks(pc.SHADERLANGUAGE_GLSL)
+                .set("normalCoreVS", instancedNormalChunk);
+              source.material.update();
+              const ownedMaterial = variant
+                ? (source.material.clone() as pc.StandardMaterial)
+                : undefined;
+              if (ownedMaterial) {
+                ownedMaterial.emissiveMap = ownedMaterial.diffuseMap;
+                ownedMaterial.emissive.copy(ownedMaterial.diffuse);
+                ownedMaterial
+                  .getShaderChunks(pc.SHADERLANGUAGE_GLSL)
+                  .set("normalCoreVS", instancedNormalChunk);
+                ownedMaterial.update();
               }
+              const mesh = new pc.MeshInstance(
+                source.mesh,
+                ownedMaterial ?? source.material,
+                entity,
+              );
+              const buffer = new pc.VertexBuffer(
+                app.graphicsDevice,
+                pc.VertexFormat.getDefaultInstancingFormat(app.graphicsDevice),
+                instanceCount,
+                { usage: pc.BUFFER_DYNAMIC },
+              );
+              mesh.setInstancing(buffer, false);
+              if (placements.some((v) => v.asset === key && !!v.environment))
+                mesh.cull = false;
+              mesh.castShadow = true;
+              mesh.receiveShadow = true;
+              const items = placements.filter((v) => v.asset === key),
+                min = [Infinity, Infinity, Infinity],
+                max = [-Infinity, -Infinity, -Infinity];
+              for (const v of items) {
+                const r = Math.max(v.width, v.depth);
+                for (const [i, c] of [v.x, v.y, v.z].entries()) {
+                  min[i] = Math.min(min[i], c - r * 2);
+                  max[i] = Math.max(max[i], c + r * 2);
+                }
+              }
+              mesh.setCustomAabb(
+                new pc.BoundingBox(
+                  new pc.Vec3(...min.map((v, i) => (v + max[i]) / 2)),
+                  new pc.Vec3(...min.map((v, i) => (max[i] - v) / 2)),
+                ),
+              );
+              entity.addComponent("render", { meshInstances: [mesh] });
+              entry.groups.push({
+                entity,
+                mesh,
+                buffer,
+                data: new Float32Array(instanceCount * 16),
+                variant,
+                ownedMaterial,
+                pulse: variant
+                  ? {
+                      speed: Number(variant.split(":")[0]),
+                      amplitude: Number(variant.split(":")[1]),
+                    }
+                  : undefined,
+                part,
+                partIndex,
+              });
             }
-            mesh.setCustomAabb(
-              new pc.BoundingBox(
-                new pc.Vec3(...min.map((v, i) => (v + max[i]) / 2)),
-                new pc.Vec3(...min.map((v, i) => (max[i] - v) / 2)),
-              ),
-            );
-            entity.addComponent("render", { meshInstances: [mesh] });
-            entry.groups.push({
-              entity,
-              mesh,
-              buffer,
-              data: new Float32Array(count * 16),
-              part,
-              partIndex,
-            });
           }
         }
         entry.loaded = true;
       } catch (error) {
         entry.error = error instanceof Error ? error.message : String(error);
       }
-      scene.update(lastState);
+      scene.update(lastState, active, lastPresentationTime);
     });
     app.assets.load(asset);
   }
@@ -353,13 +454,18 @@ export function createCosmicScene(
   ) {
     const bounds = v.part === undefined ? record.bounds : part;
     const dims = bounds.max.map((x, i) => Math.max(0.0001, x - bounds.min[i]));
-    const y = v.y;
+    const envMotion = sampleEnvironmentMotion(
+      v.environment,
+      lastPresentationTime,
+      motion,
+    );
+    const y = v.y + envMotion.y;
     let sx = v.width / dims[0],
       sz = v.depth / dims[2],
       sy = Math.min(sx, sz, 8),
-      yaw = v.yaw ?? 0,
-      x = v.x,
-      z = v.z;
+      yaw = (v.yaw ?? 0) + envMotion.yaw,
+      x = v.x + envMotion.x,
+      z = v.z + envMotion.z;
     if (v.fit === "gate" || v.fit === "prop")
       sx = sy = sz = v.width / Math.max(dims[0], dims[2]);
     let pivotY = v.fit === "floor" ? part.walkY : bounds.min[1];
@@ -403,9 +509,10 @@ export function createCosmicScene(
     /** Editor placements use this very renderer and its instancing transforms. */
     setLayout(next: ArenaConfig) {
       arena = next;
-      placements = next.visuals!;
+      placements = [...next.visuals!, ...(next.environment ?? [])];
+      visibility = makeVisibility();
       keys = [...new Set(placements.map((v) => v.asset))];
-      turboVisuals = placements.filter((v) => v.asset === "turbo-conveyor");
+      turboVisuals = placements.filter((v) => !v.environment && v.asset === "turbo-conveyor");
       for (const [key, entry] of entries) {
         const record = inventory.find((a) => a.runtime === `${key}.glb`)!;
         if (
@@ -415,7 +522,15 @@ export function createCosmicScene(
               placements.some(
                 (v) =>
                   v.asset === key && (v.part === undefined || v.part === i),
-              ) && !entry.groups.some((g) => g.partIndex === i),
+              ) &&
+              placements.some(
+                (v) =>
+                  v.asset === key &&
+                  (v.part === undefined || v.part === i) &&
+                  !entry.groups.some(
+                    (g) => g.partIndex === i && g.variant === pulseKey(v),
+                  ),
+              ),
           )
         ) {
           entries.delete(key);
@@ -427,7 +542,8 @@ export function createCosmicScene(
           const count = placements.filter(
             (v) =>
               v.asset === entry.key &&
-              (v.part === undefined || v.part === group.partIndex),
+              (v.part === undefined || v.part === group.partIndex) &&
+              pulseKey(v) === group.variant,
           ).length;
           if (count > group.buffer.numVertices) {
             group.mesh.setInstancing(null);
@@ -444,7 +560,7 @@ export function createCosmicScene(
           // Editor can move objects outside the original group bounds.
           group.mesh.cull = false;
         }
-      scene.update(lastState);
+      scene.update(lastState, active, lastPresentationTime);
     },
     placementBounds(id: string) {
       const v = placements.find((v) => v.id === id);
@@ -465,6 +581,23 @@ export function createCosmicScene(
       }
       return result;
     },
+    setEditorFocus(ids: readonly string[]) {
+      focusedInEditor.clear();
+      ids.forEach((id) => focusedInEditor.add(id));
+    },
+    setEnvironmentVisible(value: boolean) {
+      showEnvironment = value;
+      scene.update(lastState, active, lastPresentationTime);
+    },
+    setEditorHidden(ids: readonly string[]) {
+      hiddenInEditor.clear();
+      ids.forEach((id) => hiddenInEditor.add(id));
+      scene.update(lastState, active, lastPresentationTime);
+    },
+    isVisible(id: string) {
+      const v = placements.find((v) => v.id === id);
+      return !!v && visible(v) && (!v.environment || environmentNear(v));
+    },
     get ready() {
       return ready;
     },
@@ -478,7 +611,7 @@ export function createCosmicScene(
           retried = true;
         }
       // Keep healthy and in-flight containers owned by this scene: the loader shares pending URLs.
-      if (retried) scene.update(lastState);
+      if (retried) scene.update(lastState, active, lastPresentationTime);
     },
     setOverview(value: boolean) {
       if (value === overview) return;
@@ -487,12 +620,17 @@ export function createCosmicScene(
       lastStatus = "";
       canvas.dataset.arenaAssets = "loading";
       onLoad?.({ ready: false, loaded: 0, total: keys.length, error: null });
-      scene.update(lastState);
+      scene.update(lastState, active, lastPresentationTime);
     },
-    update(state: Readonly<PlayerState>, isActive = active) {
+    update(
+      state: Readonly<PlayerState>,
+      isActive = active,
+      presentationTime = state.elapsed,
+    ) {
       if (disposed) return;
       active = isActive;
       lastState = state;
+      lastPresentationTime = presentationTime;
       // Let the approved character finish importing before starting heavy environment decoding.
       canLoad =
         active &&
@@ -500,14 +638,17 @@ export function createCosmicScene(
           canvas.dataset.character === "minimorph-optimized-v1" ||
           canvas.dataset.character === "procedural-fallback");
       wanted = keys
-        .filter(
-          (key) =>
-            overview ||
-            placements.some(
-              (v) =>
-                v.asset === key &&
-                (Math.hypot(v.x - state.x, v.z - state.z) < 68 || inView(v)),
-            ),
+        .filter((key) =>
+          placements.some(
+            (v) =>
+              v.asset === key &&
+              visible(v) &&
+              (v.environment
+                ? environmentNear(v) && inView(v)
+                : overview ||
+                  Math.hypot(v.x - state.x, v.z - state.z) < 68 ||
+                  inView(v)),
+          ),
         )
         .sort(
           (a, b) =>
@@ -522,15 +663,15 @@ export function createCosmicScene(
                 .map((v) => Math.hypot(v.x - state.x, v.z - state.z)),
             ),
         );
-      required = overview
-        ? wanted
-        : keys.filter((key) =>
-            placements.some(
-              (v) =>
-                v.asset === key &&
-                Math.hypot(v.x - state.x, v.z - state.z) < 28,
-            ),
-          );
+      required = keys.filter((key) =>
+        placements.some(
+          (v) =>
+            !v.environment &&
+            visible(v) &&
+            v.asset === key &&
+            (overview || Math.hypot(v.x - state.x, v.z - state.z) < 28),
+        ),
+      );
       for (const [key, entry] of entries)
         if (
           !overview &&
@@ -538,7 +679,10 @@ export function createCosmicScene(
           !placements.some(
             (v) =>
               v.asset === key &&
-              (Math.hypot(v.x - state.x, v.z - state.z) < 90 || inView(v)),
+              visible(v) &&
+              (v.environment
+                ? environmentNear(v)
+                : Math.hypot(v.x - state.x, v.z - state.z) < 90 || inView(v)),
           )
         ) {
           entries.delete(key);
@@ -555,9 +699,12 @@ export function createCosmicScene(
             for (const v of placements)
               if (
                 v.asset === entry.key &&
-                (v.part === undefined || v.part === group.partIndex)
+                (v.part === undefined || v.part === group.partIndex) &&
+                pulseKey(v) === group.variant
               ) {
-                if (!overview && !inView(v)) continue;
+                if (!visible(v) || (v.environment && !environmentNear(v)))
+                  continue;
+                if ((!overview || v.environment) && !inView(v)) continue;
                 group.data.set(
                   transform(v, group.part, record, state).data,
                   count++ * 16,
@@ -566,6 +713,13 @@ export function createCosmicScene(
             group.entity.enabled = count > 0;
             group.mesh.instancingCount = count;
             if (count) group.buffer.setData(group.data);
+            if (count && group.pulse && group.ownedMaterial) {
+              group.ownedMaterial.emissiveIntensity =
+                0.1 +
+                (0.5 +
+                  0.5 * Math.sin(lastPresentationTime * group.pulse.speed)) *
+                  group.pulse.amplitude;
+            }
           }
         }
       const capacity = Math.max(1, turboVisuals.length * 3);
@@ -645,6 +799,6 @@ export function createCosmicScene(
       delete canvas.dataset.arenaTriangles;
     },
   };
-  scene.update(lastState);
+  scene.update(lastState, active, lastPresentationTime);
   return scene;
 }

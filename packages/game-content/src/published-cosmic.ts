@@ -1,12 +1,21 @@
 import raw from "./published/cosmic-sprint.json";
-import { applyLayout, validateLayout } from "./layout-override";
+import {
+  applyLayout,
+  validateLayout,
+  isDefaultPlacement,
+} from "./layout-override";
+import { layoutSource } from "./editor-catalog";
 import { cosmicSprint } from "./cosmic-sprint";
 import type { ArenaConfig, NavigationRoute } from "./arenas";
 /** Deterministic content fingerprint for compatibility, not an authentication credential. */
 export function layoutFingerprint(value: unknown): string {
   const canonical = (v: unknown): string =>
     v === null || typeof v !== "object"
-      ? JSON.stringify(typeof v==='number'&&Number.isFinite(v)?Math.round(v*1e9)/1e9:v)
+      ? JSON.stringify(
+          typeof v === "number" && Number.isFinite(v)
+            ? Math.round(v * 1e9) / 1e9
+            : v,
+        )
       : Array.isArray(v)
         ? `[${v.map(canonical).join(",")}]`
         : `{${Object.keys(v)
@@ -34,9 +43,33 @@ export function validatePublication(value: unknown): {
   )
     throw Error("Unknown publication property");
   const layout = validateLayout(p.layout),
-    arena = applyLayout(layout),
-    revision = layoutFingerprint({ layout, navigation: p.navigation, world: arena });
-  if (layout.objects.length || layout.checkpoints?.length) {
+    arena = applyLayout(layout);
+  // Preserve the v0.4 collision fingerprint for metadata/presentation-only edits.
+  const gameplayLayout = {
+    version: 3,
+    arenaId: layout.arenaId,
+    objects: layout.objects
+      .filter((o) => !isDefaultPlacement(o))
+      .filter(
+        (o) =>
+          layoutSource(o.sourceId)?.category !== "decoration" ||
+          (!o.deleted && !!o.colliders?.length),
+      )
+      .map((o) => {
+        const copy = { ...o };
+        delete copy.visible;
+        delete copy.locked;
+        return copy;
+      }),
+    ...(layout.checkpoints ? { checkpoints: layout.checkpoints } : {}),
+  };
+  const collisionWorld = applyLayout(gameplayLayout);
+  const revision = layoutFingerprint({
+    layout: gameplayLayout,
+    navigation: p.navigation,
+    world: collisionWorld,
+  });
+  if (gameplayLayout.objects.length || layout.checkpoints?.length) {
     if (
       !Array.isArray(p.navigation) ||
       p.navigationReviewedFor !== revision ||
