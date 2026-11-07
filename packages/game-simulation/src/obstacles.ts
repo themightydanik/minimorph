@@ -1,3 +1,4 @@
+export { surfaceContains } from "@minimorph/game-content";
 import type { ArenaConfig, ArenaObstacle, Platform } from '@minimorph/game-content';
 export interface CollisionSurface extends Platform { previousY?: number; priority?: number }
 export type MechanismPhase = 'safe' | 'warning' | 'active' | 'hidden';
@@ -24,11 +25,6 @@ export function sampleMechanism(o:ArenaObstacle,time:number,out:MechanismPose={x
  return p;
 }
 function hasSurface(o:ArenaObstacle){if(o.kind==='conveyor'&&o.surface===false)return false;return ['moving-platform','disappearing-platform','rotating-disc','conveyor','bounce-platform','collapse-platform','jump-pad'].includes(o.kind);}
-export function surfaceContains(p:Platform,x:number,z:number):boolean{
- if(p.radius!==undefined)return Math.hypot(x-p.x,z-p.z)<=p.radius;
- if(p.yaw){const dx=x-p.x,dz=z-p.z,c=Math.cos(p.yaw),s=Math.sin(p.yaw);return Math.abs(dx*c-dz*s)<=p.width/2&&Math.abs(dx*s+dz*c)<=p.depth/2;}
- return Math.abs(x-p.x)<=p.width/2&&Math.abs(z-p.z)<=p.depth/2;
-}
 /** Owned by a player/run; surfaces, sample outputs and active lists are reused every tick. */
 export class ArenaRuntime {
  readonly active:CollisionSurface[]=[];
