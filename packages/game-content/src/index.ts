@@ -7,3 +7,5 @@ export * from './editor-catalog';
 export * from "./colliders";
 
 export * from "./published-cosmic";
+
+export * from "./environment";

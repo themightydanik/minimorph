@@ -278,7 +278,7 @@ export function createGame(
     camera.setPosition(pose.x, pose.y, pose.z);
     camera.lookAt(pose.lookX, pose.lookY, pose.lookZ);
     camera.camera!.fov = pose.fov;
-    camera.camera!.farClip=overview?600:180;
+    camera.camera!.farClip=overview?600:levels.current.environment?.length?Math.max(180,...levels.current.environment.map(v=>(v.environment?.viewDistance??600)+Math.max(v.width,v.depth))):180;
     if(overview&&levels.current.navigation){const height=Math.max(230,170/(canvas.clientWidth/Math.max(1,canvas.clientHeight)*2*Math.tan(32*Math.PI/180)));camera.setPosition(38,height,-90);camera.lookAt(38,0,-90.1);camera.camera!.fov=64;}
     remotes.update(network?.remotes??[],camera,dt);
     if(now-lastStats>1000){lastStats=now;canvas.dataset.drawCalls=String(app.stats.drawCalls.total);canvas.dataset.textureBytes=String(app.stats.vramTextureBytes);canvas.dataset.frameMs=String(app.stats.frame.ms);}

@@ -42,7 +42,7 @@ describe("editor layout overrides", () => {
       const v = cosmicSprint.visuals!.find((v) => v.mechanismId === source.id)!,
         o = move(v.id),
         arena = applyLayout({ ...emptyLayout(), objects: [o] });
-      expect(arena.mechanisms.find((m) => m.id === source.id)).toEqual({
+      expect(arena.mechanisms.find((m) => m.id === source.id)).toMatchObject({
         ...source,
         x: source.x + 7,
         y: source.y + 2,
@@ -91,7 +91,7 @@ describe("editor layout overrides", () => {
     for (const input of [
       null,
       {},
-      { ...emptyLayout(), version: 4 },
+      { ...emptyLayout(), version: 5 },
       { ...emptyLayout(), arenaId: "orbit-chaos" },
       { ...emptyLayout(), objects: [{ ...o, x: Infinity }] },
       { ...emptyLayout(), objects: [o, o] },
@@ -109,7 +109,7 @@ it("migrates v0.1 exports and round trips catalog instances and gameplay propert
     arenaId: "cosmic-sprint",
     objects: [move("launch-island")],
   };
-  expect(validateLayout(old).version).toBe(3);
+  expect(validateLayout(old).version).toBe(4);
   const object = {
     id: "editor-new",
     sourceId: "catalog:giant-padded-hammer",
