@@ -132,3 +132,50 @@ body,
   background: #263858;
   margin: 8px 0;
 }
+.level-editor[hidden] {
+  display: none;
+}
+.level-editor .editor-playtest-button {
+  background: #167363;
+  border-color: #48f5dc;
+  font-weight: bold;
+}
+.editor-playtest {
+  position: absolute;
+  inset: 0;
+  background: #101a38;
+}
+.playtest-hud {
+  position: absolute;
+  z-index: 10;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: #101a30bb;
+  padding: 6px;
+  border-radius: 8px;
+}
+.playtest-hud output {
+  font: 13px system-ui;
+}
+.playtest-touch {
+  display: none;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  align-items: end;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.playtest-touch button {
+  pointer-events: auto;
+  touch-action: none;
+}
+@media (pointer: coarse) {
+  .playtest-touch {
+    display: flex;
+  }
+}

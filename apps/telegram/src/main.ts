@@ -3,9 +3,13 @@ import "@minimorph/game-ui/style.css";
 import { initializeTelegram, loadTelegramBridge } from "./telegram";
 declare const __EDITOR_ENABLED__: boolean;
 if (__EDITOR_ENABLED__ && /^\/editor\/?$/.test(window.location.pathname)) {
-  void import("@minimorph/game-engine/editor").then(({ mountLevelEditor }) => {
+  void Promise.all([
+    import("@minimorph/game-engine/editor"),
+    import("@minimorph/game-ui/playtest"),
+  ]).then(([{ mountLevelEditor }, { mountPlaytest }]) => {
     const editor = mountLevelEditor(
       document.querySelector<HTMLElement>("#app")!,
+      mountPlaytest,
     );
     window.addEventListener("pagehide", () => editor.destroy(), { once: true });
   });

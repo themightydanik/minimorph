@@ -33,7 +33,7 @@ it("damps both eye and look target across recovery/restart instead of snapping",
   expect(Math.abs(pose.lookZ - before.lookZ)).toBeLessThan(1.5);
   for (let i = 0; i < 600; i++) updateCamera(pose, fresh, 0, 1.8, FIXED_STEP);
   expect(pose.lookZ).toBeCloseTo(1);
-  expect(pose.z).toBeCloseTo(9.5, 1);
+  expect(pose.z).toBeCloseTo(7.5, 1);
 });
 
 it("keeps the initial zero-duration render finite", () => {
@@ -47,5 +47,5 @@ it("keeps the initial zero-duration render finite", () => {
 it('long recovery immediately reframes the avatar while retaining camera yaw',async()=>{
  const {reframeRecovery}=await import('./camera');const pose=createCameraPose(),player=createPlayer();
  player.z=-320;pose.z=-400;reframeRecovery(pose,player,Math.PI/2,.5);
- expect(pose.lookZ).toBe(-321);expect(pose.x).toBeCloseTo(player.x+11.5);expect(pose.z).toBeCloseTo(-321);expect(pose.y).toBe(player.y+8);
+ expect(pose.lookZ).toBe(-321);expect(pose.x).toBeCloseTo(player.x+8.5);expect(pose.z).toBeCloseTo(-321);expect(pose.y).toBe(player.y+6.5);
 });

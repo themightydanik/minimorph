@@ -1,7 +1,7 @@
 import { courseProgress } from '@minimorph/game-simulation';
 import type { OnlineDriver } from '@minimorph/multiplayer-client';
 import { createRemotePlayers } from './remote-players';
-import type { RaceMode } from "@minimorph/game-content";
+import type { ArenaConfig, RaceMode } from "@minimorph/game-content";
 import * as pc from "playcanvas";
 import {
   createPlayer,
@@ -12,7 +12,7 @@ import {
 import type { Input, PlayerState } from "./physics";
 import { createProceduralCat, loadCharacterVisual } from "./character";
 import type { CharacterSource } from "./character";
-import { createCameraPose, updateCamera, reframeRecovery } from "./camera";
+import { createCameraPose, updateCamera, reframeRecovery, createCameraFollow, updateCameraFollow } from "./camera";
 import { LevelManager } from "./levels";
 import { RaceSession } from "./session";
 import type { RaceSnapshot } from "./session";
@@ -31,6 +31,9 @@ export type { CharacterSource, CharacterVisual } from "./character";
 export { createPlayer, stepPlayer } from "./physics";
 export type { PlayerState } from "./physics";
 export interface GameOptions {
+  /** Isolated local session only; cannot attach an online driver. */
+  localArena?: ArenaConfig;
+  environmentUrls?: { [key:string]:string };
   onArenaLoad?: (status:ArenaLoadStatus)=>void;
   onPresentation?: (event: PresentationEvent) => void;
   remoteCharacter?: CharacterSource;
@@ -79,7 +82,7 @@ export function createGame(
     canvas.parentElement!.clientHeight,
   );
   app.setCanvasResolution(pc.RESOLUTION_AUTO);
-  const levels = new LevelManager(options.initialArena, options.mode);
+  const levels = new LevelManager(options.initialArena, options.mode, options.localArena);
   const session = new RaceSession(levels.current.id, options.raceFlow);
   const materials: pc.StandardMaterial[] = [];
   const sceneryGroup = app.batcher!.addGroup("Static scenery", false, 100).id;
@@ -128,7 +131,7 @@ export function createGame(
     fov: 58,
   });
   app.root.addChild(camera);
-  let arenaScene = createArenaScene(app, levels.current, shape, makeMaterial, options.onArenaLoad);
+  let arenaScene = createArenaScene(app, levels.current, shape, makeMaterial, options.onArenaLoad, options.environmentUrls);
   let overview=false,lastStats=0;
   const effectRoot = new pc.Entity("Pooled visual effects"); app.root.addChild(effectRoot);
   const effects = createPolishEffects(app, effectRoot, shape);
@@ -156,6 +159,8 @@ export function createGame(
     cameraYaw = 0;
   let lastWallTime = performance.now();
   const pose = createCameraPose();
+  if(options.localArena)reframeRecovery(pose,player,0,canvas.clientWidth/Math.max(1,canvas.clientHeight));
+  const follow = createCameraFollow();
   const resize = () => {
     if (!destroyed) {
       app.graphicsDevice.maxPixelRatio = Math.min(
@@ -260,10 +265,11 @@ export function createGame(
     effects.end();
     canvas.dataset.activeEffects = String(effects.active);
     const framing = levels.current.sections?.find(s => -player.z >= s.start && -player.z < s.end);
+    const viewYaw = updateCameraFollow(follow, player, cameraYaw, input.cameraTurn ?? 0, dt);
     updateCamera(
       pose,
       player,
-      cameraYaw,
+      viewYaw,
       canvas.clientWidth / Math.max(1, canvas.clientHeight),
       dt,
       levels.current,
@@ -285,13 +291,30 @@ export function createGame(
     window.removeEventListener("resize", resize);
     document.removeEventListener("visibilitychange", visibility);
     app.off("update", update);
-    remotes.destroy();
-    character.destroy();
-    effects.destroy();
-    lighting.destroy();
-    arenaScene.destroy();
-    app.destroy();
-    materials.forEach((m) => m.destroy());
+    app.autoRender = false;
+    app.renderNextFrame = false;
+    app.timeScale = 0;
+    app.root.enabled = false;
+    arenaScene.update(player, false); // Freeze streaming; existing container jobs may still add textures.
+    const release = () => {
+      remotes.destroy();
+      character.destroy();
+      effects.destroy();
+      lighting.destroy();
+      arenaScene.destroy();
+      materials.forEach((m) => m.destroy());
+      app.destroy();
+    };
+    const settleLocalLoads = () => {
+      const pending = app.assets.list().filter(asset => asset.loading);
+      if (!pending.length) { release(); return; }
+      // GLB parsing is not abortable. Keep its registry/device alive until callbacks settle.
+      void Promise.all(pending.map(asset => new Promise<void>(resolve => {
+        const done = () => { asset.off('load', done); asset.off('error', done); resolve(); };
+        asset.once('load', done); asset.once('error', done);
+      }))).then(settleLocalLoads);
+    };
+    if(options.localArena)settleLocalLoads();else release();
   };
   try {
     app.batcher!.generate();
@@ -304,12 +327,15 @@ export function createGame(
   }
   function resetPlayer(reframe = false) {
     player = createPlayer(levels.current); previous = { ...player };
+    Object.assign(follow, createCameraFollow());
     accumulator = 0; pendingJump = false; pendingDive = false; effects.reset(); events.reset();
+    if(options.localArena)reframeRecovery(pose,player,cameraYaw,canvas.clientWidth/Math.max(1,canvas.clientHeight));
     if (reframe) { cameraYaw = 0; Object.assign(pose, { x: player.x, y: player.y + 5, z: player.z + 9, lookX: player.x, lookY: player.y + 1, lookZ: player.z - 1 }); }
   }
   return {
     setOverview(enabled){overview=enabled&&!!levels.current.navigation&&session.phase!=="racing";arenaScene.setOverview(overview);canvas.dataset.overview=String(overview);},
     setOnline(driver,arenaId,epoch=""){
+      if (driver && options.localArena) throw new Error('Local Playtest cannot connect to multiplayer');
       // Reconnect uses the same driver/arena; retain visual high-water marks, not old cue playback.
       if (driver && driver === online && (!arenaId || arenaId === levels.current.id)&&epoch===onlineEpoch) return;
       online=undefined;onlineEpoch=epoch;lastViewingId="";
@@ -321,7 +347,7 @@ export function createGame(
       if (destroyed) return;
       const oldArena=levels.current;levels.load(id, mode);
       overview=false;
-      if(levels.current!==oldArena){arenaScene.destroy();arenaScene = createArenaScene(app, levels.current, shape, makeMaterial, options.onArenaLoad);}
+      if(levels.current!==oldArena){arenaScene.destroy();arenaScene = createArenaScene(app, levels.current, shape, makeMaterial, options.onArenaLoad, options.environmentUrls);}
       else {arenaScene.setOverview(false);arenaScene.retry();}
       camera.camera!.clearColor = new pc.Color().fromString(levels.current.palette.sky);
       canvas.dataset.arena = id;

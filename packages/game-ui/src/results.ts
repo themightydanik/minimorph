@@ -23,7 +23,7 @@ export function createResultsUI(root: HTMLElement) {
       falls.textContent = String(result.falls);
       badge.textContent = result.personalBest ? 'PERSONAL BEST · A NEW ORBIT RECORD' : 'COURSE CLEARED · KEEP YOUR MOMENTUM';
       if (result.personalBest && result.improvement && result.improvement > 0) badge.textContent += ` · −${result.improvement.toFixed(2)}s`;
-      splits.textContent = result.splits?.map((t,i)=>`C${i+1} ${formatTime(t)}`).join(' · ') ?? '';
+      splits.textContent = result.splits?.map((t,i)=>`CP touch ${i+1} ${formatTime(t)}`).join(' · ') ?? '';
       next.hidden = !result.nextArenaName;
       next.textContent = result.nextArenaName ? `Next: ${result.nextArenaName}` : 'Circuit complete';
     },

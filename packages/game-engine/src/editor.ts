@@ -8,7 +8,11 @@ import {
   editorCatalog,
   layoutSource,
 } from "@minimorph/game-content";
-import type { LayoutObject, LayoutOverride } from "@minimorph/game-content";
+import type {
+  ArenaConfig,
+  LayoutObject,
+  LayoutOverride,
+} from "@minimorph/game-content";
 import { createCosmicScene } from "./cosmic-scene";
 import { createPolishLighting } from "./polish-lighting";
 import { createPlayer } from "./physics";
@@ -16,12 +20,25 @@ import "./editor.css";
 import { EditorHistory } from "./editor-history";
 import { editorAssetUrls } from "./editor-assets";
 /** Preview-only authoring mode: no player, sockets or persisted production overrides. */
-export function mountLevelEditor(host: HTMLElement) {
-  host.innerHTML = `<main class="level-editor"><header><b>Minimorph · Level Editor v0.2</b><button data-undo disabled>Undo</button><button data-redo disabled>Redo</button><button data-export>Save / Export JSON</button><button data-import>Import JSON</button><input data-file type="file" accept=".json,application/json" hidden><button data-reset>Reset layout</button><a href="/">Back to game</a></header><aside><h3>Cosmic Sprint</h3><p>Draft only · export never changes the published game.</p><h3>Asset catalog · 23 GLBs</h3><input data-asset-search aria-label="Search assets" placeholder="Search prepared assets"><select data-catalog aria-label="Asset catalog"></select><select data-add-at aria-label="Placement location"><option value="target">At camera target</option><option value="selection">At selected object</option></select><button data-add>Add selected asset</button><p data-catalog-note></p><h3>Scene objects</h3><div data-hierarchy></div></aside><section class="editor-viewport"><canvas aria-label="Cosmic Sprint editor viewport"></canvas><nav><button data-top>Top-down</button><button data-focus>Focus selection</button><span>Click: select · right drag: orbit · middle / Shift drag: pan · wheel: zoom · arrows: move gizmo on X/Z</span></nav><output data-status role="status">Loading actual GLB scene…</output></section><aside><h3>Selected object</h3><div data-inspector></div><p>Spawn, finish, checkpoints, decoration and bot routes are read-only. Moving platforms does not regenerate routes. Export and review before use in gameplay.</p></aside></main>`;
+export function mountLevelEditor(
+  host: HTMLElement,
+  launchPlaytest: (
+    host: HTMLElement,
+    arena: ArenaConfig,
+    environmentUrls: { [key: string]: string },
+    onExit: () => void,
+  ) => { destroy(): void },
+) {
+  host.innerHTML = `<main class="level-editor"><header><b>Minimorph · Level Editor v0.3</b><button data-playtest class="editor-playtest-button">▶ Playtest</button><button data-undo disabled>Undo</button><button data-redo disabled>Redo</button><button data-export>Save / Export JSON</button><button data-import>Import JSON</button><input data-file type="file" accept=".json,application/json" hidden><button data-reset>Reset layout</button><a href="/">Back to game</a></header><aside><h3>Cosmic Sprint</h3><p>Draft only · export never changes the published game.</p><h3>Asset catalog · 23 GLBs</h3><input data-asset-search aria-label="Search assets" placeholder="Search prepared assets"><select data-catalog aria-label="Asset catalog"></select><select data-add-at aria-label="Placement location"><option value="target">At camera target</option><option value="selection">At selected object</option></select><button data-add>Add selected asset</button><p data-catalog-note></p><h3>Scene objects</h3><div data-hierarchy></div></aside><section class="editor-viewport"><canvas aria-label="Cosmic Sprint editor viewport"></canvas><nav><button data-top>Top-down</button><button data-focus>Focus selection</button><span>Click: select · right drag: orbit · middle / Shift drag: pan · wheel: zoom · arrows: move gizmo on X/Z</span></nav><output data-status role="status">Loading actual GLB scene…</output></section><aside><h3>Selected object</h3><div data-inspector></div><p>Spawn, finish, checkpoints, decoration and bot routes are read-only. Moving platforms does not regenerate routes. Export and review before use in gameplay.</p></aside></main>`;
+  let playtestSession: { destroy(): void } | undefined;
+  const editorElement = host.querySelector<HTMLElement>(".level-editor")!;
+  const playtestHost = document.createElement("div");
+  host.append(playtestHost);
   const q = <T extends HTMLElement>(s: string) => host.querySelector<T>(s)!;
   const canvas = q<HTMLCanvasElement>("canvas"),
     status = q<HTMLOutputElement>("[data-status]");
   canvas.tabIndex = 0;
+  canvas.id = "minimorph-editor";
   const app = new pc.Application(canvas, {
     graphicsDeviceOptions: {
       deviceTypes: ["webgl2"],
@@ -141,6 +158,7 @@ export function mountLevelEditor(host: HTMLElement) {
   q("[data-redo]").addEventListener("click", () => traverseHistory(true));
   window.addEventListener("keydown", historyShortcut);
   function historyShortcut(e: KeyboardEvent) {
+    if (playtestSession) return;
     if (
       !(e.ctrlKey || e.metaKey) ||
       e.altKey ||
@@ -568,14 +586,16 @@ export function mountLevelEditor(host: HTMLElement) {
     }
   });
   filterCatalog();
-  const resize = new ResizeObserver(() =>
-    app.resizeCanvas(
-      canvas.parentElement!.clientWidth,
-      canvas.parentElement!.clientHeight,
-    ),
-  );
+  const resize = new ResizeObserver(() => {
+    if (!playtestSession)
+      app.resizeCanvas(
+        canvas.parentElement!.clientWidth,
+        canvas.parentElement!.clientHeight,
+      );
+  });
   resize.observe(canvas.parentElement!);
   app.on("update", () => {
+    if (playtestSession) return;
     scene.update(state, true);
     const bounds = scene.placementBounds(selected);
     if (bounds) {
@@ -596,11 +616,52 @@ export function mountLevelEditor(host: HTMLElement) {
             app.drawLine(corners[i], corners[i | bit], pc.Color.YELLOW);
     }
   });
+  function exitPlaytest() {
+    const session = playtestSession;
+    playtestSession = undefined;
+    try {
+      session?.destroy();
+    } finally {
+      playtestHost.hidden = true;
+      editorElement.hidden = false;
+      app.timeScale = 1;
+      app.autoRender = true;
+      scene.root.enabled = true;
+      inspector();
+      app.resizeCanvas(
+        canvas.parentElement!.clientWidth,
+        canvas.parentElement!.clientHeight,
+      );
+      canvas.focus();
+    }
+  }
+  q("[data-playtest]").addEventListener("click", () => {
+    if (playtestSession || dragging) return;
+    try {
+      const draft = applyLayout(layout);
+      editorElement.hidden = true;
+      playtestHost.hidden = false;
+      gizmo.enabled = false;
+      app.timeScale = 0;
+      app.autoRender = false;
+      scene.root.enabled = false;
+      playtestSession = launchPlaytest(
+        playtestHost,
+        draft,
+        editorAssetUrls,
+        exitPlaytest,
+      );
+    } catch (error) {
+      exitPlaytest();
+      status.textContent = `Playtest failed: ${String(error)}`;
+    }
+  });
   scene.setOverview(true);
   refresh();
   app.start();
   return {
     destroy() {
+      playtestSession?.destroy();
       window.removeEventListener("keydown", historyShortcut);
       listeners.abort();
       resize.disconnect();

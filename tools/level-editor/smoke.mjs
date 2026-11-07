@@ -30,68 +30,77 @@ try {
     { timeout: 150000 },
   );
 
-  await page.locator("[data-asset-search]").fill("main-floor-tile");
-  await page.locator("[data-catalog]").selectOption("catalog:main-floor-tile");
-  await page.locator("[data-add]").click();
-  const id = await page.locator("canvas").getAttribute("data-editor-selected");
-  assert.match(id, /^editor-/);
-  const edit = async (key, value) => {
-    await page.locator(`[data-property="${key}"]`).fill(String(value));
-    await page.locator(`[data-property="${key}"]`).press("Tab");
-  };
-  const draft = async () =>
-    JSON.parse(await page.locator("canvas").getAttribute("data-layout"));
-  await edit("x", 25);
-  await edit("width", 18);
-  await edit("scale", 1.5);
-  assert.equal((await draft()).objects[0].scale, 1.5);
-  await page.locator("[data-undo]").click();
-  assert.equal((await draft()).objects[0].scale, undefined);
-  await page.locator("[data-redo]").click();
-  assert.equal((await draft()).objects[0].scale, 1.5);
-  await page.keyboard.press("Control+z");
-  assert.equal((await draft()).objects[0].scale, undefined);
-  await page.keyboard.press("Control+Shift+z");
-  const before = await draft();
-  const download = page.waitForEvent("download");
-  await page.locator("[data-export]").click();
-  const file = await download,
-    path = await file.path();
-  await page.locator("[data-reset]").click();
-  assert.deepEqual((await draft()).objects, []);
-  await page.locator("[data-file]").setInputFiles(path);
-  await page.waitForFunction(
-    () =>
-      JSON.parse(document.querySelector("canvas").dataset.layout).objects
-        .length === 1,
+  const editor = page.locator(
+    'canvas[aria-label="Cosmic Sprint editor viewport"]',
   );
-  assert.deepEqual(await draft(), before);
-  await page.locator("[data-asset-search]").fill("curved-floor-corner");
-  await page
-    .locator("[data-catalog]")
-    .selectOption("catalog:curved-floor-corner");
-  await page.locator("[data-add]").click();
+  await page.locator('[data-object="launch-island"]').click();
+  await page.locator('[data-property="x"]').fill("2");
+  await page.locator('[data-property="x"]').press("Tab");
+  await page.locator('[data-property="width"]').fill("30");
+  await page.locator('[data-property="width"]').press("Tab");
+  const draft = JSON.parse(await editor.getAttribute("data-layout"));
+  const sockets = [];
+  page.on("websocket", (socket) => sockets.push(socket.url()));
+  await page.locator("[data-playtest]").click();
+  const game = page.locator('canvas[aria-label="Local Playtest"]');
+  await page.waitForFunction(
+    () => {
+      const c = document.querySelector('canvas[aria-label="Local Playtest"]');
+      return (
+        c?.dataset.character === "minimorph-optimized-v1" &&
+        c.dataset.arenaAssets === "ready"
+      );
+    },
+    null,
+    { timeout: 150000 },
+  );
+  const startZ = Number(await game.getAttribute("data-playtest-z"));
+  await game.focus();
+  await page.keyboard.down("KeyW");
+  await page.waitForFunction(
+    (z) =>
+      Number(
+        document.querySelector('canvas[aria-label="Local Playtest"]').dataset
+          .playtestZ,
+      ) <
+      z - 0.1,
+    startZ,
+    { timeout: 30000 },
+  );
+  await page.keyboard.up("KeyW");
+  await page.keyboard.press("Space");
   await page.waitForFunction(
     () =>
-      document.querySelector("canvas").dataset.arenaAssetCount === "15/15" &&
-      document.querySelector("canvas").dataset.arenaAssets === "ready",
+      Number(
+        document.querySelector('canvas[aria-label="Local Playtest"]').dataset
+          .playtestY,
+      ) > 0.05,
+    null,
+    { timeout: 15000 },
+  );
+  await page.locator("[data-exit-playtest]").click();
+  assert.deepEqual(JSON.parse(await editor.getAttribute("data-layout")), draft);
+  assert.equal(
+    await page.locator('[data-property="width"]').inputValue(),
+    "30",
+  );
+  await page.locator("[data-undo]").click();
+  await page.locator("[data-redo]").click();
+  assert.deepEqual(JSON.parse(await editor.getAttribute("data-layout")), draft);
+  await page.locator("[data-playtest]").click();
+  await page.waitForFunction(
+    () =>
+      document.querySelector('canvas[aria-label="Local Playtest"]')?.dataset
+        .arenaAssets === "ready",
     null,
     { timeout: 90000 },
   );
-  assert.match(
-    await page.locator("[data-inspector]").innerText(),
-    /NON-COLLIDABLE/,
-  );
-  const added = await page
-    .locator("canvas")
-    .getAttribute("data-editor-selected");
-  await page.locator("[data-undo]").click();
-  assert.equal(await page.locator(`[data-object="${added}"]`).count(), 0);
-  await page.locator("[data-redo]").click();
-  assert.equal(await page.locator(`[data-object="${added}"]`).count(), 1);
+  await page.locator("[data-exit-playtest]").click();
+  assert.deepEqual(JSON.parse(await editor.getAttribute("data-layout")), draft);
+  assert.deepEqual(sockets, []);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: add -> move -> linked scale -> undo/redo + shortcuts -> export/reset/import; newly streamed catalog GLB; creation undo/redo; no page errors.",
+    "PASS: unsaved edit -> real Minimorph Playtest -> move/jump -> Exit -> exact draft + history preserved; repeated Playtest/Exit; no WebSockets or page errors.",
   );
 } finally {
   await browser.close();

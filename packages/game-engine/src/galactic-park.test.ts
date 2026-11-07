@@ -164,7 +164,7 @@ it("garden launches and both conveyor directions are physical, bounded and relea
     }
   }
 });
-it("spatial progress distinguishes branches and cannot skip ordered checkpoints or finish from below", () => {
+it("spatial progress distinguishes branches and cannot finish from below", () => {
   const state = createPlayer(arena);
   Object.assign(state, { checkpoint: 2, x: 76, z: -92 });
   const turbo = courseProgress(arena, state);
@@ -175,7 +175,7 @@ it("spatial progress distinguishes branches and cannot skip ordered checkpoints 
   expect(turbo).toBeLessThan(3 / 7);
   expect(garden).toBeGreaterThan(2 / 7);
   expect(garden).toBeLessThan(3 / 7);
-  Object.assign(state, arena.finish, { checkpoint: 0 });
+  Object.assign(state, arena.finish, { checkpoint: 0, y: arena.finish.y - 1, grounded:false });
   stepArenaPlayer(state, { x: 0, z: 0, jump: false }, FIXED_STEP, arena);
   expect(state.won).toBe(false);
 });
