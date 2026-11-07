@@ -17,6 +17,8 @@ export interface PlayerState {
   diveHeld: boolean;
   collapseTimes: Record<string,number>;
   splits: number[];
+  turboTime?:number;
+  turboMultiplier?:number;
   supportId: string | null;
   lastHazard: string | null;
   knockTime: number;
@@ -36,6 +38,7 @@ export interface PlayerState {
   elapsed: number;
   falls: number;
   checkpoint: number;
+  checkpointSerial?: number;
   checkpointFlash: number;
   coyote: number;
   jumpBuffer: number;
@@ -74,7 +77,7 @@ export function createPlayer(course: CourseDefinition = legacyCourse): PlayerSta
   return {
     ...course.spawn,
     action: "normal", actionTime: 0, diveCooldown: 0, diveUsed: false, jumpHeld: false, diveHeld: false,
-    collapseTimes: {}, splits: [],
+    collapseTimes: {}, splits: [], turboTime:0, turboMultiplier:1,
     supportId: null, lastHazard: null, knockTime: 0, knockX: 0, knockZ: 0, eventSerial: 0, lastEvent: null,
     vx: 0,
     vy: 0,
@@ -84,7 +87,7 @@ export function createPlayer(course: CourseDefinition = legacyCourse): PlayerSta
     won: false,
     elapsed: 0,
     falls: 0,
-    checkpoint: 0,
+    checkpoint: 0, checkpointSerial:0,
     checkpointFlash: 0,
     coyote: COYOTE_TIME,
     jumpBuffer: 0,
@@ -140,7 +143,7 @@ function restoreCheckpoint(state: PlayerState, course: CourseDefinition): void {
   const point = respawnPoint(state, course);
   Object.assign(state, {
     action: "normal", actionTime: 0, diveUsed: false,
-    supportId: null, knockTime: 0, knockX: 0, knockZ: 0,
+    supportId: null, turboTime:0,turboMultiplier:1, knockTime: 0, knockX: 0, knockZ: 0,
     x: point.x,
     y: point.y,
     z: point.z,
@@ -229,10 +232,10 @@ export function stepPlayer(
     state.jumpBuffer = state.coyote = 0;
   }
   if (state.action === "normal") {
-    approachVelocity(state, movement.x * SPEED, movement.z * SPEED, dt, course.airControl ?? 1);
+    approachVelocity(state, movement.x * SPEED * (state.turboTime!>0?state.turboMultiplier??1:1), movement.z * SPEED * (state.turboTime!>0?state.turboMultiplier??1:1), dt, course.airControl ?? 1);
   } else if (state.action === "dive") {
     // Limited steering; no extra thrust after the initial dive.
-    approachVelocity(state, movement.x * SPEED, movement.z * SPEED, dt, 0.18);
+    approachVelocity(state, movement.x * SPEED * (state.turboTime!>0?state.turboMultiplier??1:1), movement.z * SPEED * (state.turboTime!>0?state.turboMultiplier??1:1), dt, 0.18);
     state.jumpBuffer = state.coyote = 0;
   } else {
     const friction = state.action === "slide" ? 2.4 : 8;
@@ -323,6 +326,10 @@ export function stepArenaPlayer(state:PlayerState,input:Input,dt:number,arena:Ar
  if(state.grounded&&state.supportId&&!state.recovery){const d=world.displacement(state.supportId,state.elapsed,dt,state.x,state.z);state.x+=d.x;state.y+=d.y;state.z+=d.z;}
  const surfaces=world.surfaces(state.elapsed+dt,state.elapsed,state.collapseTimes,state.z);
  if(state.grounded)for(const s of surfaces)if(s.id===state.supportId)s.previousY=s.y;
+ state.turboTime=Math.max(0,(state.turboTime??0)-dt);if(!state.turboTime)state.turboMultiplier=1;
+ for(const e of world.entries){const o=e.o;if(o.kind!=='conveyor'||o.turboMultiplier===undefined)continue;
+  if(surfaceContains(o,state.x,state.z)&&state.y<=o.y+(o.triggerHeight??.35)&&state.y+1.7>=o.y){state.turboTime=Math.max(state.turboTime,o.turboDuration??5);state.turboMultiplier=Math.max(state.turboMultiplier??1,Math.max(1,Math.min(2,o.turboMultiplier)));}
+ }
  const oldZ=state.z;
  // Reuse the serialized lastHazard latch: no extra client/server-only contact state.
  const previousHazard = state.lastHazard ? world.byId.get(state.lastHazard)?.o : undefined;
@@ -330,13 +337,19 @@ export function stepArenaPlayer(state:PlayerState,input:Input,dt:number,arena:Ar
  stepPlayer(state,input,dt,surfaces,arena.obstacles,arena,false);
  if(state.recovery||state.won)return;
  for(const e of world.entries){
-  const o=e.o;if(Math.abs(o.z-state.z)>18)continue;
+  const o=e.o;const reachZ=o.kind==='sweeper'?o.length/2+o.width/2:'radius'in o?o.radius:'depth'in o?(Math.abs(Math.cos(o.yaw??0))*o.depth+Math.abs(Math.sin(o.yaw??0))*o.width)/2:18;if(Math.abs(o.z-state.z)>reachZ+18)continue;
   if(o.kind==='collapse-platform'&&state.grounded&&state.supportId===o.id){const t=state.collapseTimes[o.id];if(t===undefined||state.elapsed-t>=o.delay+o.resetAfter)state.collapseTimes[o.id]=state.elapsed;}
-  if((o.kind==='jump-pad'&&state.grounded&&Math.abs(state.y-o.y)<.05&&Math.abs(state.x-o.x)<o.width/2&&Math.abs(state.z-o.z)<o.depth/2)||(o.kind==='bounce-platform'&&state.grounded&&state.supportId===o.id)){
+  if((o.kind==='jump-pad'&&state.grounded&&Math.abs(state.y-o.y)<.05&&surfaceContains(o,state.x,state.z))||(o.kind==='bounce-platform'&&state.grounded&&state.supportId===o.id)){
    state.action='normal';state.actionTime=0;state.vy=o.boost;state.grounded=false;state.coyote=state.jumpBuffer=0;state.supportId=null;state.lastEvent='pad';state.eventSerial++;
   }
   const p=sampleMechanism(o,state.elapsed,e.now,state.collapseTimes[o.id]);
   if(!mechanismContact(o,state.elapsed,state,PLAYER_RADIUS,p))continue;
+  if(o.kind==='solid-box'){
+   const co=Math.cos(o.yaw??0),si=Math.sin(o.yaw??0),dx=state.x-p.x,dz=state.z-p.z;let lx=dx*co-dz*si,lz=dx*si+dz*co;
+   const px=o.width/2+PLAYER_RADIUS-Math.abs(lx),pz=o.depth/2+PLAYER_RADIUS-Math.abs(lz);
+   if(px<pz)lx=(lx>=0?1:-1)*(o.width/2+PLAYER_RADIUS+.001);else lz=(lz>=0?1:-1)*(o.depth/2+PLAYER_RADIUS+.001);
+   state.x=p.x+lx*co+lz*si;state.z=p.z-lx*si+lz*co;state.vx=state.vz=0;continue;
+  }
   // Solid barriers never become permeable during knockback/recovery grace.
   const barrier=o.kind==='moving-wall'||o.kind==='timed-gate';
   if(barrier){const side=oldZ>=p.z?1:-1;state.z=p.z+side*(o.depth/2+PLAYER_RADIUS+.01);if(state.vz*side<0)state.vz=0;}
@@ -347,8 +360,8 @@ export function stepArenaPlayer(state:PlayerState,input:Input,dt:number,arena:Ar
   if(Math.hypot(dx,dz)<.05){dx=Math.cos(p.angle+Math.PI/2);dz=Math.sin(p.angle+Math.PI/2);}
   if (o.impactStrength !== undefined) {
     if (o.kind === 'sweeper') {
-      const side = (state.x-p.x)*Math.cos(p.angle)+(state.z-p.z)*Math.sin(p.angle) >= 0 ? 1 : -1;
-      dx = -Math.sin(p.angle)*side; dz = Math.cos(p.angle)*side;
+      const side = (state.x-p.x)*Math.cos(p.angle+(o.yaw??0))+(state.z-p.z)*Math.sin(p.angle+(o.yaw??0)) >= 0 ? 1 : -1;
+      dx = -Math.sin(p.angle+(o.yaw??0))*side; dz = Math.cos(p.angle+(o.yaw??0))*side;
     } else if (o.kind === 'pusher') {
       const before = sampleMechanism(o, state.elapsed-dt);
       if (Math.abs(p.x-before.x) > 1e-8) dx = Math.sign(p.x-before.x);

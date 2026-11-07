@@ -34,11 +34,21 @@ try {
     'canvas[aria-label="Cosmic Sprint editor viewport"]',
   );
   await page.locator('[data-object="launch-island"]').click();
-  await page.locator('[data-property="x"]').fill("2");
-  await page.locator('[data-property="x"]').press("Tab");
-  await page.locator('[data-property="width"]').fill("30");
-  await page.locator('[data-property="width"]').press("Tab");
+  await page.locator("[data-collider-mode]").check();
+  for (const [key, value] of [
+    ["z", 16],
+    ["width", 8],
+    ["depth", 8],
+  ]) {
+    await page.locator(`[data-collider-property="${key}"]`).fill(String(value));
+    await page.locator(`[data-collider-property="${key}"]`).press("Tab");
+  }
   const draft = JSON.parse(await editor.getAttribute("data-layout"));
+  assert.equal(draft.objects[0].z, 12);
+  assert.equal(draft.objects[0].colliders[0].z, 16);
+  await page.locator("[data-undo]").click();
+  await page.locator("[data-redo]").click();
+  assert.deepEqual(JSON.parse(await editor.getAttribute("data-layout")), draft);
   const sockets = [];
   page.on("websocket", (socket) => sockets.push(socket.url()));
   await page.locator("[data-playtest]").click();
@@ -54,53 +64,44 @@ try {
     null,
     { timeout: 150000 },
   );
-  const startZ = Number(await game.getAttribute("data-playtest-z"));
   await game.focus();
-  await page.keyboard.down("KeyW");
+  await page.keyboard.down("KeyD");
   await page.waitForFunction(
-    (z) =>
-      Number(
-        document.querySelector('canvas[aria-label="Local Playtest"]').dataset
-          .playtestZ,
-      ) <
-      z - 0.1,
-    startZ,
-    { timeout: 30000 },
-  );
-  await page.keyboard.up("KeyW");
-  await page.keyboard.press("Space");
-  await page.waitForFunction(
-    () =>
-      Number(
-        document.querySelector('canvas[aria-label="Local Playtest"]').dataset
-          .playtestY,
-      ) > 0.05,
+    () => {
+      const d = document.querySelector(
+        'canvas[aria-label="Local Playtest"]',
+      ).dataset;
+      return Number(d.playtestX) > 4 && Number(d.playtestY) < -0.05;
+    },
     null,
-    { timeout: 15000 },
+    { timeout: 40000 },
   );
+  await page.keyboard.up("KeyD");
   await page.locator("[data-exit-playtest]").click();
   assert.deepEqual(JSON.parse(await editor.getAttribute("data-layout")), draft);
   assert.equal(
-    await page.locator('[data-property="width"]').inputValue(),
-    "30",
+    await page.locator('[data-collider-property="width"]').inputValue(),
+    "8",
   );
-  await page.locator("[data-undo]").click();
-  await page.locator("[data-redo]").click();
-  assert.deepEqual(JSON.parse(await editor.getAttribute("data-layout")), draft);
-  await page.locator("[data-playtest]").click();
+  const download = page.waitForEvent("download");
+  await page.locator("[data-export]").click();
+  const file = await download,
+    path = await file.path();
+  await page.locator("[data-reset]").click();
+  await page.locator("[data-file]").setInputFiles(path);
   await page.waitForFunction(
     () =>
-      document.querySelector('canvas[aria-label="Local Playtest"]')?.dataset
-        .arenaAssets === "ready",
-    null,
-    { timeout: 90000 },
+      JSON.parse(
+        document.querySelector(
+          'canvas[aria-label="Cosmic Sprint editor viewport"]',
+        ).dataset.layout,
+      ).objects.length === 1,
   );
-  await page.locator("[data-exit-playtest]").click();
   assert.deepEqual(JSON.parse(await editor.getAttribute("data-layout")), draft);
   assert.deepEqual(sockets, []);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: unsaved edit -> real Minimorph Playtest -> move/jump -> Exit -> exact draft + history preserved; repeated Playtest/Exit; no WebSockets or page errors.",
+    "PASS: independent collider offsets/dimensions -> Undo/Redo -> real Playtest falling beyond edited collider while visual unchanged -> Exit -> JSON export/reset/import; no sockets or errors.",
   );
 } finally {
   await browser.close();

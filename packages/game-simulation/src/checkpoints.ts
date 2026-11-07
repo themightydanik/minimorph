@@ -13,7 +13,7 @@ export function advanceCheckpoints(
   if (!state.grounded) return;
   const index = course.checkpoints.findIndex(
     (checkpoint) =>
-      Math.abs(state.y - checkpoint.y) < 0.01 &&
+      checkpoint.enabled!==false && Math.abs(state.y - checkpoint.y) < 0.01 &&
       Math.hypot(state.x - checkpoint.x, state.z - checkpoint.z) <
         checkpoint.radius,
   );
@@ -23,6 +23,7 @@ export function advanceCheckpoints(
     if (state.splits.length < course.checkpoints.length)
       state.splits.push(state.elapsed);
     state.checkpointFlash = 1.2;
+    state.checkpointSerial=(state.checkpointSerial??0)+1;
   }
   const finish = course.finish;
   if (

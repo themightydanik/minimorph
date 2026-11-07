@@ -1,5 +1,7 @@
 import type { ArenaConfig, ArenaVisual } from "./arenas";
 import { cosmicSprint } from "./cosmic-sprint";
+import { applyColliderOverrides, validateColliders } from "./colliders";
+import type { LayoutCollider } from "./colliders";
 import { layoutSource } from "./editor-catalog";
 export interface LayoutObject {
   id: string;
@@ -13,15 +15,20 @@ export interface LayoutObject {
   depth?: number;
   scale?: number;
   impactStrength?: number;
+  colliders?: LayoutCollider[];
 }
 export interface LayoutOverride {
-  version: 2;
+  version: 3;
   arenaId: "cosmic-sprint";
   objects: LayoutObject[];
+  checkpoints?: { index: number; radius: number; enabled: boolean }[];
 }
 export function editableVisuals(): ArenaVisual[] {
   return cosmicSprint.visuals!.filter(
-    (v) => cosmicSprint.platforms.some((p) => p.id === v.id) || !!v.mechanismId,
+    (v) =>
+      cosmicSprint.platforms.some((p) => p.id === v.id) ||
+      !!v.mechanismId ||
+      layoutSource(v.id)?.category === "decoration",
   );
 }
 export function canRotateLayoutObject(sourceId: string): boolean {
@@ -29,7 +36,7 @@ export function canRotateLayoutObject(sourceId: string): boolean {
   return !!s && s.category !== "mechanism";
 }
 export function emptyLayout(): LayoutOverride {
-  return { version: 2, arenaId: "cosmic-sprint", objects: [] };
+  return { version: 3, arenaId: "cosmic-sprint", objects: [] };
 }
 export function validateLayout(value: unknown): LayoutOverride {
   const fail = (): never => {
@@ -41,9 +48,15 @@ export function validateLayout(value: unknown): LayoutOverride {
   const v = value as Record<string, unknown>;
   if (
     Object.keys(v).some(
-      (k) => !["version", "arenaId", "objects"].includes(k),
+      (k) =>
+        ![
+          "version",
+          "arenaId",
+          "objects",
+          ...(v.version === 3 ? ["checkpoints"] : []),
+        ].includes(k),
     ) ||
-    ![1, 2].includes(v.version as number) ||
+    ![1, 2, 3].includes(v.version as number) ||
     v.arenaId !== "cosmic-sprint" ||
     !Array.isArray(v.objects) ||
     v.objects.length > 200
@@ -60,7 +73,14 @@ export function validateLayout(value: unknown): LayoutOverride {
           !(
             v.version === 1
               ? base
-              : [...base, "width", "depth", "scale", "impactStrength"]
+              : [
+                  ...base,
+                  "width",
+                  "depth",
+                  "scale",
+                  "impactStrength",
+                  ...(v.version === 3 ? ["colliders"] : []),
+                ]
           ).includes(k),
       )
     )
@@ -122,6 +142,7 @@ export function validateLayout(value: unknown): LayoutOverride {
       !["sweeper", "pusher"].includes(source.mechanism?.kind ?? "")
     )
       return fail();
+    if (o.colliders !== undefined) o.colliders = validateColliders(o.colliders);
     ids.add(o.id);
     return { ...o } as unknown as LayoutObject;
   });
@@ -134,7 +155,42 @@ export function validateLayout(value: unknown): LayoutOverride {
     )
       return fail();
   }
-  return { version: 2, arenaId: "cosmic-sprint", objects };
+  let checkpoints: LayoutOverride["checkpoints"];
+  if (v.checkpoints !== undefined) {
+    if (
+      !Array.isArray(v.checkpoints) ||
+      v.checkpoints.length > cosmicSprint.checkpoints.length
+    )
+      return fail();
+    const seen = new Set<number>();
+    checkpoints = v.checkpoints.map((value: unknown) => {
+      if (!value || typeof value !== "object") return fail();
+      const c = value as { index: number; radius: number; enabled: boolean };
+      if (
+        Object.keys(c).some(
+          (k) => !["index", "radius", "enabled"].includes(k),
+        ) ||
+        !Number.isInteger(c.index) ||
+        c.index < 0 ||
+        c.index >= cosmicSprint.checkpoints.length ||
+        seen.has(c.index) ||
+        typeof c.radius !== "number" ||
+        !Number.isFinite(c.radius) ||
+        c.radius < 0.25 ||
+        c.radius > 10 ||
+        typeof c.enabled !== "boolean"
+      )
+        return fail();
+      seen.add(c.index);
+      return { ...c };
+    });
+  }
+  return {
+    version: 3,
+    arenaId: "cosmic-sprint",
+    objects,
+    ...(checkpoints ? { checkpoints } : {}),
+  };
 }
 /** Trusted templates own visual/collision associations; imports can never supply arbitrary colliders. */
 export function applyLayout(value: unknown): ArenaConfig {
@@ -226,5 +282,14 @@ export function applyLayout(value: unknown): ArenaConfig {
         });
     }
   }
-  return { ...arena, visuals, platforms, mechanisms };
+  const checkpoints = arena.checkpoints.map((cp, i) => {
+    const override = layout.checkpoints?.find((c) => c.index === i);
+    return override
+      ? { ...cp, radius: override.radius, enabled: override.enabled }
+      : cp;
+  });
+  return applyColliderOverrides(
+    { ...arena, visuals, platforms, mechanisms, checkpoints },
+    layout.objects,
+  );
 }

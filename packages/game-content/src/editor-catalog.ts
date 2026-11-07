@@ -91,12 +91,12 @@ export function layoutSource(id: string): LayoutSource | undefined {
     mechanism = cosmicSprint.mechanisms.find(
       (m) => m.id === visual.mechanismId,
     );
-  if (!platform && !mechanism) return;
+  if (!platform && !mechanism && visual.fit!=="prop") return;
   return {
     visual,
     platform,
     mechanism,
-    category: platform ? "platform" : "mechanism",
+    category: platform ? "platform" : mechanism ? "mechanism" : "decoration",
     name: id,
   };
 }

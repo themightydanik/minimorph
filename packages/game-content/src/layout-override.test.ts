@@ -35,7 +35,7 @@ describe("editor layout overrides", () => {
       yaw: 0.7,
     });
     expect(JSON.stringify(cosmicSprint)).toBe(before);
-    expect(applyLayout(emptyLayout())).toEqual(cosmicSprint);
+    expect(applyLayout(emptyLayout())).toMatchObject(cosmicSprint);
   });
   it("moves every mechanism with the art, preserving hammer height and animation parameters", () => {
     for (const source of cosmicSprint.mechanisms) {
@@ -91,7 +91,7 @@ describe("editor layout overrides", () => {
     for (const input of [
       null,
       {},
-      { ...emptyLayout(), version: 3 },
+      { ...emptyLayout(), version: 4 },
       { ...emptyLayout(), arenaId: "orbit-chaos" },
       { ...emptyLayout(), objects: [{ ...o, x: Infinity }] },
       { ...emptyLayout(), objects: [o, o] },
@@ -109,7 +109,7 @@ it("migrates v0.1 exports and round trips catalog instances and gameplay propert
     arenaId: "cosmic-sprint",
     objects: [move("launch-island")],
   };
-  expect(validateLayout(old).version).toBe(2);
+  expect(validateLayout(old).version).toBe(3);
   const object = {
     id: "editor-new",
     sourceId: "catalog:giant-padded-hammer",

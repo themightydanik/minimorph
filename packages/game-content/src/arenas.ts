@@ -1,7 +1,7 @@
 import { platforms, obstacles, spawn, finish, checkpoints } from './legacy';
 import type { Platform, MovingObstacle } from './legacy';
 export interface Point { x: number; y: number; z: number }
-export interface Marker extends Point { radius: number }
+export interface Marker extends Point { radius: number; enabled?:boolean }
 export type RaceMode = "race" | "training";
 export interface ArenaSection { id: string; name: string; start: number; end: number; hint: string; cameraDistance?: number; cameraLift?: number; elevation?: number }
 export interface CourseDefinition {
@@ -12,9 +12,10 @@ export interface CourseDefinition {
   checkpoints: readonly Marker[];
 }
 export interface NavigationRoute { id: string; stage: number; name: string; skill?: 'easy' | 'hard'; points: readonly Point[] }
-export interface ArenaVisual extends Point { id: string; asset: string; width: number; depth: number; yaw?: number; part?: number; mechanismId?: string; fit?: 'floor' | 'gate' | 'prop'; }
+export interface ArenaVisual extends Point { id: string; asset: string; width: number; depth: number; yaw?: number; part?: number; mechanismId?: string; animation?: ArenaObstacle; fit?: 'floor' | 'gate' | 'prop'; }
 interface Mechanism extends Point { impactStrength?: number; id: string; period: number; phase?: number; yaw?: number }
 export type ArenaObstacle =
+  | (Mechanism & { kind: 'solid-box'; width:number;depth:number;height:number })
   | (Mechanism & { kind: 'sweeper'; length: number; width: number; height: number })
   | (Mechanism & { kind: 'moving-platform'; width: number; depth: number; axis: 'x' | 'y' | 'z'; amplitude: number })
   | (Mechanism & { kind: 'sliding-block'; width: number; depth: number; height: number; axis: 'x' | 'z'; amplitude: number })
@@ -24,7 +25,7 @@ export type ArenaObstacle =
   | (Mechanism & { kind: 'rotating-disc'; radius: number })
   | (Mechanism & { kind: 'pendulum'; radius: number; length: number; swing: number })
   | (Mechanism & { kind: 'moving-wall'; width: number; depth: number; height: number; gap: number; amplitude: number })
-  | (Mechanism & { kind: 'conveyor'; width: number; depth: number; velocityX: number; velocityZ: number })
+  | (Mechanism & { kind: 'conveyor'; surface?:boolean;turboMultiplier?:number;turboDuration?:number;triggerHeight?:number; width: number; depth: number; velocityX: number; velocityZ: number })
   | (Mechanism & { kind: 'bounce-platform'; width: number; depth: number; amplitude: number; boost: number })
   | (Mechanism & { kind: 'timed-gate'; width: number; depth: number; height: number; warning: number; activeFor: number })
   | (Mechanism & { kind: 'pusher'; width: number; depth: number; height: number; side: -1 | 1; reach: number; warning: number; activeFor: number; shaft?: boolean })
@@ -39,6 +40,7 @@ export interface RouteChoice {
   skill: 'easy' | 'hard';
 }
 export interface ArenaConfig extends CourseDefinition {
+  colliderOwners?: Record<string,{ownerId:string;localId:string}>;
   visuals?: readonly ArenaVisual[];
   /** Optional branch target over a shared, ordered checkpoint interval. */
   branches?: readonly RouteChoice[];

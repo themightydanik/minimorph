@@ -9,7 +9,7 @@ it('suppresses serial/checkpoint/win replays and action rewinds during predictio
  Object.assign(s,{elapsed:.1,action:'normal',eventSerial:0});events.observe('local',s);
  Object.assign(s,{elapsed:.25,action:'dive',eventSerial:1});events.observe('local',s);
  Object.assign(s,{elapsed:.3,action:'slide'});events.observe('local',s);
- Object.assign(s,{elapsed:.5,checkpoint:1});events.observe('local',s);
+ Object.assign(s,{elapsed:.5,checkpoint:1,checkpointSerial:1});events.observe('local',s);
  Object.assign(s,{elapsed:.4,checkpoint:0});events.observe('local',s);
  Object.assign(s,{elapsed:.6,checkpoint:1,won:true});events.observe('local',s);
  s.won=false;events.observe('local',s);s.won=true;events.observe('local',s);
