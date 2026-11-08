@@ -9,3 +9,6 @@ export * from "./colliders";
 export * from "./published-cosmic";
 
 export * from "./environment";
+
+export * from "./surface-geometry";
+export * from "./level-validation";
