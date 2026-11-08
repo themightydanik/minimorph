@@ -1,3 +1,6 @@
+import { createLocalPlaytestState } from "./playtest-start";
+import type { LocalPlaytestStart } from "./playtest-start";
+export type { LocalPlaytestStart } from "./playtest-start";
 import { courseProgress } from '@minimorph/game-simulation';
 import type { OnlineDriver } from '@minimorph/multiplayer-client';
 import { createRemotePlayers } from './remote-players';
@@ -33,6 +36,8 @@ export type { PlayerState } from "./physics";
 export interface GameOptions {
   /** Isolated local session only; cannot attach an online driver. */
   localArena?: ArenaConfig;
+  /** Editor-only initial/Restart state; never changes respawn points or accepts an online driver. */
+  localPlaytestStart?: LocalPlaytestStart;
   environmentUrls?: { [key:string]:string };
   onArenaLoad?: (status:ArenaLoadStatus)=>void;
   onPresentation?: (event: PresentationEvent) => void;
@@ -61,6 +66,11 @@ export function createGame(
   onState: (state: Readonly<PlayerState>) => void,
   options: GameOptions = {},
 ): Game {
+  if(options.localPlaytestStart&&!options.localArena)throw Error('Custom starts require isolated local Playtest.');
+  const localStart=options.localPlaytestStart?structuredClone(options.localPlaytestStart):undefined;
+  const freshPlayer=(arena:ArenaConfig)=>options.localArena?createLocalPlaytestState(arena,localStart):createPlayer(arena);
+  // Validate before allocating a graphics device.
+  if(options.localArena&&localStart)freshPlayer(options.localArena);
   let app: pc.Application;
   try {
     app = new pc.Application(canvas, {
@@ -150,7 +160,7 @@ export function createGame(
   const remotes=createRemotePlayers(app,canvas,options.remoteCharacter,()=>createProceduralCat(shape,{silver,navy,cyan}),shape);
   let online:OnlineDriver|undefined;
   let onlineEpoch="",lastViewingId="";
-  let player = createPlayer(levels.current),
+  let player = freshPlayer(levels.current),
     previous = { ...player },
     accumulator = 0,
     destroyed = false,
@@ -326,7 +336,7 @@ export function createGame(
     throw error;
   }
   function resetPlayer(reframe = false) {
-    player = createPlayer(levels.current); previous = { ...player };
+    player = freshPlayer(levels.current); previous = { ...player };
     Object.assign(follow, createCameraFollow());
     accumulator = 0; pendingJump = false; pendingDive = false; effects.reset(); events.reset();
     if(options.localArena)reframeRecovery(pose,player,cameraYaw,canvas.clientWidth/Math.max(1,canvas.clientHeight));

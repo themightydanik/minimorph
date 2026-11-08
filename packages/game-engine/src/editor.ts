@@ -1,3 +1,13 @@
+import { resolvePlaytestStart, pickPlaytestSurface } from "./playtest-start";
+import type {
+  LocalPlaytestStart,
+  PlaytestStartRequest,
+} from "./playtest-start";
+import {
+  snapCoordinate,
+  snapPositionEdit,
+  snapTranslation,
+} from "./editor-grid";
 import * as pc from "playcanvas";
 import {
   applyLayout,
@@ -43,9 +53,10 @@ export function mountLevelEditor(
     arena: ArenaConfig,
     environmentUrls: { [key: string]: string },
     onExit: () => void,
+    start?: LocalPlaytestStart,
   ) => { destroy(): void },
 ) {
-  host.innerHTML = `<main class="level-editor"><header><b>Minimorph · Galactic Fun Park · Environment Tools</b><button data-playtest class="editor-playtest-button">▶ Playtest</button><label><input type="checkbox" data-show-colliders>Show Colliders</label><label><input type="checkbox" data-collider-mode>Collider Edit Mode</label><label><input type="checkbox" data-show-environment checked>Environment layer</label><button data-group>Group</button><button data-ungroup>Ungroup</button><button data-duplicate-selection>Duplicate selection</button><button data-delete-selection>Delete selection</button><button data-undo disabled>Undo</button><button data-redo disabled>Redo</button><button data-export>Save / Export JSON</button><button data-import>Import JSON</button><input data-file type="file" accept=".json,application/json" hidden><button data-reset>Reset layout</button><a href="/">Back to game</a></header><aside><h3>Cosmic Sprint</h3><p>Draft only · export never changes the published game.</p><h3>Asset catalog · 23 GLBs</h3><input data-asset-search aria-label="Search assets" placeholder="Search prepared assets"><select data-catalog aria-label="Asset catalog"></select><select data-add-at aria-label="Placement location"><option value="target">At camera target</option><option value="selection">At selected object</option></select><select data-add-layer aria-label="Object layer"><option value="gameplay">Gameplay / colliders</option><option value="environment">Environment · NON-COLLIDABLE</option></select><select data-environment-category aria-label="Environment category"><option>planet</option><option>island</option><option>cloud</option><option>satellite</option><option>star</option><option>rocket</option><option>structure</option></select><button data-add>Add selected asset</button><p data-catalog-note></p><h3>Scene objects</h3><div data-hierarchy></div></aside><section class="editor-viewport"><canvas aria-label="Cosmic Sprint editor viewport"></canvas><nav><button data-top>Top-down</button><button data-focus>Focus selection</button><span>Click: select · right drag: orbit · middle / Shift drag: pan · wheel: zoom · arrows: move gizmo on X/Z</span></nav><output data-status role="status">Loading actual GLB scene…</output></section><aside><h3>Selected object</h3><div data-inspector></div><p>Spawn, finish, checkpoints, decoration and bot routes are read-only. Moving platforms does not regenerate routes. Export and review before use in gameplay.</p></aside></main>`;
+  host.innerHTML = `<main class="level-editor"><header><b>Minimorph · Galactic Fun Park · Environment Tools</b><button data-playtest class="editor-playtest-button">▶ Playtest</button><label><input type="checkbox" data-show-colliders>Show Colliders</label><label><input type="checkbox" data-collider-mode>Collider Edit Mode</label><label><input type="checkbox" data-show-environment checked>Environment layer</label><button data-group>Group</button><button data-ungroup>Ungroup</button><button data-duplicate-selection>Duplicate selection</button><button data-delete-selection>Delete selection</button><button data-undo disabled>Undo</button><button data-redo disabled>Redo</button><button data-export>Save / Export JSON</button><button data-import>Import JSON</button><input data-file type="file" accept=".json,application/json" hidden><button data-reset>Reset layout</button><a href="/">Back to game</a></header><aside><h3>Cosmic Sprint</h3><p>Draft only · export never changes the published game.</p><h3>Playtest Start</h3><select data-playtest-start aria-label="Playtest Start"><option value="default">Default level spawn</option><option value="checkpoint">Enabled checkpoint</option><option value="selection">Selected walkable platform</option><option value="point">Pick point on surface</option></select><select data-start-checkpoint aria-label="Start checkpoint"></select><button data-pick-start>Pick surface point</button><output data-start-status role="status"></output><h3>Grid positioning</h3><label><input type="checkbox" data-grid-snap>Grid Snap</label><select data-grid-step aria-label="Grid step"><option value="0.25">0.25 m</option><option value="0.5">0.5 m</option><option value="1" selected>1 m</option><option value="2">2 m</option></select><h3>Asset catalog · 23 GLBs</h3><input data-asset-search aria-label="Search assets" placeholder="Search prepared assets"><select data-catalog aria-label="Asset catalog"></select><select data-add-at aria-label="Placement location"><option value="target">At camera target</option><option value="selection">At selected object</option></select><select data-add-layer aria-label="Object layer"><option value="gameplay">Gameplay / colliders</option><option value="environment">Environment · NON-COLLIDABLE</option></select><select data-environment-category aria-label="Environment category"><option>planet</option><option>island</option><option>cloud</option><option>satellite</option><option>star</option><option>rocket</option><option>structure</option></select><button data-add>Add selected asset</button><p data-catalog-note></p><h3>Scene objects</h3><div data-hierarchy></div></aside><section class="editor-viewport"><canvas aria-label="Cosmic Sprint editor viewport"></canvas><nav><button data-top>Top-down</button><button data-focus>Focus selection</button><span>Click: select · right drag: orbit · middle / Shift drag: pan · wheel: zoom · arrows: move gizmo on X/Z</span></nav><output data-status role="status">Loading actual GLB scene…</output></section><aside><h3>Selected object</h3><div data-inspector></div><p>Spawn, finish, checkpoints, decoration and bot routes are read-only. Moving platforms does not regenerate routes. Export and review before use in gameplay.</p></aside></main>`;
   let playtestSession: { destroy(): void } | undefined;
   const editorElement = host.querySelector<HTMLElement>(".level-editor")!;
   const playtestHost = document.createElement("div");
@@ -124,9 +135,95 @@ export function mountLevelEditor(
       target.z + distance * c * Math.cos(azimuth),
     );
     camera.lookAt(target);
+    canvas.dataset.editorCamera = JSON.stringify({
+      x: target.x,
+      y: target.y,
+      z: target.z,
+      distance,
+      azimuth,
+      elevation,
+    });
   }
   let selection = new Set<string>(),
     environmentTime = 0;
+  let pickedStart:
+      | { point: { x: number; y: number; z: number }; supportId: string }
+      | undefined,
+    pickingStart = false;
+  function gridStep() {
+    return q<HTMLInputElement>("[data-grid-snap]").checked
+      ? Number(q<HTMLSelectElement>("[data-grid-step]").value)
+      : undefined;
+  }
+  function currentPlaytestStart() {
+    const mode = q<HTMLSelectElement>("[data-playtest-start]").value;
+    let request: PlaytestStartRequest;
+    if (mode === "checkpoint")
+      request = {
+        mode,
+        index: Number(q<HTMLSelectElement>("[data-start-checkpoint]").value),
+      };
+    else if (mode === "selection") {
+      if (selection.size !== 1)
+        return {
+          valid: false as const,
+          message:
+            "Select exactly one walkable platform, or pick a surface point.",
+        };
+      request = {
+        mode,
+        objectId: selected,
+        ...(colliderMode && selectedCollider
+          ? { colliderId: selectedCollider }
+          : {}),
+      };
+    } else if (mode === "point") {
+      if (!pickedStart)
+        return {
+          valid: false as const,
+          message:
+            "Click Pick surface point, then click a compiled landing surface in the viewport.",
+        };
+      request = { mode, ...pickedStart };
+    } else request = { mode: "default" };
+    return resolvePlaytestStart(arena, request);
+  }
+  function updatePlaytestStart() {
+    const select = q<HTMLSelectElement>("[data-start-checkpoint]"),
+      before = select.value;
+    select.replaceChildren();
+    for (const [i, cp] of arena.checkpoints.entries())
+      if (cp.enabled !== false) {
+        const option = document.createElement("option");
+        option.value = String(i);
+        option.textContent = `Checkpoint ${i + 1}`;
+        select.append(option);
+      }
+    if ([...select.options].some((o) => o.value === before))
+      select.value = before;
+    select.hidden =
+      q<HTMLSelectElement>("[data-playtest-start]").value !== "checkpoint";
+    const result = currentPlaytestStart();
+    q("[data-start-status]").textContent = result.message;
+    q<HTMLButtonElement>("[data-playtest]").disabled = !result.valid;
+    canvas.dataset.playtestStartValidation = JSON.stringify(result);
+  }
+  q("[data-playtest-start]").addEventListener("change", updatePlaytestStart);
+  q("[data-start-checkpoint]").addEventListener("change", updatePlaytestStart);
+  q("[data-pick-start]").addEventListener("click", () => {
+    pickingStart = true;
+    gizmo.enabled = false;
+    q("[data-start-status]").textContent =
+      "Click a landing surface in the viewport. Escape cancels.";
+  });
+  window.addEventListener("keydown", cancelStartPick);
+  function cancelStartPick(e: KeyboardEvent) {
+    if (e.key === "Escape" && pickingStart) {
+      pickingStart = false;
+      gizmo.enabled = true;
+      updatePlaytestStart();
+    }
+  }
   positionCamera();
   function focus() {
     const ids = selection.size ? [...selection] : selected ? [selected] : [];
@@ -179,6 +276,7 @@ export function mountLevelEditor(
     canvas.dataset.layout = JSON.stringify(layout);
     canvas.dataset.editorSelected = selected;
     updateHistoryButtons();
+    updatePlaytestStart();
   }
   function traverseHistory(redo: boolean) {
     if (dragging) return;
@@ -208,6 +306,7 @@ export function mountLevelEditor(
   }
   function setObject(o: LayoutObject) {
     const old = authoringObject(layout, o.id);
+    if (old) o = snapPositionEdit(old as LayoutObject, o, gridStep());
     if (old?.locked) {
       const before = { ...old },
         after = { ...o };
@@ -378,7 +477,13 @@ export function mountLevelEditor(
     }
   }
   function transformChosen(change: Parameters<typeof transformSelection>[2]) {
-    applyDraft(transformSelection(layout, selectionIds(), change));
+    applyDraft(
+      transformSelection(
+        layout,
+        selectionIds(),
+        snapTranslation(layout, selectionIds(), change, gridStep()),
+      ),
+    );
     inspector();
   }
   function groupInspector(box: HTMLElement) {
@@ -428,6 +533,7 @@ export function mountLevelEditor(
   }
   function setEnvironment(o: EnvironmentObject) {
     const before = layout.environment?.find((e) => e.id === o.id);
+    if (before) o = snapPositionEdit(before, o, gridStep());
     if (before?.locked) {
       const a = { ...before },
         b = { ...o };
@@ -565,6 +671,8 @@ export function mountLevelEditor(
     }
   }
   function inspector() {
+    updatePlaytestStart();
+    gizmo.enabled = !pickingStart;
     const box = q("[data-inspector]");
     box.replaceChildren();
     const name = document.createElement("p");
@@ -784,6 +892,7 @@ export function mountLevelEditor(
     canvas.dataset.editorSelected = selected;
     canvas.dataset.editorSelection = JSON.stringify([...selection]);
     inspector();
+    updatePlaytestStart();
     for (const button of q(
       "[data-hierarchy]",
     ).querySelectorAll<HTMLButtonElement>("[data-object]"))
@@ -917,9 +1026,16 @@ export function mountLevelEditor(
       notifyError(() =>
         applyDraft(
           transformSelection(dragLayout!, selectionIds(), {
-            x: at.x - dragPivot!.x,
-            y: at.y - dragPivot!.y,
-            z: at.z - dragPivot!.z,
+            ...snapTranslation(
+              dragLayout!,
+              selectionIds(),
+              {
+                x: at.x - dragPivot!.x,
+                y: at.y - dragPivot!.y,
+                z: at.z - dragPivot!.z,
+              },
+              gridStep(),
+            ),
           }),
         ),
       );
@@ -959,9 +1075,11 @@ export function mountLevelEditor(
       return;
     }
     try {
-      setObject({ ...o, x: p.x, z: p.z });
-      for (const key of ["x", "z"] as const)
-        q<HTMLInputElement>(`[data-property="${key}"]`).value = String(p[key]);
+      setObject({ ...o, x: p.x, y: p.y, z: p.z });
+      for (const key of ["x", "y", "z"] as const)
+        q<HTMLInputElement>(`[data-property="${key}"]`).value = String(
+          object()![key],
+        );
     } catch (e) {
       anchor.setPosition(o.x, o.y, o.z);
       status.textContent = String(e);
@@ -1061,6 +1179,14 @@ export function mountLevelEditor(
         ),
         ray = new pc.Ray(from, to.sub(from).normalize()),
         hit = new pc.Vec3();
+      if (pickingStart) {
+        pickingStart = false;
+        gizmo.enabled = true;
+        pickedStart = pickPlaytestSurface(arena, from, ray.direction);
+        q<HTMLSelectElement>("[data-playtest-start]").value = "point";
+        updatePlaytestStart();
+        return;
+      }
       if (colliderMode) {
         const hit = overlays.pick(ray);
         if (hit) {
@@ -1234,10 +1360,15 @@ export function mountLevelEditor(
       (s) => s.visual.id === q<HTMLSelectElement>("[data-catalog]").value,
     );
     if (!source) return;
-    const at =
+    const location =
       q<HTMLSelectElement>("[data-add-at]").value === "selection"
         ? (authoringObject(layout, selected) ?? target)
         : target;
+    const at = {
+      x: snapCoordinate(location.x, gridStep()),
+      y: snapCoordinate(location.y, gridStep()),
+      z: snapCoordinate(location.z, gridStep()),
+    };
     try {
       if (q<HTMLSelectElement>("[data-add-layer]").value === "environment") {
         const o: EnvironmentObject = {
@@ -1322,6 +1453,7 @@ export function mountLevelEditor(
       app.timeScale = 1;
       app.autoRender = true;
       scene.root.enabled = true;
+      gizmo.enabled = true;
       inspector();
       app.resizeCanvas(
         canvas.parentElement!.clientWidth,
@@ -1333,6 +1465,9 @@ export function mountLevelEditor(
   q("[data-playtest]").addEventListener("click", () => {
     if (playtestSession || dragging) return;
     try {
+      const checked = currentPlaytestStart();
+      updatePlaytestStart();
+      if (!checked.valid) throw Error(checked.message);
       const draft = applyLayout(layout);
       editorElement.hidden = true;
       playtestHost.hidden = false;
@@ -1345,6 +1480,7 @@ export function mountLevelEditor(
         draft,
         editorAssetUrls,
         exitPlaytest,
+        checked.start,
       );
     } catch (error) {
       exitPlaytest();
@@ -1370,12 +1506,15 @@ export function mountLevelEditor(
     },
   );
   scene.setOverview(true);
+  canvas.dataset.layout=JSON.stringify(layout);
   refresh();
+  updatePlaytestStart();
   app.start();
   return {
     destroy() {
       playtestSession?.destroy();
       window.removeEventListener("keydown", historyShortcut);
+      window.removeEventListener("keydown", cancelStartPick);
       listeners.abort();
       resize.disconnect();
       gizmo.destroy();
