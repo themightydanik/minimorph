@@ -1,4 +1,7 @@
-import { trainingArenas, getTrainingArena } from './arenas';
+import { LevelRegistryError } from "./level-document";
+import { LevelRegistry, legacyLevelDocument } from "./level-registry";
+import type { TrustedLevelSource } from "./level-registry";
+import { trainingArenas } from './arenas';
 import { publishedCosmicSprint as cosmicSprint } from './published-cosmic';
 import type { ArenaConfig, ArenaObstacle, ArenaSection, RaceMode } from './arenas';
 import type { Platform } from './legacy';
@@ -89,7 +92,12 @@ export const arenas: readonly ArenaConfig[] = [
  buildRound(trainingArenas[1],58,['belts','pendulums','walls','shuttles','rotors','bounce','pulse']),
  buildRound(trainingArenas[2],54,['collapse','pendulums','terraces','belts','shuttles','bounce','pulse','terraces']),
 ];
+const legacySources:TrustedLevelSource[]=[
+ ...arenas.map(arena=>({ref:`legacy:race:${arena.id}`,levelId:arena.id,arena,legacy:{arenaId:arena.id,mode:'race' as const},editor:arena.id==='cosmic-sprint'?'legacy-cosmic-v4' as const:'read-only' as const})),
+ ...trainingArenas.map(arena=>({ref:`legacy:training:${arena.id}`,levelId:`training-${arena.id}`,arena,legacy:{arenaId:arena.id,mode:'training' as const},editor:'read-only' as const})),
+];
+export const levelRegistry=new LevelRegistry(legacySources.map(legacyLevelDocument),legacySources);
 export function getArena(id:string, mode:RaceMode='race'):ArenaConfig {
- if(mode==='training')return getTrainingArena(id);
- const arena=arenas.find(a=>a.id===id);if(!arena)throw new Error(`Unknown arena: ${id}`);return arena;
+ if(mode==='race'&&!levelRegistry.isPublishedRace(id))throw new LevelRegistryError('LEVEL_UNKNOWN',`Unknown published racing level: ${id}`,id);
+ return levelRegistry.resolveArena(mode==='training'?`training-${id}`:id);
 }

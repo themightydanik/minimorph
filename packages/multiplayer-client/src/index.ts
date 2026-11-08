@@ -48,6 +48,7 @@ export class Prediction {
   arenaId = "cosmic-sprint";
   context?: { round: number; tournament: number };
   receive(state: PlayerState, ack: number, arenaId: string, racing: boolean) {
+    getArena(arenaId); // Reject unknown registry identities before touching prediction.
     this.arenaId = arenaId;
     this.seq = Math.max(this.seq, ack);
     this.pending = this.pending.filter((c) => c.seq > ack);
