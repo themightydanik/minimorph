@@ -207,3 +207,9 @@ body,
   margin: 10px 0 6px;
   font-size: 11px;
 }
+.level-editor [data-start-status] {
+  display: block;
+  margin: 6px 0 12px;
+  font-size: 12px;
+  color: #b4e8d9;
+}

@@ -1,5 +1,5 @@
 import { animatedCharacterSource, createGame } from "@minimorph/game-engine";
-import type { Game } from "@minimorph/game-engine";
+import type { Game, LocalPlaytestStart } from "@minimorph/game-engine";
 import type { ArenaConfig } from "@minimorph/game-content";
 import { characterConfig } from "./character-config";
 import { mountJoystick } from "./joystick";
@@ -9,6 +9,7 @@ export function mountPlaytest(
   arena: ArenaConfig,
   environmentUrls: { [key: string]: string },
   onExit: () => void,
+  start?: LocalPlaytestStart,
 ) {
   host.innerHTML = `<section class="editor-playtest"><canvas tabindex="0" aria-label="Local Playtest"></canvas><div class="playtest-hud"><button data-exit-playtest>Exit Playtest</button><button data-restart-playtest>Restart</button><output data-playtest-status role="status">Loading Minimorph…</output></div><nav class="playtest-touch"><div class="joystick" role="group" aria-label="Movement joystick"><span class="joystick-knob"></span></div><div class="touch-actions"><button data-playtest-action="dive">DIVE</button><button data-playtest-action="jump">JUMP</button></div></nav></section>`;
   const abort = new AbortController(),
@@ -162,11 +163,14 @@ export function mountPlaytest(
         canvas.dataset.playtestX = String(state.x);
         canvas.dataset.playtestY = String(state.y);
         canvas.dataset.playtestZ = String(state.z);
+        canvas.dataset.playtestElapsed = String(state.elapsed);
+        canvas.dataset.playtestCheckpoint = String(state.checkpoint);
         if (ready)
           status.textContent = `${state.won ? "Finished · " : ""}${state.elapsed.toFixed(1)} s${state.recovery ? " · Respawning" : ""}`;
       },
       {
         localArena: arena,
+        localPlaytestStart: start,
         environmentUrls,
         initialArena: arena.id,
         raceFlow: false,
@@ -189,8 +193,11 @@ export function mountPlaytest(
     game?.destroy();
     throw error;
   }
+  let disposed = false;
   return {
     destroy() {
+      if (disposed) return;
+      disposed = true;
       abort.abort();
       clear();
       game?.destroy();
