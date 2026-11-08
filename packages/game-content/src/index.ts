@@ -12,3 +12,7 @@ export * from "./environment";
 
 export * from "./surface-geometry";
 export * from "./level-validation";
+
+export * from "./level-document";
+export * from "./level-registry";
+export * from "./level-registry-adapter";

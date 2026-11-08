@@ -13,6 +13,7 @@ import { surfaceContains } from "./surface-geometry";
 
 export type DiagnosticSeverity = "error" | "warning" | "unverified";
 export type LevelDiagnosticCode =
+  | import("./level-document").LevelRegistryCode
   | "INPUT_INVALID"
   | "LAYOUT_INVALID"
   | "SOURCE_MISSING"
@@ -50,6 +51,13 @@ export interface LevelDiagnostic {
 export interface LevelValidationReport {
   schemaVersion: 1;
   phase: "static";
+  level?: {
+    id: string;
+    version: number;
+    simulationRevision: string;
+    gameplayDigest: string;
+    presentationRevision: string;
+  };
   arenaId: string | null;
   valid: boolean;
   revision?: string;
@@ -711,6 +719,11 @@ export function formatLevelValidationReport(
 ): string {
   return [
     `${report.valid ? "VALID" : "INVALID"} static level report: ${report.arenaId ?? "unknown"}${report.revision ? ` (${report.revision})` : ""}`,
+    ...(report.level
+      ? [
+          `Registered level: ${report.level.id}@${report.level.version} · simulation ${report.level.simulationRevision} · gameplay ${report.level.gameplayDigest} · presentation ${report.level.presentationRevision}`,
+        ]
+      : []),
     ...report.diagnostics.map(
       (d) =>
         `${d.severity.toUpperCase()} ${d.code} [${[d.objectId, d.colliderId, d.routeId, d.path].filter(Boolean).join(" / ") || "level"}]: ${d.message}${d.values ? ` ${JSON.stringify(d.values)}` : ""}${d.suggestion ? ` Fix: ${d.suggestion}` : ""}`,

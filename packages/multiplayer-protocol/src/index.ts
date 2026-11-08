@@ -1,8 +1,8 @@
-import { publishedLayoutRevision } from "@minimorph/game-content";
+import { publishedLayoutRevision, levelRegistry, SIMULATION_REVISION } from "@minimorph/game-content";
 import type { PlayerState, Input } from "@minimorph/game-simulation";
 export const PROTOCOL_VERSION = 2;
 /** Bump when collision-relevant course/sampling data changes, independently of wire v2. */
-export const WORLD_REVISION = `tournament-v1-colliders-v4-${publishedLayoutRevision}`;
+export const WORLD_REVISION = `${SIMULATION_REVISION}-${publishedLayoutRevision}-r1-${levelRegistry.gameplayManifestRevision()}`;
 export const SERVER_HZ = 30,
   SNAPSHOT_HZ = 10,
   CAPACITY = 8,
@@ -238,6 +238,7 @@ export function parseClientMessage(text: string): ClientMessage | null {
 }
 /** Structural compatibility checks only; qualification decisions remain server supplied. */
 export function validRoomSnapshot(s: RoomSnapshot): boolean {
+  if (!levelRegistry.isPublishedRace(s.arenaId))return false;
   if (
     !Array.isArray(s.participants) ||
     s.participants.length > 8 ||

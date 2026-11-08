@@ -1,5 +1,5 @@
 import { randomBytes, createHash } from "node:crypto";
-import { arenas } from "@minimorph/game-content";
+import { levelRegistry } from "@minimorph/game-content";
 import {
   WORLD_REVISION,
   CAPACITY,
@@ -101,7 +101,7 @@ export class MatchService {
         this.error(peer, "already_joined", "Leave the current room first.");
         return;
       }
-      if (!arenas.some((a) => a.id === m.arenaId)) {
+      if (!levelRegistry.isPublishedRace(m.arenaId)) {
         this.error(peer, "bad_arena", "Unknown arena.");
         return;
       }
