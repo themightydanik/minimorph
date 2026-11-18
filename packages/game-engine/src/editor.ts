@@ -56,7 +56,7 @@ export function mountLevelEditor(
     start?: LocalPlaytestStart,
   ) => { destroy(): void },
 ) {
-  host.innerHTML = `<main class="level-editor"><header><b>Minimorph · Galactic Fun Park · Environment Tools</b><button data-playtest class="editor-playtest-button">▶ Playtest</button><label><input type="checkbox" data-show-colliders>Show Colliders</label><label><input type="checkbox" data-collider-mode>Collider Edit Mode</label><label><input type="checkbox" data-show-environment checked>Environment layer</label><button data-group>Group</button><button data-ungroup>Ungroup</button><button data-duplicate-selection>Duplicate selection</button><button data-delete-selection>Delete selection</button><button data-undo disabled>Undo</button><button data-redo disabled>Redo</button><button data-export>Save / Export JSON</button><button data-import>Import JSON</button><input data-file type="file" accept=".json,application/json" hidden><button data-reset>Reset layout</button><a href="/">Back to game</a></header><aside><h3>Cosmic Sprint</h3><p>Draft only · export never changes the published game.</p><h3>Playtest Start</h3><select data-playtest-start aria-label="Playtest Start"><option value="default">Default level spawn</option><option value="checkpoint">Enabled checkpoint</option><option value="selection">Selected walkable platform</option><option value="point">Pick point on surface</option></select><select data-start-checkpoint aria-label="Start checkpoint"></select><button data-pick-start>Pick surface point</button><output data-start-status role="status"></output><h3>Grid positioning</h3><label><input type="checkbox" data-grid-snap>Grid Snap</label><select data-grid-step aria-label="Grid step"><option value="0.25">0.25 m</option><option value="0.5">0.5 m</option><option value="1" selected>1 m</option><option value="2">2 m</option></select><h3>Asset catalog · 23 GLBs</h3><input data-asset-search aria-label="Search assets" placeholder="Search prepared assets"><select data-catalog aria-label="Asset catalog"></select><select data-add-at aria-label="Placement location"><option value="target">At camera target</option><option value="selection">At selected object</option></select><select data-add-layer aria-label="Object layer"><option value="gameplay">Gameplay / colliders</option><option value="environment">Environment · NON-COLLIDABLE</option></select><select data-environment-category aria-label="Environment category"><option>planet</option><option>island</option><option>cloud</option><option>satellite</option><option>star</option><option>rocket</option><option>structure</option></select><button data-add>Add selected asset</button><p data-catalog-note></p><h3>Scene objects</h3><div data-hierarchy></div></aside><section class="editor-viewport"><canvas aria-label="Cosmic Sprint editor viewport"></canvas><nav><button data-top>Top-down</button><button data-focus>Focus selection</button><span>Click: select · right drag: orbit · middle / Shift drag: pan · wheel: zoom · arrows: move gizmo on X/Z</span></nav><output data-status role="status">Loading actual GLB scene…</output></section><aside><h3>Selected object</h3><div data-inspector></div><p>Spawn, finish, checkpoints, decoration and bot routes are read-only. Moving platforms does not regenerate routes. Export and review before use in gameplay.</p></aside></main>`;
+  host.innerHTML = `<main class="level-editor"><header><b>Minimorph · Galactic Fun Park · Environment Tools</b><button data-playtest class="editor-playtest-button">▶ Playtest</button><label><input type="checkbox" data-show-colliders>Show Colliders</label><label><input type="checkbox" data-collider-mode>Collider Edit Mode</label><label><input type="checkbox" data-show-environment checked>Environment layer</label><button data-group>Group</button><button data-ungroup>Ungroup</button><button data-duplicate-selection>Duplicate selection</button><button data-delete-selection>Delete selection</button><button data-undo disabled>Undo</button><button data-redo disabled>Redo</button><button data-save-draft>Save browser draft</button><button data-load-draft>Restore browser draft</button><button data-clear-draft>Clear browser draft</button><button data-export>Export JSON for PR</button><button data-import>Import JSON</button><input data-file type="file" accept=".json,application/json" hidden><button data-reset>Reset layout</button><a href="/">Back to game</a></header><aside><h3>Cosmic Sprint</h3><p>Draft only · export never changes the published game.</p><h3>Playtest Start</h3><select data-playtest-start aria-label="Playtest Start"><option value="default">Default level spawn</option><option value="checkpoint">Enabled checkpoint</option><option value="selection">Selected walkable platform</option><option value="point">Pick point on surface</option></select><select data-start-checkpoint aria-label="Start checkpoint"></select><button data-pick-start>Pick surface point</button><output data-start-status role="status"></output><h3>Grid positioning</h3><label><input type="checkbox" data-grid-snap>Grid Snap</label><select data-grid-step aria-label="Grid step"><option value="0.25">0.25 m</option><option value="0.5">0.5 m</option><option value="1" selected>1 m</option><option value="2">2 m</option></select><h3>Asset catalog · 23 GLBs</h3><input data-asset-search aria-label="Search assets" placeholder="Search prepared assets"><select data-catalog aria-label="Asset catalog"></select><select data-add-at aria-label="Placement location"><option value="target">At camera target</option><option value="selection">At selected object</option></select><select data-add-layer aria-label="Object layer"><option value="gameplay">Gameplay / colliders</option><option value="environment">Environment · NON-COLLIDABLE</option></select><select data-environment-category aria-label="Environment category"><option>planet</option><option>island</option><option>cloud</option><option>satellite</option><option>star</option><option>rocket</option><option>structure</option></select><button data-add>Add selected asset</button><p data-catalog-note></p><h3>Scene objects</h3><div data-hierarchy></div></aside><section class="editor-viewport"><canvas aria-label="Cosmic Sprint editor viewport"></canvas><nav><button data-top>Top-down</button><button data-focus>Focus selection</button><span>Click: select · right drag: orbit · middle / Shift drag: pan · wheel: zoom · arrows: move gizmo on X/Z</span></nav><output data-status role="status">Loading actual GLB scene…</output></section><aside><h3>Selected object</h3><div data-inspector></div><p>Spawn, finish, checkpoints, decoration and bot routes are read-only. Moving platforms does not regenerate routes. Export and review before use in gameplay.</p></aside></main>`;
   let playtestSession: { destroy(): void } | undefined;
   const editorElement = host.querySelector<HTMLElement>(".level-editor")!;
   const playtestHost = document.createElement("div");
@@ -1280,6 +1280,42 @@ export function mountLevelEditor(
     positionCamera();
   });
   q("[data-focus]").addEventListener("click", focus);
+  // Browser-local recovery only: no server writes, no automatic publishing.
+  const draftStorageKey = "minimorph.editor.cosmic-sprint.layout.v4";
+  q("[data-save-draft]").addEventListener("click", () => {
+    try {
+      localStorage.setItem(draftStorageKey, JSON.stringify(validateLayout(layout)));
+      status.textContent = "Draft saved in this browser only. Export JSON to submit a PR.";
+    } catch (error) {
+      status.textContent = `Could not save browser draft: ${String(error)}. Export JSON instead.`;
+    }
+  });
+  q("[data-load-draft]").addEventListener("click", () => {
+    try {
+      const raw = localStorage.getItem(draftStorageKey);
+      if (!raw) {
+        status.textContent = "No browser draft found. Import a JSON backup if needed.";
+        return;
+      }
+      const next = validateLayout(JSON.parse(raw));
+      applyDraft(next);
+      selected = "";
+      selection.clear();
+      scene.setEditorFocus([]);
+      refresh();
+      status.textContent = "Browser draft restored for review. Published course unchanged.";
+    } catch (error) {
+      status.textContent = `Could not restore browser draft: ${String(error)}. Saved data was not overwritten.`;
+    }
+  });
+  q("[data-clear-draft]").addEventListener("click", () => {
+    try {
+      localStorage.removeItem(draftStorageKey);
+      status.textContent = "Browser draft cleared. Current editor layout is unchanged.";
+    } catch (error) {
+      status.textContent = `Could not clear browser draft: ${String(error)}.`;
+    }
+  });
   q("[data-export]").addEventListener("click", () => {
     const url = URL.createObjectURL(
         new Blob([JSON.stringify(validateLayout(layout), null, 2)], {
