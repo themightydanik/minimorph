@@ -1,6 +1,6 @@
 import * as pc from "playcanvas";
 import { arenas, editorCatalog, validateCompiledLevel } from "@minimorph/game-content";
-import type { ArenaConfig, ArenaObstacle } from "@minimorph/game-content";
+import type { ArenaConfig, ArenaObstacle, ArenaVisual } from "@minimorph/game-content";
 import type { LocalPlaytestStart } from "./playtest-start";
 import { editorAssetUrls } from "./editor-assets";
 import rawInventory from "../../../assets/arenas/cosmic-sprint/runtime-manifest.json";
@@ -51,7 +51,7 @@ export function mountUniversalEditor(host:HTMLElement,launch:Launch) {
   const glbCache=new Map<string,pc.Asset>();
   const loading=new Set<string>();
   const failed=new Set<string>();
-  let disposed=false,sceneGeneration=0;
+  let disposed=false;
   const inventory=rawInventory.assets;
   const glbRecord=(name:string)=>inventory.find(a=>a.runtime===`${name}.glb`);
   function loadVisualAsset(name:string){
@@ -62,7 +62,7 @@ export function mountUniversalEditor(host:HTMLElement,launch:Launch) {
     asset.once("error",(error:unknown)=>{loading.delete(name);failed.add(name);if(!disposed)status.textContent=`GLB unavailable (${name}): ${String(error)}`;});
     app.assets.load(asset);
   }
-  function addVisual(l:"visuals"|"environment",i:number,v:ArenaConfig["visuals"] extends readonly (infer V)[]|undefined ? V : never){
+  function addVisual(l:"visuals"|"environment",i:number,v:ArenaVisual){
     const a=glbCache.get(v.asset),record=glbRecord(v.asset);
     if(!a?.resource||!record){addBox(l,i,v,[Math.max(.4,v.width||1),.5,Math.max(.4,v.depth||1)],layer===l&&selected===i?mats.selected:mats.visual);loadVisualAsset(v.asset);return;}
     try{
@@ -72,7 +72,7 @@ export function mountUniversalEditor(host:HTMLElement,launch:Launch) {
         const keep=record.parts[v.part]?.name;
         if(keep){for(const component of entity.findComponents("render") as pc.RenderComponent[])if(component.entity.name!==keep)component.entity.enabled=false;}
       }
-      const bounds=v.part===undefined?record.bounds:record.parts[v.part]?.min&&record.parts[v.part]?.max?record.parts[v.part]:record.bounds;
+      const bounds=v.part===undefined?record.bounds:record.parts[v.part]??record.bounds;
       const sizeX=Math.max(.001,bounds.max[0]-bounds.min[0]);
       const sizeZ=Math.max(.001,bounds.max[2]-bounds.min[2]);
       const scale=Math.min(v.width/sizeX,v.depth/sizeZ);
