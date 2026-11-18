@@ -1,6 +1,6 @@
 import { arenas, validateCompiledLevel } from "@minimorph/game-content";
 import type { ArenaConfig } from "@minimorph/game-content";
-import { editorAssetUrls } from "@minimorph/game-engine/editor-assets";
+import { editorAssetUrls } from "@minimorph/game-engine/editor";
 import type { LocalPlaytestStart } from "@minimorph/game-engine";
 
 type Launch = (host: HTMLElement, arena: ArenaConfig, urls: Record<string,string>, onExit: () => void, start?: LocalPlaytestStart) => { destroy(): void };
