@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./editor": "./src/editor.ts"
+    "./editor": "./src/editor.ts",
+    "./universal-editor": "./src/universal-editor.ts"
   },
   "dependencies": {
     "playcanvas": "2.23.3",
