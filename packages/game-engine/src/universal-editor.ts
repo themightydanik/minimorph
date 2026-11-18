@@ -1,8 +1,9 @@
 import * as pc from "playcanvas";
 import { arenas, editorCatalog, validateCompiledLevel } from "@minimorph/game-content";
-import type { ArenaConfig, ArenaObstacle } from "@minimorph/game-content";
+import type { ArenaConfig, ArenaObstacle, ArenaVisual } from "@minimorph/game-content";
 import type { LocalPlaytestStart } from "./playtest-start";
 import { editorAssetUrls } from "./editor-assets";
+import rawInventory from "../../../assets/arenas/cosmic-sprint/runtime-manifest.json";
 import "./editor.css";
 
 type Launch = (host: HTMLElement, arena: ArenaConfig, urls: Record<string,string>, onExit:()=>void, start?:LocalPlaytestStart)=>{destroy():void};
@@ -47,6 +48,42 @@ export function mountUniversalEditor(host:HTMLElement,launch:Launch) {
   const light=new pc.Entity("Sun");light.addComponent("light",{type:"directional",intensity:1.4,castShadows:false});light.setEulerAngles(45,30,0);app.root.addChild(light);
   const ambient=new pc.Color(.42,.48,.65);app.scene.ambientLight=ambient;
   let sceneRoot=new pc.Entity("Track"),picks:Array<{entity:pc.Entity;layer:Layer;index:number}>=[];
+  const glbCache=new Map<string,pc.Asset>();
+  const loading=new Set<string>();
+  const failed=new Set<string>();
+  let disposed=false;
+  const inventory=rawInventory.assets;
+  const glbRecord=(name:string)=>inventory.find(a=>a.runtime===`${name}.glb`);
+  function loadVisualAsset(name:string){
+    if(glbCache.has(name)||loading.has(name)||failed.has(name)||!editorAssetUrls[name])return;
+    const asset=new pc.Asset(`Editor preview ${name}`,"container",{url:editorAssetUrls[name]});
+    glbCache.set(name,asset);loading.add(name);app.assets.add(asset);
+    asset.once("load",()=>{loading.delete(name);if(!disposed){rebuild();status.textContent=`Loaded 3D model: ${name}`;}});
+    asset.once("error",(error:unknown)=>{loading.delete(name);failed.add(name);if(!disposed)status.textContent=`GLB unavailable (${name}): ${String(error)}`;});
+    app.assets.load(asset);
+  }
+  function addVisual(l:"visuals"|"environment",i:number,v:ArenaVisual){
+    const a=glbCache.get(v.asset),record=glbRecord(v.asset);
+    if(!a?.resource||!record){addBox(l,i,v,[Math.max(.4,v.width||1),.5,Math.max(.4,v.depth||1)],layer===l&&selected===i?mats.selected:mats.visual);loadVisualAsset(v.asset);return;}
+    try{
+      const entity=(a.resource as pc.ContainerResource).instantiateRenderEntity();
+      entity.name=`${l}-${i}-${v.asset}`;
+      if(v.part!==undefined){
+        const keep=record.parts[v.part]?.name;
+        if(keep){for(const component of entity.findComponents("render") as pc.RenderComponent[])if(component.entity.name!==keep)component.entity.enabled=false;}
+      }
+      const bounds=v.part===undefined?record.bounds:record.parts[v.part]??record.bounds;
+      const sizeX=Math.max(.001,bounds.max[0]-bounds.min[0]);
+      const sizeZ=Math.max(.001,bounds.max[2]-bounds.min[2]);
+      const scale=Math.min(v.width/sizeX,v.depth/sizeZ);
+      entity.setLocalScale(scale,scale,scale);
+      entity.setPosition(v.x,v.y,v.z);
+      entity.setEulerAngles(0,v.yaw??0,0);
+      sceneRoot.addChild(entity);
+      // Picking uses an invisible-to-render proxy with a known position.
+      const pick=new pc.Entity(`pick-${l}-${i}`);pick.setPosition(v.x,v.y,v.z);sceneRoot.addChild(pick);picks.push({entity:pick,layer:l,index:i});
+    }catch(error){status.textContent=`GLB preview error: ${String(error)}`;addBox(l,i,v,[Math.max(.4,v.width||1),.5,Math.max(.4,v.depth||1)],mats.visual);}
+  }
   app.root.addChild(sceneRoot);
   const material=(color:string)=>{const m=new pc.StandardMaterial();m.diffuse=new pc.Color().fromString(color);m.update();return m;};
   const mats={platform:material("#477fa8"),mechanism:material("#ef9d6c"),checkpoint:material("#b8f582"),selected:material("#ffdd66"),visual:material("#b18ef5"),spawn:material("#67efbe"),finish:material("#f277a0"),route:material("#e6e8f4")};
@@ -68,7 +105,7 @@ export function mountUniversalEditor(host:HTMLElement,launch:Launch) {
     draft.checkpoints.forEach((p,i)=>addBox("checkpoints",i,p,[1.2,2.5,1.2],layer==="checkpoints"&&selected===i?mats.selected:mats.checkpoint));
     addBox("spawn",0,draft.spawn,[2,2,2],layer==="spawn"?mats.selected:mats.spawn);
     addBox("finish",0,draft.finish,[2,3,2],layer==="finish"?mats.selected:mats.finish);
-    for(const l of ["visuals","environment"] as const)(draft[l]??[]).forEach((p,i)=>addBox(l,i,p,[Math.max(.4,p.width||1),.5,Math.max(.4,p.depth||1)],layer===l&&selected===i?mats.selected:mats.visual));
+    for(const l of ["visuals","environment"] as const)(draft[l]??[]).forEach((p,i)=>addVisual(l,i,p));
     draft.routes.forEach((r,i)=>r.points.forEach((p,j)=>addBox("routes",i,p,[.35,.35,.35],layer==="routes"&&selected===i?mats.selected:mats.route)));
   }
   const assetPicker=q<HTMLSelectElement>("[data-asset]");
@@ -127,5 +164,5 @@ export function mountUniversalEditor(host:HTMLElement,launch:Launch) {
   q("[data-play]").addEventListener("click",()=>{try{const arena=validateDraft(draft,base),report=validateCompiledLevel(arena);if(report.diagnostics.some(d=>d.severity==="error"))throw Error("Static validation errors; fix before Playtest");wrapper.hidden=true;playHost.hidden=false;app.autoRender=false;playSession=launch(playHost,arena,editorAssetUrls,()=>{playSession?.destroy();playSession=undefined;playHost.hidden=true;wrapper.hidden=false;app.autoRender=true;});}catch(e){wrapper.hidden=false;playHost.hidden=true;app.autoRender=true;status.textContent=String(e);}});
   const resize=new ResizeObserver(()=>app.resizeCanvas(canvas.parentElement!.clientWidth,canvas.parentElement!.clientHeight));resize.observe(canvas.parentElement!);
   target.set(0,0,-Math.max(50,Math.abs(base.finish.z)/2));distance=Math.max(80,Math.abs(base.finish.z)*.75);positionCamera();refresh();updateHistory();app.start();
-  return {destroy(){playSession?.destroy();resize.disconnect();sceneRoot.destroy();app.destroy();wrapper.remove();playHost.remove();}};
+  return {destroy(){playSession?.destroy();resize.disconnect();disposed=true;sceneRoot.destroy();for(const asset of glbCache.values()){app.assets.remove(asset);asset.unload();}glbCache.clear();app.destroy();wrapper.remove();playHost.remove();}};
 }
