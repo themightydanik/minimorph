@@ -6,18 +6,18 @@ if (__EDITOR_ENABLED__ && /^\/editor\/?$/.test(window.location.pathname)) {
   void Promise.all([
     import("@minimorph/game-engine/editor"),
     import("@minimorph/game-ui/playtest"),
-    import("./arena-draft-editor"),
-  ]).then(([{ mountLevelEditor }, { mountPlaytest }, { mountArenaDraftEditor }]) => {
+    import("@minimorph/game-engine/universal-editor"),
+  ]).then(([{ mountLevelEditor }, { mountPlaytest }, { mountUniversalEditor }]) => {
     const host = document.querySelector<HTMLElement>("#app")!;
     const choice = document.createElement("div");
     choice.style.cssText = "position:fixed;z-index:999;right:12px;top:12px;background:#111b35;color:white;padding:8px;border-radius:8px";
-    choice.innerHTML = '<label>Editor mode <select><option value="cosmic">Cosmic Sprint 3D editor</option><option value="all">All tracks · top-down editor</option></select></label>';
+    choice.innerHTML = '<label>Editor mode <select><option value="cosmic">Cosmic Sprint 3D editor</option><option value="all">All tracks · 3D editor</option></select></label>';
     document.body.append(choice);
     const select = choice.querySelector("select")!;
     let current: { destroy(): void } | undefined;
     const mount = () => {
       current?.destroy();
-      current = select.value === "cosmic" ? mountLevelEditor(host, mountPlaytest) : mountArenaDraftEditor(host, mountPlaytest);
+      current = select.value === "cosmic" ? mountLevelEditor(host, mountPlaytest) : mountUniversalEditor(host, mountPlaytest);
     };
     select.addEventListener("change", mount);
     mount();
