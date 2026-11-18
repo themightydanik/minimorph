@@ -1526,3 +1526,5 @@ export function mountLevelEditor(
     },
   };
 }
+
+export { editorAssetUrls } from "./editor-assets";
